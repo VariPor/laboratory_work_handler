@@ -7,7 +7,7 @@ void Manager::addVariable(VariableData& var) {
 
 void Manager::deleteVariable(QString& name) {
     for (int i = 0; i < variables.count(); ++i) {
-        if (name == variables.at(i).fullNaming || name == variables.at(i).fullNaming) {
+        if (name == variables.at(i).fullNaming || name == variables.at(i).shortNaming) {
             variables.removeAt(i);
             return;
         }
