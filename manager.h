@@ -18,6 +18,6 @@ private:
    QList<VariableData> calculated;
 };
 
-Q_GLOBAL_STATIC(Manager, StaticManager)
+Q_GLOBAL_STATIC(Manager, GlobalManager)
 
 #endif // MANAGER_H

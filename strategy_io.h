@@ -5,32 +5,40 @@
 
 struct StrategyIO
 {
-    virtual void save(Manager) = 0;
-    virtual void load(Manager) = 0;
+    virtual void save() = 0;
+    virtual void load() = 0;
 };
 
-struct StrategyIO_Choose
+struct StrategyIO_Choose : StrategyIO
 {
-    virtual void save(Manager) override;
-    virtual void load(Manager) override;
+    virtual void save() override;
+    virtual void load() override;
 };
 
-struct StrategyIO_JSON
+struct StrategyIO_JSON : StrategyIO
 {
-    virtual void save(Manager) override;
-    virtual void load(Manager) override;
+    virtual void save() override;
+    virtual void load() override;
 };
 
-struct StrategyIO_BD
+struct StrategyIO_BD : StrategyIO
 {
-    virtual void save(Manager) override;
-    virtual void load(Manager) override;
+    virtual void save() override;
+    virtual void load() override;
 };
 
-struct StrategyIO_Custom
+struct StrategyIO_Custom : StrategyIO
 {
-    virtual void save(Manager) override;
-    virtual void load(Manager) override;
+    virtual void save() override;
+    virtual void load() override;
 };
+
+
+struct StrategyIO_CSV : StrategyIO
+{
+    virtual void save() override {};
+    virtual void load() override;
+};
+
 
 #endif // STRATEGY_IO_H
