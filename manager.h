@@ -4,14 +4,15 @@
 #include <variable_data.h>
 #include <QGlobalStatic>
 
-class Manager {
+class Manager
+{
 public:
    void addVariable(VariableData&);
-   void deleteVariable(QString&);
+   void deleteVariable(int);
    void addMeasurementRow(QList<double>&);
    void removeMeasurementRow(int);
    void clearCalculated();
-   void addCalculated();
+   void addCalculated(VariableData&);
 private:
    QList<VariableData> variables;
    QList<VariableData> calculated;
