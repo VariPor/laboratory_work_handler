@@ -5,18 +5,24 @@
 #include <QString>
 #include <utility>
 
-enum class ErrorType {
+enum ErrorType
+{
     relative,
-    absolute
+    absolute,
+    calculated
 };
 
-class VariableData {
-public:
+class VariableData
+{
     QList<double> measurements;
     QString fullNaming;
     QString shortNaming;
     std::pair<ErrorType, double> instrumentError;
-    double error(double measurement);
+    QList<double> calcErrors;
+    friend class Manager;
+public:  
+    double error(double measurement, int index = 0);
+    VariableData(QString fullNaming, QString shortNaming = "", QList<double> meas = QList<double> {});
 };
 
 #endif // VARIABLEDATA_H
