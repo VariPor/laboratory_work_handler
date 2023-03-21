@@ -1,7 +1,8 @@
 #include "manager.h"
 
+Q_GLOBAL_STATIC(Manager, GlobalManager)
 
-void Manager::addVariable(VariableData& var)
+void Manager::addVariable(const VariableData& var)
 {
     variables.append(var);
 }
@@ -29,7 +30,7 @@ void Manager::removeMeasurementRow(int num_row)
         variables[i].measurements.removeAt(i);
 }
 
-void Manager::addCalculated(VariableData& var)
+void Manager::addCalculated(const VariableData& var)
 {
     calculated.append(var);
 }
@@ -37,4 +38,9 @@ void Manager::addCalculated(VariableData& var)
 void Manager::clearCalculated()
 {
     calculated.clear();
+}
+
+Manager *Manager::instance()
+{
+    return GlobalManager;
 }

@@ -7,17 +7,17 @@
 class Manager
 {
 public:
-   void addVariable(VariableData&);
+   void addVariable(const VariableData&);
    void deleteVariable(int);
    void addMeasurementRow(QList<double>&);
    void removeMeasurementRow(int);
    void clearCalculated();
-   void addCalculated(VariableData&);
-private:
+   void addCalculated(const VariableData&);
+
+   static Manager* instance();
+
    QList<VariableData> variables;
    QList<VariableData> calculated;
 };
-
-Q_GLOBAL_STATIC(Manager, GlobalManager)
 
 #endif // MANAGER_H

@@ -20,17 +20,13 @@ void StrategyIO_CSV::load()
     {
         if (str[i] == ',')
         {
-            VariableData var (name);
-            GlobalManager->addVariable(var);
+            Manager::instance()->addVariable(VariableData (name));
             name.clear();
             continue;
         }
         name += str[i];
         if (i == str.size() - 1)
-        {
-            VariableData var (name);
-            GlobalManager->addVariable(var);
-        }
+            Manager::instance()->addVariable(VariableData (name));
     }
 
     QList<double> data;
@@ -43,7 +39,7 @@ void StrategyIO_CSV::load()
         data.push_back(number);
         if (ch == '\n')     // end of string
         {
-            GlobalManager->addMeasurementRow(data);
+            Manager::instance()->addMeasurementRow(data);
             data.clear();
         }
     }
