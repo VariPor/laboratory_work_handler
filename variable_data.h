@@ -5,22 +5,32 @@
 #include <QString>
 #include <utility>
 
-enum ErrorType
+struct Instrument
 {
-    relative,
-    absolute,
-    calculated
+    enum ErrorType
+    {
+        relative,
+        absolute,
+        calculated
+    } type;
+    double value;
 };
 
 class VariableData
 {
+public:
     QList<double> measurements;
     QString fullNaming;
     QString shortNaming;
-    std::pair<ErrorType, double> instrumentError;
+    Instrument instrumentError;
     QList<double> calcErrors;
-    friend class Manager;
-public:  
+
+    struct VisualOptions
+    {
+        bool visible = true;
+        int width = 1;
+    } visual;
+
     double error(double measurement, int index = 0);
     VariableData(QString fullNaming, QString shortNaming = "", QList<double> meas = QList<double> {});
 };
