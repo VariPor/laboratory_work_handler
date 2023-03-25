@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 
 #include <QApplication>
+#include <strategy_io.h>
 
 int main(int argc, char *argv[])
 {

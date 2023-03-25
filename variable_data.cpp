@@ -4,23 +4,16 @@
 double VariableData::error(double measurement, int index)
 {
 
-  switch(int(VariableData::instrumentError.first))
+  switch(int(VariableData::instrumentError.type))
   {
-    case 0:
-    { // relative error
-      return VariableData::instrumentError.second * measurement;
-    }
-    case 1:
-    { // absolute error
-      return VariableData::instrumentError.second;
-    }
-    case 2:
-    { // calculated error
+    case Instrument::ErrorType::relative:
+      return VariableData::instrumentError.value * measurement;
+    case Instrument::ErrorType::absolute:
+      return VariableData::instrumentError.value;
+    case Instrument::ErrorType::calculated:
         return calcErrors.at(index);
-    }
-    default: {
+    default:
       throw "Wrong ErrorType!";
-    }
   }
     
 }
