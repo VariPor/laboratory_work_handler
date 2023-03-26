@@ -4,6 +4,7 @@
 #include <QList>
 #include <QString>
 #include <utility>
+#include <QColor>
 
 struct Instrument
 {
@@ -29,6 +30,11 @@ public:
     {
         bool visible = true;
         int width = 1;
+        QString line_type = "solid";
+        QString point_type = "square";
+        QColor color = "red";
+
+        static constexpr int FILEDS = 5;
     } visual;
 
     double error(double measurement, int index = 0);
