@@ -28,17 +28,17 @@ QVariant VisualModel::data(const QModelIndex &index, int role) const
         case Qt::BackgroundColorRole:
             switch (option)
             {
-                case 0:
-                    return visual.visible ? Qt::Checked : Qt::Unchecked;
-                case 4:
-                    return visual.color;
+              case 0:
+                return visual.visible ? Qt::Checked : Qt::Unchecked;
+              case 4:
+                return visual.color;
             }
          break;
 
         case Qt::CheckStateRole:
             switch (option)
             {
-            case 0:
+              case 0:
                 return visual.visible ? Qt::Checked : Qt::Unchecked;
             }
             break;
@@ -46,8 +46,6 @@ QVariant VisualModel::data(const QModelIndex &index, int role) const
         case Qt::DisplayRole:
             switch (option)
             {
-              case 0:
-                return visual.visible;
               case 1:
                 return visual.width;
               case 2:
@@ -84,8 +82,6 @@ bool VisualModel::setData(const QModelIndex &index, const QVariant &value, int r
     {
         switch (option)
         {
-          case 0:
-            return visual.visible;
           case 1:
             if (!value.toInt(&ok)) return false;
             if (!ok) return false;
@@ -95,8 +91,6 @@ bool VisualModel::setData(const QModelIndex &index, const QVariant &value, int r
             visual.point_type = value.toString();
             return true;
           case 3:
-            if (!value.canConvert<QString>()) return false;
-            if (value.toString().isEmpty()) return false;
             visual.line_type = value.toString();
             return true;
           case 4:
@@ -108,47 +102,50 @@ bool VisualModel::setData(const QModelIndex &index, const QVariant &value, int r
     return false;
 }
 
-QVariant VisualModel::headerData( int section, Qt::Orientation orientation, int role ) const {
-    if( role != Qt::DisplayRole )
+QVariant VisualModel::headerData( int section, Qt::Orientation orientation, int role ) const
+{
+    if (role != Qt::DisplayRole)
     {
         return QVariant();
     }
 
-    if( orientation == Qt::Vertical )
+    if (orientation == Qt::Vertical)
     {
         return QString(Manager::instance() -> variables[section].fullNaming);
     }
 
-    switch( section )
+    switch (section)
     {
-    case 0:
-        return QString( "visible" );
-    case 1:
-        return QString( "width" );
-    case 2:
-        return QString( "point_type" );
-    case 3:
-        return QString( "line_type" );
-    case 4:
-        return QString( "color" );
+      case 0:
+        return QString("visible");
+      case 1:
+        return QString("width");
+      case 2:
+        return QString("point_type");
+      case 3:
+        return QString("line_type");
+      case 4:
+        return QString("color");
     }
+
     return QVariant();
 }
 
 Qt::ItemFlags VisualModel::flags(const QModelIndex &index) const
 {
     int option  = index.column();
-    switch (option) {
-        case 0:
-            return Qt::ItemIsEnabled | Qt::ItemIsUserCheckable | QAbstractItemModel::flags(index);
-        case 1:
-            return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
-        case 2:
-            return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
-        case 3:
-            return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
-        case 4:
-            return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
+    switch (option)
+    {
+      case 0:
+        return Qt::ItemIsEnabled | Qt::ItemIsUserCheckable | QAbstractItemModel::flags(index);
+      case 1:
+        return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
+      case 2:
+        return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
+      case 3:
+        return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
+      case 4:
+        return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
     }
     return Qt::ItemIsEditable;
 }

@@ -13,8 +13,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->setupUi(this);
     ui->tableView_3->setItemDelegateForColumn(4, new ColorDelegate());
-    ui->tableView_3->setItemDelegateForColumn(2,new ComboBoxDelegate({"square", "circle"}));
-     ui->tableView_3->setItemDelegateForColumn(3,new ComboBoxDelegate({"Solid", "something"}));
+    ui->tableView_3->setItemDelegateForColumn(2, new ComboBoxDelegate({"square", "circle"}));
+    ui->tableView_3->setItemDelegateForColumn(3, new ComboBoxDelegate({"solid", "something"}));
     ui->tableView_3->setModel(new VisualModel);
     ui->tableView_3->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 }
