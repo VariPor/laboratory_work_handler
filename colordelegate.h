@@ -3,7 +3,8 @@
 
 #include <QStyledItemDelegate>
 
-class ColorDelegate : public QStyledItemDelegate {
+class ColorDelegate : public QStyledItemDelegate
+{
   Q_OBJECT
  public:
   ColorDelegate(QObject* parent = nullptr);

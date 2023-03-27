@@ -4,9 +4,9 @@
 
 #include "strategy_io.h"
 
-void StrategyIO_CSV::load()
+void StrategyIO_CSV::load(const QString& input)
 {
-    QFile file("test.csv");
+    QFile file(input);
     if(!file.open(QIODevice::ReadOnly))
         {
             throw std::runtime_error(" error opening file: " + file.error());
@@ -30,7 +30,6 @@ void StrategyIO_CSV::load()
     }
 
     QList<double> data;
-    //str = instream.readLine();
     while (!instream.atEnd())
     {
         double number;
@@ -46,3 +45,38 @@ void StrategyIO_CSV::load()
     file.close();
 }
 
+void StrategyIO_CSV::save(const QString& output)
+{
+    QFile file(output);
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
+        {
+            throw std::runtime_error(" error opening file: " + file.error());
+            return;
+        }
+
+    QTextStream outstream(&file);
+
+
+    auto& variables = Manager::instance()->variables;
+
+    if (variables.size() > 0)
+        for (int i = 0; i < variables.size(); ++i)
+        {
+            if (i == 0)
+                outstream << variables[i].fullNaming;
+            else
+                outstream << "," << variables[i].fullNaming;
+        }
+
+        for (int i = 0; i < variables[0].measurements.size(); ++i) {
+            for (int j = 0; j < variables.size(); ++j)
+            {
+                if (j == 0)
+                    outstream << variables[i].measurements[j];
+                else
+                    outstream << "," << variables[i].measurements[j];
+            }
+            outstream << '\n';
+        }
+    file.close();
+}

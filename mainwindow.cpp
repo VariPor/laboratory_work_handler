@@ -6,24 +6,32 @@
 #include "manager.h"
 #include "colordelegate.h"
 #include "comboboxdelegate.h"
+#include "measurement_model.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->tableView_3->setItemDelegateForColumn(4, new ColorDelegate());
-    ui->tableView_3->setItemDelegateForColumn(2, new ComboBoxDelegate({"square", "circle"}));
-    ui->tableView_3->setItemDelegateForColumn(3, new ComboBoxDelegate({"Solid", "something"}));
-    ui->tableView_3->setModel(new VisualModel);
-    ui->tableView_3->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
-    ui->tableView_5->setItemDelegateForColumn(0, new ComboBoxDelegate({"relative", "absolute", "calculated"}));
-    ui->tableView_5->setModel(new InstrumentModel);
-    ui->tableView_5->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    Manager::instance()->addVariable(VariableData{"foo", "bar", {1.2, 15.4,111,1112.1}});
+    Manager::instance()->addVariable(VariableData{"meh", "ce", {1.2,1}});
 
-    ui->tableView_4->setModel(new NamingModel);
-    ui->tableView_4->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui->variable_tableView->setModel(new MeasurementModel);
+    ui->variable_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+
+    ui->visual_tableView->setItemDelegateForColumn(4, new ColorDelegate);
+    ui->visual_tableView->setItemDelegateForColumn(2, new ComboBoxDelegate({"square", "circle"}));
+    ui->visual_tableView->setItemDelegateForColumn(3, new ComboBoxDelegate({"solid", "something"}));
+    ui->visual_tableView->setModel(new VisualModel);
+    ui->visual_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+
+    ui->instruments_tableView->setItemDelegateForColumn(0, new ComboBoxDelegate({"relative", "absolute", "calculated"}));
+    ui->instruments_tableView->setModel(new InstrumentModel);
+    ui->instruments_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+
+    ui->naming_tableView->setModel(new NamingModel);
+    ui->naming_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 }
 
 MainWindow::~MainWindow()

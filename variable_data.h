@@ -6,24 +6,24 @@
 #include <utility>
 #include <QColor>
 
-struct Instrument
-{
-    enum ErrorType
-    {
-        relative,
-        absolute,
-        calculated
-    } type;
-    double value;
-};
-
 class VariableData
 {
 public:
     QList<double> measurements;
     QString fullNaming;
     QString shortNaming;
-    Instrument instrumentError;
+    struct Instrument
+    {
+        enum ErrorType
+        {
+            relative,
+            absolute,
+            calculated
+        } type = ErrorType::absolute;
+        double value = 0;
+
+        static constexpr int FILEDS = 2;
+    } instrumentError;
     QList<double> calcErrors;
 
     struct VisualOptions
@@ -32,7 +32,7 @@ public:
         int width = 1;
         QString line_type = "solid";
         QString point_type = "square";
-        QColor color = "red";
+        QColor color = "black";
 
         static constexpr int FILEDS = 5;
     } visual;

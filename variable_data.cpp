@@ -1,4 +1,3 @@
-#include <iostream>
 #include "variable_data.h"
 
 double VariableData::error(double measurement, int index)
@@ -18,7 +17,11 @@ double VariableData::error(double measurement, int index)
     
 }
 
-
 VariableData::VariableData(QString fullN, QString shortN, QList<double> meas)
-    : fullNaming { fullN }, shortNaming { shortN }, measurements { meas }
-{}
+    : measurements { meas }, fullNaming { fullN }, shortNaming { shortN }
+{
+    for (int i = 0; i < measurements.size(); ++i)
+    {
+        calcErrors.append(0);
+    }
+}

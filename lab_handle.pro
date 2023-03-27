@@ -18,26 +18,32 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     colordelegate.cpp \
     comboboxdelegate.cpp \
+    instrument_model.cpp \
     main.cpp \
     mainwindow.cpp \
     manager.cpp \
+    measurement_model.cpp \
+    naming_model.cpp \
     qcustomplot.cpp \
     strategy_io.cpp \
-    tables.cpp \
-    variable_data.cpp
+    variable_data.cpp \
+    visual_model.cpp
 
 HEADERS += \
     block.h \
     colordelegate.h \
     comboboxdelegate.h \
     editor_odf.h \
+    instrument_model.h \
     mainwindow.h \
     manager.h \
+    measurement_model.h \
+    naming_model.h \
     plot.h \
     qcustomplot.h \
     strategy_io.h \
-    tables.h \
-    variable_data.h
+    variable_data.h \
+    visual_model.h
 
 FORMS += \
     mainwindow.ui
