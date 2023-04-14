@@ -2,6 +2,7 @@
 #define MANAGER_H
 
 #include <variable_data.h>
+#include "plot.h"
 #include <QGlobalStatic>
 
 class Manager
@@ -18,6 +19,8 @@ public:
 
    QList<VariableData> variables;
    QList<VariableData> calculated;
+
+   Plot *plot;
 };
 
 #endif // MANAGER_H

@@ -2,12 +2,12 @@
 #include "variable_data.h"
 #include "manager.h"
 
-int maxSizeOfMeasurement(const Manager& m)
+int maxSizeOfMeasurement()
 {
     int max = 0;
-    for (int i = 0; i < m.variables.size(); ++i)
+    for (int i = 0; i < Manager::instance()->variables.size(); ++i)
     {
-        max = std::max(m.variables[i].measurements.size(), max);
+        max = std::max(Manager::instance()->variables[i].measurements.size(), max);
     }
     return max;
 }
@@ -15,7 +15,7 @@ int maxSizeOfMeasurement(const Manager& m)
 int MeasurementModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return maxSizeOfMeasurement(*Manager::instance()); //очень плохо срочно адекватную идею
+    return maxSizeOfMeasurement();
 }
 
 int MeasurementModel::columnCount(const QModelIndex &parent) const
@@ -26,58 +26,47 @@ int MeasurementModel::columnCount(const QModelIndex &parent) const
 
 QVariant MeasurementModel::data(const QModelIndex &index, int role) const
 {
-    int option = index.row();
+    int row = index.row();
     int variable  = index.column();
+    auto v = Manager::instance()->variables[variable];
 
-    if (Manager::instance()->variables[variable].measurements.size() <= option)
+    if (v.measurements.size() <= row) return QVariant();
+
+    if (role == Qt::DisplayRole)
     {
-        return QVariant();
-    }
-
-    switch (role)
-    {
-        case Qt::DisplayRole: //тоже плохо, надо что-то добавить
-        {
-            QString r = QVariant(Manager::instance()->variables[variable].measurements[option]).toString() + " ± " +
-                    QVariant(Manager::instance() -> variables[variable].instrumentError.value).toString();
-            return r;
-        }
-
+        QString r = QVariant(v.measurements[row]).toString() + " ± " +
+                    QVariant(v.instrumentError.value).toString();
+        return r;
     }
     return QVariant();
 }
 
 QVariant MeasurementModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if( role != Qt::DisplayRole )
-    {
-        return QVariant();
-    }
+    if (role != Qt::DisplayRole) return QVariant();
 
-    if( orientation == Qt::Vertical )
-    {
-        return section + 1;
-    }
+    if (orientation == Qt::Vertical) return section + 1;
 
     return Manager::instance()->variables[section].fullNaming;
 }
 
 bool MeasurementModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    int option = index.row();
-    int variable  = index.column();
-    bool ok = true;
+    int row = index.row();
+    int variable = index.column();
+    auto m = Manager::instance();
 
     if (role == Qt::EditRole)
     {
-        if (!value.toDouble(&ok)) return false;
-        if (!ok) return false;
-        if (Manager::instance()->variables[variable].measurements.size() <= option)
+        if (!value.canConvert<double>()) return false;
+        if (m->variables[variable].measurements.size() <= row)
         {
-            Manager::instance()->variables[variable].measurements.append(value.toDouble());
+            m->variables[variable].measurements.append(value.toDouble());
+            emit dataChanged(index, index);
             return true;
         }
-        Manager::instance()->variables[variable].measurements[option] = value.toDouble();
+        m->variables[variable].measurements[row] = value.toDouble();
+        emit dataChanged(index, index);
         return true;
     }
     return false;

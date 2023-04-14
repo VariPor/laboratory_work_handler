@@ -46,9 +46,9 @@ QVariant VisualModel::data(const QModelIndex &index, int role) const
               case 1:
                 return visual.width;
               case 2:
-                return visual.point_type;
+                return visual.point_types.value(visual.point_type);
               case 3:
-                return visual.line_type;
+                return visual.line_types.value(visual.line_type);
             }
     }
     return QVariant();
@@ -83,46 +83,46 @@ bool VisualModel::setData(const QModelIndex &index, const QVariant &value, int r
             if (!value.toInt(&ok)) return false;
             if (!ok) return false;
             visual.width = value.toInt();
+            emit dataChanged(index, index);
             return true;
           case 2:
-            visual.point_type = value.toString();
+            visual.point_type = VariableData::VisualOptions::point_types.key(value.toString());
+            emit dataChanged(index, index);
             return true;
           case 3:
-            visual.line_type = value.toString();
+            visual.line_type = VariableData::VisualOptions::line_types.key(value.toString());
+            emit dataChanged(index, index);
             return true;
           case 4:
             visual.color = value.value<QColor>();
+            emit dataChanged(index, index);
             return true;
         }
+        emit dataChanged(index, index);
         return true;
     }
+    emit dataChanged(index, index);
     return false;
 }
 
-QVariant VisualModel::headerData( int section, Qt::Orientation orientation, int role ) const
+QVariant VisualModel::headerData (int section, Qt::Orientation orientation, int role) const
 {
-    if (role != Qt::DisplayRole)
-    {
-        return QVariant();
-    }
+    if (role != Qt::DisplayRole) return QVariant();
 
-    if (orientation == Qt::Vertical)
-    {
-        return QString(Manager::instance() -> variables[section].fullNaming);
-    }
+    if (orientation == Qt::Vertical) return QString(Manager::instance() -> variables[section].fullNaming);
 
     switch (section)
     {
       case 0:
-        return QString("visible");
+        return QString("Visible");
       case 1:
-        return QString("width");
+        return QString("Width");
       case 2:
-        return QString("point_type");
+        return QString("Point type");
       case 3:
-        return QString("line_type");
+        return QString("Line type");
       case 4:
-        return QString("color");
+        return QString("Color");
     }
     return QVariant();
 }
@@ -135,11 +135,8 @@ Qt::ItemFlags VisualModel::flags(const QModelIndex &index) const
       case 0:
         return Qt::ItemIsEnabled | Qt::ItemIsUserCheckable | QAbstractItemModel::flags(index);
       case 1:
-        return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
       case 2:
-        return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
       case 3:
-        return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
       case 4:
         return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
     }

@@ -36,7 +36,7 @@ void StrategyIO_CSV::load(const QString& input)
         instream >> number;
         QString ch = instream.read(1);
         data.push_back(number);
-        if (ch == '\n')     // end of string
+        if (ch == '\r')      // end of string
         {
             Manager::instance()->addMeasurementRow(data);
             data.clear();
