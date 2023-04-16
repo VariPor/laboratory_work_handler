@@ -6,7 +6,8 @@
 
 #include "variable_data.h"
 
-class NamingModel : public QAbstractTableModel {
+class NamingModel : public QAbstractTableModel
+{
  public:
   NamingModel(QObject* parent = nullptr) : QAbstractTableModel(parent){};
   ~NamingModel(){};

@@ -6,7 +6,8 @@
 
 #include "variable_data.h"
 
-class MeasurementModel : public QAbstractTableModel {
+class MeasurementModel : public QAbstractTableModel
+{
  public:
   MeasurementModel(QObject* parent = nullptr) : QAbstractTableModel(parent){};
   ~MeasurementModel(){};

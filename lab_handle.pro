@@ -2,7 +2,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
-CONFIG += c++11
+CONFIG += c++20
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -22,7 +22,10 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     manager.cpp \
+    measurement_model.cpp \
     naming_model.cpp \
+    plot_hist.cpp \
+    plot_scatter.cpp \
     qcustomplot.cpp \
     strategy_io.cpp \
     variable_data.cpp \
@@ -39,6 +42,8 @@ HEADERS += \
     measurement_model.h \
     naming_model.h \
     plot.h \
+    plot_hist.h \
+    plot_scatter.h \
     qcustomplot.h \
     strategy_io.h \
     variable_data.h \

@@ -6,7 +6,8 @@
 
 #include "variable_data.h"
 
-class InstrumentModel : public QAbstractTableModel {
+class InstrumentModel : public QAbstractTableModel
+{
  public:
   InstrumentModel(QObject* parent = nullptr) : QAbstractTableModel(parent){};
   ~InstrumentModel(){};

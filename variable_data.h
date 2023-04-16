@@ -5,6 +5,7 @@
 #include <QString>
 #include <utility>
 #include <QColor>
+#include "qcustomplot.h"
 
 class VariableData
 {
@@ -30,9 +31,12 @@ public:
     {
         bool visible = true;
         int width = 1;
-        QString line_type = "solid";
-        QString point_type = "square";
-        QColor color = "red";
+        Qt::PenStyle line_type = Qt::SolidLine;
+        QCPScatterStyle::ScatterShape point_type = QCPScatterStyle::ScatterShape::ssNone;
+        QColor color = "black";
+
+        static QMap<Qt::PenStyle, QString> line_types;
+        static QMap<QCPScatterStyle::ScatterShape, QString> point_types;
 
         static constexpr int FILEDS = 5;
     } visual;

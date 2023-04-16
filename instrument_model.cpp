@@ -2,9 +2,6 @@
 #include "variable_data.h"
 #include "manager.h"
 
-#include <QColor>
-#include <QColorDialog>
-
 int InstrumentModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
@@ -41,7 +38,6 @@ bool InstrumentModel::setData(const QModelIndex &index, const QVariant &value, i
 {
     int variable = index.row();
     int option  = index.column();
-    bool ok = true;
     auto& instrument = Manager::instance() -> variables[variable].instrumentError;
 
     if (role == Qt::EditRole)

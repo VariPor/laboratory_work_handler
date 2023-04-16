@@ -6,7 +6,8 @@
 
 #include "variable_data.h"
 
-class VisualModel : public QAbstractTableModel {
+class VisualModel : public QAbstractTableModel
+{
  public:
   VisualModel(QObject* parent = nullptr) : QAbstractTableModel(parent){};
   ~VisualModel(){};

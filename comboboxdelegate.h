@@ -3,7 +3,8 @@
 
 #include <QStyledItemDelegate>
 
-class ComboBoxDelegate : public QStyledItemDelegate {
+class ComboBoxDelegate : public QStyledItemDelegate
+{
   Q_OBJECT
  public:
   ComboBoxDelegate(QStringList options, QObject* parent = nullptr);

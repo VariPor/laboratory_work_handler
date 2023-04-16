@@ -2,9 +2,6 @@
 #include "variable_data.h"
 #include "manager.h"
 
-#include <QColor>
-#include <QColorDialog>
-
 int NamingModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
@@ -41,7 +38,6 @@ bool NamingModel::setData(const QModelIndex &index, const QVariant &value, int r
 {
     int variable = index.row();
     int option  = index.column();
-    bool ok = true;
     auto& name = Manager::instance() -> variables[variable];
 
     if (role == Qt::EditRole)
