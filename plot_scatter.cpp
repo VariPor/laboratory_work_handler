@@ -6,7 +6,7 @@ void PlotScatter::draw(QCustomPlot *plot)
     auto m = Manager::instance();
 
     plot->clearGraphs();
-    for (int i = 0; i < m->variables.size(); ++i)
+    for (int i = 0; i < m->getVariablesCount(); ++i)
     {
         auto & v = m->variables[i];
         if (!v.visual.visible) continue;
@@ -25,7 +25,7 @@ void PlotScatter::draw(QCustomPlot *plot)
 
         QVector<double> x,y,e;
 
-        for (int j = 0; j < v.measurements.size(); ++j)
+        for (int j = 0; j < m->getVariablesCount(); ++j)
         {
             x.append(j);
             y.append(v.measurements[j]);

@@ -6,7 +6,7 @@ void PlotHistogram::draw(QCustomPlot *plot)
     auto m = Manager::instance();
 
     plot->clearGraphs();
-    for (int i = 0; i < m->variables.size(); ++i)
+    for (int i = 0; i < m->getVariablesCount(); ++i)
     {
         auto & v = m->variables[i];
         if (!v.visual.visible) continue;

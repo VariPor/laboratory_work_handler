@@ -1,4 +1,5 @@
 #include "variable_data.h"
+
 QMap<Qt::PenStyle, QString> VariableData::VisualOptions::line_types = {
     {Qt::SolidLine, "Solid"},
     {Qt::DashLine, "Dashed"},
@@ -11,12 +12,18 @@ QMap<QCPScatterStyle::ScatterShape, QString> VariableData::VisualOptions::point_
     {QCPScatterStyle::ScatterShape::ssCircle, "Circle"},
 };
 
-double VariableData::error(double measurement, int index)
+QMap<VariableData::Instrument::ErrorType, QString> VariableData::Instrument::error_types = {
+    {VariableData::Instrument::ErrorType::relative, "relative"},
+    {VariableData::Instrument::ErrorType::absolute, "absolute"},
+    {VariableData::Instrument::ErrorType::calculated, "calculated"},
+};
+
+double VariableData::error(int index)
 {
   switch(int(VariableData::instrumentError.type))
   {
     case Instrument::ErrorType::relative:
-      return VariableData::instrumentError.value * measurement;
+      return VariableData::instrumentError.value * VariableData::measurements.at(index);
     case Instrument::ErrorType::absolute:
       return VariableData::instrumentError.value;
     case Instrument::ErrorType::calculated:

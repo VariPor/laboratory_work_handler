@@ -5,7 +5,7 @@
 int InstrumentModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return Manager::instance()->variables.size();
+    return Manager::instance()->getVariablesCount();
 }
 
 int InstrumentModel::columnCount(const QModelIndex &parent) const
@@ -26,7 +26,7 @@ QVariant InstrumentModel::data(const QModelIndex &index, int role) const
             switch (option)
             {
               case 0:
-                return instrument.type;
+                return instrument.error_types.value(instrument.type);
               case 1:
                 return instrument.value;
             }
@@ -45,12 +45,8 @@ bool InstrumentModel::setData(const QModelIndex &index, const QVariant &value, i
         switch (option)
         {
           case 0:
-            if (value.toString() == "relative")
-                instrument.type = VariableData::Instrument::relative;
-            if (value.toString() == "absolute")
-                instrument.type = VariableData::Instrument::absolute;
-            if (value.toString() == "calculated")
-                instrument.type = VariableData::Instrument::calculated;
+            instrument.type = VariableData::Instrument::error_types.key(value.toString());
+            emit dataChanged(index, index);
             return true;
           case 1:
             instrument.value = value.toDouble();

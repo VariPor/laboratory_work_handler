@@ -23,6 +23,7 @@ public:
         } type = ErrorType::absolute;
         double value = 0;
 
+        static QMap<VariableData::Instrument::ErrorType, QString> error_types;
         static constexpr int FILEDS = 2;
     } instrumentError;
     QList<double> calcErrors;
@@ -41,7 +42,7 @@ public:
         static constexpr int FILEDS = 5;
     } visual;
 
-    double error(double measurement, int index = 0);
+    double error(int index = 0);
     VariableData(QString fullNaming, QString shortNaming = "", QList<double> meas = QList<double> {});
 };
 

@@ -2,26 +2,16 @@
 #include "variable_data.h"
 #include "manager.h"
 
-int maxSizeOfMeasurement()
-{
-    int max = 0;
-    for (int i = 0; i < Manager::instance()->variables.size(); ++i)
-    {
-        max = std::max(Manager::instance()->variables[i].measurements.size(), max);
-    }
-    return max;
-}
-
 int MeasurementModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return maxSizeOfMeasurement();
+    return Manager::instance()->getMeasurementsCount();
 }
 
 int MeasurementModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return Manager::instance()->variables.size();
+    return Manager::instance()->getVariablesCount();
 }
 
 QVariant MeasurementModel::data(const QModelIndex &index, int role) const
@@ -35,7 +25,7 @@ QVariant MeasurementModel::data(const QModelIndex &index, int role) const
     if (role == Qt::DisplayRole)
     {
         QString r = QVariant(v.measurements[row]).toString() + " ± " +
-                    QVariant(v.instrumentError.value).toString();
+                    QVariant(v.error(row)).toString();
         return r;
     }
     return QVariant();

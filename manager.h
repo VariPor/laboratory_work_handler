@@ -1,7 +1,7 @@
 #ifndef MANAGER_H
 #define MANAGER_H
 
-#include <variable_data.h>
+#include "variable_data.h"
 #include "plot.h"
 #include <QGlobalStatic>
 
@@ -14,6 +14,8 @@ public:
    void removeMeasurementRow(int);
    void clearCalculated();
    void addCalculated(const VariableData&);
+   int getVariablesCount();
+   int getMeasurementsCount();
 
    static Manager* instance();
 
@@ -21,6 +23,8 @@ public:
    QList<VariableData> calculated;
 
    Plot *plot;
+private:
+   int measurement_count = 0;
 };
 
 #endif // MANAGER_H

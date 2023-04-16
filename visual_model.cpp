@@ -5,7 +5,7 @@
 int VisualModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return Manager::instance()->variables.size();
+    return Manager::instance()->getVariablesCount();
 }
 
 int VisualModel::columnCount(const QModelIndex &parent) const

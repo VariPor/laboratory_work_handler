@@ -25,22 +25,28 @@ void StrategyIO_CSV::load(const QString& input)
             continue;
         }
         name += str[i];
-        if (i == str.size() - 1)
+        if (i + 1 == str.size())
             Manager::instance()->addVariable(VariableData (name));
     }
 
     QList<double> data;
     while (!instream.atEnd())
     {
-        double number;
-        instream >> number;
-        QString ch = instream.read(1);
-        data.push_back(number);
-        if (ch == '\r')      // end of string
+        QString str = instream.readLine();
+        QStringList num_strings = str.split(u',');
+        for (QString num_str : num_strings)
         {
-            Manager::instance()->addMeasurementRow(data);
-            data.clear();
+            bool ok;
+            int num = num_str.toInt(&ok, 10);
+            if (ok)
+                data.push_back(num);
+            else
+                data.push_back(NAN);
         }
+        for (int i = data.size(); i < Manager::instance()->getVariablesCount(); ++i)
+            data.push_back(NAN);
+        Manager::instance()->addMeasurementRow(data);
+        data.clear();
     }
     file.close();
 }
@@ -57,24 +63,25 @@ void StrategyIO_CSV::save(const QString& output)
     QTextStream outstream(&file);
 
 
+    auto* manager = Manager::instance();
     auto& variables = Manager::instance()->variables;
 
-    if (variables.size() > 0)
-        for (int i = 0; i < variables.size(); ++i)
+    if (manager->getVariablesCount() > 0)
+        for (int i = 0; i < manager->getVariablesCount(); ++i)
         {
             if (i == 0)
-                outstream << variables[i].fullNaming;
+                outstream << variables.at(i).fullNaming;
             else
-                outstream << "," << variables[i].fullNaming;
+                outstream << "," << variables.at(i).fullNaming;
         }
 
-        for (int i = 0; i < variables[0].measurements.size(); ++i) {
-            for (int j = 0; j < variables.size(); ++j)
+        for (int i = 0; i < manager->getMeasurementsCount(); ++i) {
+            for (int j = 0; j < manager->getVariablesCount(); ++j)
             {
                 if (j == 0)
-                    outstream << variables[i].measurements[j];
+                    outstream << variables.at(i).measurements.at(j);
                 else
-                    outstream << "," << variables[i].measurements[j];
+                    outstream << "," << variables.at(i).measurements.at(j);
             }
             outstream << '\n';
         }

@@ -5,7 +5,7 @@
 int NamingModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return Manager::instance()->variables.size();
+    return Manager::instance()->getVariablesCount();
 }
 
 int NamingModel::columnCount(const QModelIndex &parent) const
