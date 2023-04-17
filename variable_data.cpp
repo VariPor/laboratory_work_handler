@@ -1,4 +1,4 @@
-#include "variable_data.h"
+﻿#include "variable_data.h"
 
 QMap<Qt::PenStyle, QString> VariableData::VisualOptions::line_types = {
     {Qt::SolidLine, "Solid"},
@@ -33,5 +33,5 @@ double VariableData::error(int index)
   }   
 }
 
-VariableData::VariableData(QString fullN, QString shortN, QList<double> meas)
+VariableData::VariableData(QString shortN, QString fullN, QList<double> meas)
     : measurements { meas }, fullNaming { fullN }, shortNaming { shortN } {}

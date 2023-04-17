@@ -16,6 +16,7 @@ public:
    void addCalculated(const VariableData&);
    int getVariablesCount();
    int getMeasurementsCount();
+   int getVariable(const QString& name);
 
    static Manager* instance();
 

@@ -64,3 +64,17 @@ Manager *Manager::instance()
 int Manager::getVariablesCount() { return variables.size(); }
 
 int Manager::getMeasurementsCount() { return measurement_count; }
+
+int Manager::getVariable(const QString& name)
+{
+    for (int i = 0; i < this->getVariablesCount(); ++i)
+    {
+        if (variables.at(i).shortNaming == name || variables.at(i).fullNaming == name)
+            return i;
+    }
+    throw std::out_of_range("no variable with this name");
+}
+
+
+
+

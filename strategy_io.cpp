@@ -1,6 +1,7 @@
 #include <QDataStream>
 #include <QTextStream>
 #include <QFile>
+#include <QDebug>
 
 #include "strategy_io.h"
 
@@ -49,6 +50,8 @@ void StrategyIO_CSV::load(const QString& input)
         data.clear();
     }
     file.close();
+    StrategyIO_JSON j;
+    j.load("json.json");
 }
 
 void StrategyIO_CSV::save(const QString& output)
@@ -85,5 +88,83 @@ void StrategyIO_CSV::save(const QString& output)
             }
             outstream << '\n';
         }
+    file.close();
+}
+
+void StrategyIO_JSON::load(const QString& input)
+{
+   QString val;
+   QFile file;
+   file.setFileName(input);
+   file.open(QIODevice::ReadOnly | QIODevice::Text);
+   val = file.readAll();
+   file.close();
+
+   QJsonDocument d = QJsonDocument::fromJson(val.toUtf8());
+   QJsonArray array = d.array();
+   for (int i = 0; i < array.size(); ++i)
+   {
+       QJsonObject temp = array[i].toObject();
+       QString short_name = temp["names"].toObject()["shortNaming"].toString();
+       int ind_variable = Manager::instance()->getVariable(short_name);
+
+       auto& variable = Manager::instance()->variables[ind_variable];
+
+       variable.fullNaming = temp["names"].toObject()["fullNaming"].toString();
+
+       variable.instrumentError.type = VariableData::Instrument::error_types.key(temp["instrumentErrors"].toObject()["type"].toString());
+       if (variable.instrumentError.type != VariableData::Instrument::ErrorType::calculated)
+           variable.instrumentError.value = temp["instrumentErrors"].toObject()["value"].toDouble();
+       else {
+           auto list = temp["instrumentErrors"].toObject()["value"].toArray();
+           for (int i = 0; i < list.size(); ++i)
+               variable.calcErrors.push_back(list[i].toDouble());
+       }
+
+       variable.visual.visible = temp["visualOptions"].toObject()["visible"].toBool();
+       variable.visual.width = temp["visualOptions"].toObject()["width"].toInt();
+       variable.visual.line_type = VariableData::VisualOptions::line_types.key(temp["visualOptions"].toObject()["line_type"].toString());
+       variable.visual.point_type = VariableData::VisualOptions::point_types.key(temp["visualOptions"].toObject()["point_type"].toString());
+       variable.visual.color = temp["visualOptions"].toObject()["color"].toString();
+   }
+}
+
+void StrategyIO_JSON::save(const QString& output)
+{
+    QString val;
+    QFile file;
+    file.setFileName(output);
+    file.open(QIODevice::WriteOnly | QIODevice::Text);
+
+    auto& variables = Manager::instance()->variables;
+
+    QJsonArray array;
+    for (int i = 0; i < variables.size(); ++i)
+    {
+        QJsonObject temp;
+        QJsonObject names;
+        names.insert("fullNaming", variables[i].fullNaming);
+        names.insert("shortNaming", variables[i].shortNaming);
+        temp.insert(QString::fromStdString("names"), QJsonValue (names));
+
+        QJsonObject instrumentError;
+        instrumentError.insert("type", VariableData::Instrument::error_types[variables[i].instrumentError.type]);
+        instrumentError.insert("value", variables[i].error());
+        temp.insert(QString::fromStdString("instrumentError"), QJsonValue (instrumentError));
+
+        QJsonObject visualOptions;
+        visualOptions.insert("visible", variables[i].visual.visible);
+        visualOptions.insert("width", variables[i].visual.width);
+        visualOptions.insert("color", variables[i].visual.color.name());
+        visualOptions.insert("point_type", VariableData::VisualOptions::point_types[variables[i].visual.point_type]);
+        visualOptions.insert("line_type", VariableData::VisualOptions::line_types[variables[i].visual.line_type]);
+        temp.insert(QString::fromStdString("visualOptions"), QJsonValue (visualOptions));
+
+        array.append(temp);
+    }
+
+    QJsonDocument d(array);
+    file.write(d.toJson());
+
     file.close();
 }
