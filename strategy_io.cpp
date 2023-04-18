@@ -50,8 +50,6 @@ void StrategyIO_CSV::load(const QString& input)
         data.clear();
     }
     file.close();
-    StrategyIO_JSON j;
-    j.load("json.json");
 }
 
 void StrategyIO_CSV::save(const QString& output)
