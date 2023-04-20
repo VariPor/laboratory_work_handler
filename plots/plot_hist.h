@@ -1,15 +1,14 @@
 #ifndef PLOT_HIST_H
 #define PLOT_HIST_H
 
-
 #include "plot.h"
 
 class PlotHistogramOptionsDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit PlotHistogramOptionsDialog(QString xLable, QString yLable, QString title, int bins, QWidget *parent = nullptr);
-    QLineEdit xlable, ylable, title;
+    explicit PlotHistogramOptionsDialog(QString xlable, QString ylable, QString title, int bins, QWidget *parent = nullptr);
+    QLineEdit xLable, yLable, title;
     QSpinBox bins;
 };
 
@@ -22,7 +21,7 @@ public:
 
     void draw(QCustomPlot *plot) override;
     void options() override;
-    QString xlable = "Measurement value", ylable = "Measurement count", title = "";
+    QString xLable = "Measurement value", yLable = "Measurement count", title = "";
     int bins = 10;
 };
 

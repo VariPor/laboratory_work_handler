@@ -1,15 +1,17 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "visual_model.h"
-#include "instrument_model.h"
-#include "naming_model.h"
+#include "models/visual_model.h"
+#include "models/instrument_model.h"
+#include "models/naming_model.h"
+#include "models/colordelegate.h"
+#include "models/comboboxdelegate.h"
+#include "models/measurement_model.h"
 #include "manager.h"
-#include "colordelegate.h"
-#include "comboboxdelegate.h"
-#include "measurement_model.h"
 #include "strategy_io.h"
-#include "plot_hist.h"
-#include "plot_scatter.h"
+#include "plots/plot_hist.h"
+#include "plots/plot_scatter.h"
+#include "plots/plot_2d.h"
+#include "plots/plot_choise.h"
 #include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -18,7 +20,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    Manager::instance()->addVariable(VariableData{"meh", "brah", {1,2,3,4,4,1}});
+    Manager::instance()->addVariable(VariableData{"meh", "brah", {1,2,3,4,4}});
+    Manager::instance()->addVariable(VariableData{"foo", "ohh", {1,2,3,4,5}});
 
     ui->variable_tableView->setModel(new MeasurementModel);
     ui->variable_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -29,18 +32,24 @@ MainWindow::MainWindow(QWidget *parent)
     ui->visual_tableView->setModel(new VisualModel);
     ui->visual_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
-    ui->instruments_tableView->setItemDelegateForColumn(0, new ComboBoxDelegate({"relative", "absolute", "calculated"}));
+    ui->instruments_tableView->setItemDelegateForColumn(0, new ComboBoxDelegate(VariableData::Instrument::error_types.values()));
     ui->instruments_tableView->setModel(new InstrumentModel);
     ui->instruments_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
     ui->naming_tableView->setModel(new NamingModel);
     ui->naming_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
-    Manager::instance()->plot = new PlotHistogram();
-    Manager::instance()->plot->draw(ui->scatterPlot);
+    Manager::instance()->plot = new PlotChoise({
+                                                    {"Scatter plot", new PlotScatter},
+                                                    {"Histogram plot", new PlotHistogram},
+                                                    {"2d scatter plot", new Plot2d("",
+                                                                                   "")}
+                                                });
+    Manager::instance()->plot->draw(ui->plot);
 
-    connect(ui->replot_action, SIGNAL(triggered()), this, SLOT(draw()));
+    connect(ui->actionReplot, SIGNAL(triggered()), this, SLOT(draw()));
     connect(ui->actionOptions, SIGNAL(triggered()), this, SLOT(plotOptions()));
+    connect(ui->actionOpenAs, SIGNAL(triggered()), this, SLOT(openFile()));
 }
 
 MainWindow::~MainWindow()
@@ -50,7 +59,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::draw()
 {
-    Manager::instance()->plot->draw(ui->scatterPlot);
+    Manager::instance()->plot->draw(ui->plot);
 }
 
 void MainWindow::plotOptions()
@@ -58,7 +67,7 @@ void MainWindow::plotOptions()
     Manager::instance()->plot->options();
 }
 
-void MainWindow::on_open_as_action_triggered()
+void MainWindow::openFile()
 {
     QString str = QFileDialog::getOpenFileName(0, "Открыть", "", "*.csv");
     if (str.isEmpty()) return;

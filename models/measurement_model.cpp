@@ -24,7 +24,7 @@ QVariant MeasurementModel::data(const QModelIndex &index, int role) const
 
     if (role == Qt::DisplayRole)
     {
-        QString r = QVariant(v.measurements[row]).toString() + " ± " +
+        QVariant r = QVariant(v.measurements[row]).toString() + " ± " +
                     QVariant(v.error(row)).toString();
         return r;
     }

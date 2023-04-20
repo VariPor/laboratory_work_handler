@@ -17,7 +17,7 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_open_as_action_triggered();
+    void openFile();
     void draw();
     void plotOptions();
 

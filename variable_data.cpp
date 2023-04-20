@@ -13,9 +13,9 @@ QMap<QCPScatterStyle::ScatterShape, QString> VariableData::VisualOptions::point_
 };
 
 QMap<VariableData::Instrument::ErrorType, QString> VariableData::Instrument::error_types = {
-    {VariableData::Instrument::ErrorType::relative, "relative"},
-    {VariableData::Instrument::ErrorType::absolute, "absolute"},
-    {VariableData::Instrument::ErrorType::calculated, "calculated"},
+    {VariableData::Instrument::ErrorType::relative, "Relative"},
+    {VariableData::Instrument::ErrorType::absolute, "Absolute"},
+    {VariableData::Instrument::ErrorType::calculated, "Calculated"},
 };
 
 double VariableData::error(int index)
@@ -30,8 +30,10 @@ double VariableData::error(int index)
         return calcErrors.at(index);
     default:
       throw "Wrong ErrorType!";
-  }   
+  }
 }
+
+int VariableData::getMeasurementsCount() {return measurements.size();}
 
 VariableData::VariableData(QString shortN, QString fullN, QList<double> meas)
     : measurements { meas }, fullNaming { fullN }, shortNaming { shortN } {}
