@@ -50,6 +50,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionReplot, SIGNAL(triggered()), this, SLOT(draw()));
     connect(ui->actionOptions, SIGNAL(triggered()), this, SLOT(plotOptions()));
     connect(ui->actionOpenAs, SIGNAL(triggered()), this, SLOT(openFile()));
+    connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(saveFile()));
+    connect(ui->actionOpen_directory, SIGNAL(triggered()), this, SLOT(openDirectory()));
+    connect(ui->actionSave_to_directory, SIGNAL(triggered()), this, SLOT(saveDirectory()));
 }
 
 MainWindow::~MainWindow()
@@ -69,10 +72,21 @@ void MainWindow::plotOptions()
 
 void MainWindow::openFile()
 {
-    QString str = QFileDialog::getOpenFileName(0, "Открыть", "", "*.csv");
-    if (str.isEmpty()) return;
-    StrategyIO_CSV loader;
-    loader.load(str);
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
+                                                    "data.csv",
+                                                    tr("Open CSV (*.csv);;Open json (*.json)"));
+
+    if (fileName.isEmpty()) return;
+    if (fileName.endsWith(".csv")) {
+        Manager::instance()->clear();
+        StrategyIO_CSV loader;
+        loader.load(fileName);
+    }
+    if (fileName.endsWith(".json")) {
+        StrategyIO_JSON loader;
+        loader.load(fileName);
+    }
+
     ui->variable_tableView->model()->deleteLater();
     ui->variable_tableView->setModel(new MeasurementModel);
     ui->visual_tableView->setModel(new VisualModel);
@@ -80,3 +94,52 @@ void MainWindow::openFile()
     ui->naming_tableView->setModel(new NamingModel);
 }
 
+void MainWindow::saveFile()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
+                                                    "data.csv",
+                                                    tr("Open CSV (*.csv);;Open json (*.json)"));
+    if (fileName.endsWith(".csv")) {
+        StrategyIO_CSV saver;
+        saver.save(fileName);
+    }
+    if (fileName.endsWith(".json")) {
+        StrategyIO_JSON saver;
+        saver.save(fileName);
+    }
+}
+
+void MainWindow::openDirectory(){
+    auto dirName = QFileDialog::getExistingDirectory(this, tr("Open directory"), "",
+                                                     QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    QString file_csv = dirName + QDir::separator() + "data.csv";
+    QString file_json = dirName + QDir::separator() + "data.json";
+
+    //Manager::instance()->clear();
+
+    StrategyIO_CSV loader_csv;
+    loader_csv.load(file_csv);
+
+    StrategyIO_JSON loader_json;
+    loader_json.load(file_json);
+
+    ui->variable_tableView->model()->deleteLater();
+    ui->variable_tableView->setModel(new MeasurementModel);
+    ui->visual_tableView->setModel(new VisualModel);
+    ui->instruments_tableView->setModel(new InstrumentModel);
+    ui->naming_tableView->setModel(new NamingModel);
+}
+
+void MainWindow::saveDirectory()
+{
+    auto dirName = QFileDialog::getExistingDirectory(this, tr("Open directory"), "",
+                                                     QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    QString file_csv = dirName + QDir::separator() + "data.csv";
+    QString file_json = dirName + QDir::separator() + "data.json";
+
+    StrategyIO_CSV saver_csv;
+    saver_csv.save(file_csv);
+
+    StrategyIO_JSON saver_json;
+    saver_json.save(file_json);
+}

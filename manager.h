@@ -17,6 +17,7 @@ public:
    int getVariablesCount();
    int getMeasurementsCount();
    VariableData* getVariable(const QString& shortName);
+   void clear();
 
    static Manager* instance();
 

@@ -75,6 +75,11 @@ VariableData* Manager::getVariable(const QString& name)
     return nullptr;
 }
 
+void Manager::clear() {
+    variables.clear();
+    calculated.clear();
+    measurement_count = 0;
+}
 
 
 

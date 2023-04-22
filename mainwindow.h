@@ -18,8 +18,11 @@ public:
 
 private slots:
     void openFile();
+    void saveFile();
     void draw();
     void plotOptions();
+    void saveDirectory();
+    void openDirectory();
 
 private:
     Ui::MainWindow *ui;

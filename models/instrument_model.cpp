@@ -65,7 +65,7 @@ QVariant InstrumentModel::headerData( int section, Qt::Orientation orientation, 
 
     if( orientation == Qt::Vertical )
     {
-        return QString(Manager::instance() -> variables[section].fullNaming);
+        return QString(Manager::instance() -> variables[section].shortNaming);
     }
 
     switch( section )

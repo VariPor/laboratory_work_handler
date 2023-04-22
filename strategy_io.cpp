@@ -71,20 +71,21 @@ void StrategyIO_CSV::save(const QString& output)
         for (int i = 0; i < manager->getVariablesCount(); ++i)
         {
             if (i == 0)
-                outstream << variables.at(i).fullNaming;
+                outstream << variables.at(i).shortNaming;
             else
-                outstream << "," << variables.at(i).fullNaming;
+                outstream << "," << variables.at(i).shortNaming;
         }
+        outstream << '\r';
 
         for (int i = 0; i < manager->getMeasurementsCount(); ++i) {
             for (int j = 0; j < manager->getVariablesCount(); ++j)
             {
                 if (j == 0)
-                    outstream << variables.at(i).measurements.at(j);
+                    outstream << variables.at(j).measurements.at(i);
                 else
-                    outstream << "," << variables.at(i).measurements.at(j);
+                    outstream << "," << variables.at(j).measurements.at(i);
             }
-            outstream << '\n';
+            outstream << '\r';
         }
     file.close();
 }

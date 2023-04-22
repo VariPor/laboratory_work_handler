@@ -37,7 +37,7 @@ QVariant MeasurementModel::headerData(int section, Qt::Orientation orientation, 
 
     if (orientation == Qt::Vertical) return section + 1;
 
-    return Manager::instance()->variables[section].fullNaming;
+    return Manager::instance()->variables[section].shortNaming;
 }
 
 bool MeasurementModel::setData(const QModelIndex &index, const QVariant &value, int role)
