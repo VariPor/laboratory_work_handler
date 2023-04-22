@@ -2,7 +2,7 @@
 #define MANAGER_H
 
 #include "variable_data.h"
-#include "plot.h"
+#include "plots/plot.h"
 #include <QGlobalStatic>
 
 class Manager
@@ -16,7 +16,7 @@ public:
    void addCalculated(const VariableData&);
    int getVariablesCount();
    int getMeasurementsCount();
-   int getVariable(const QString& name);
+   VariableData* getVariable(const QString& shortName);
 
    static Manager* instance();
 

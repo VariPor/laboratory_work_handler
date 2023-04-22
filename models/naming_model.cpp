@@ -71,9 +71,9 @@ QVariant NamingModel::headerData( int section, Qt::Orientation orientation, int 
     switch( section )
     {
     case 0:
-        return QString( "full" );
+        return QString( "Full" );
     case 1:
-        return QString( "short" );
+        return QString( "Short" );
     }
     return QVariant();
 }

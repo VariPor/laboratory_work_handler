@@ -6,6 +6,7 @@ void PlotHistogram::draw(QCustomPlot *plot)
     auto m = Manager::instance();
 
     plot->clearGraphs();
+    plot->legend->clear();
     for (int i = 0; i < m->getVariablesCount(); ++i)
     {
         auto & v = m->variables[i];
@@ -56,8 +57,8 @@ void PlotHistogram::draw(QCustomPlot *plot)
         plot->plotLayout()->addElement(0, 0, new QCPTextElement(plot, title));
     }
     static_cast<QCPTextElement* >(plot->plotLayout()->element(0,0))->setText(title);
-    plot->xAxis->setLabel(xlable);
-    plot->yAxis->setLabel(ylable);
+    plot->xAxis->setLabel(xLable);
+    plot->yAxis->setLabel(yLable);
     plot->legend->setVisible(true);
     plot->legend->setBrush(QColor(255, 255, 255, 150));
     plot->rescaleAxes();
@@ -67,17 +68,17 @@ void PlotHistogram::draw(QCustomPlot *plot)
 
 void PlotHistogram::options()
 {
-    PlotHistogramOptionsDialog optionDialog{xlable, ylable, title, bins, this};
+    PlotHistogramOptionsDialog optionDialog{xLable, yLable, title, bins, this};
     optionDialog.show();
     optionDialog.exec();
-    xlable = optionDialog.xlable.text();
-    ylable = optionDialog.ylable.text();
+    xLable = optionDialog.xLable.text();
+    yLable = optionDialog.yLable.text();
     title = optionDialog.title.text();
     bins = optionDialog.bins.value();
 }
 
-PlotHistogramOptionsDialog::PlotHistogramOptionsDialog(QString xLable, QString yLable, QString title, int bins, QWidget *parent)
-    : xlable(xLable), ylable(yLable), title(title), QDialog{parent}
+PlotHistogramOptionsDialog::PlotHistogramOptionsDialog(QString xlable, QString ylable, QString title, int bins, QWidget *parent)
+    : xLable(xlable), yLable(ylable), title(title), QDialog{parent}
 {
     QVBoxLayout *mainlayout = new QVBoxLayout;
 
@@ -87,11 +88,11 @@ PlotHistogramOptionsDialog::PlotHistogramOptionsDialog(QString xLable, QString y
 
     QLabel *xLableLable = new QLabel(tr("X axis lable:"));
     mainlayout->addWidget(xLableLable);
-    mainlayout->addWidget(&this->xlable);
+    mainlayout->addWidget(&this->xLable);
 
     QLabel *yLableLable = new QLabel(tr("Y axis lable:"));
     mainlayout->addWidget(yLableLable);
-    mainlayout->addWidget(&this->ylable);
+    mainlayout->addWidget(&this->yLable);
 
     QLabel *binsLable = new QLabel(tr("Bin count:"));
     mainlayout->addWidget(binsLable);

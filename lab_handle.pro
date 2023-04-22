@@ -16,38 +16,42 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    colordelegate.cpp \
-    comboboxdelegate.cpp \
-    instrument_model.cpp \
+    models/colordelegate.cpp \
+    models/comboboxdelegate.cpp \
+    models/instrument_model.cpp \
     main.cpp \
     mainwindow.cpp \
     manager.cpp \
-    measurement_model.cpp \
-    naming_model.cpp \
-    plot_hist.cpp \
-    plot_scatter.cpp \
+    models/measurement_model.cpp \
+    models/naming_model.cpp \
+    plots/plot_2d.cpp \
+    plots/plot_choise.cpp \
+    plots/plot_hist.cpp \
+    plots/plot_scatter.cpp \
     qcustomplot.cpp \
     strategy_io.cpp \
     variable_data.cpp \
-    visual_model.cpp
+    models/visual_model.cpp
 
 HEADERS += \
     block.h \
-    colordelegate.h \
-    comboboxdelegate.h \
+    models/colordelegate.h \
+    models/comboboxdelegate.h \
     editor_odf.h \
-    instrument_model.h \
+    models/instrument_model.h \
     mainwindow.h \
     manager.h \
     measurement_model.h \
-    naming_model.h \
-    plot.h \
-    plot_hist.h \
-    plot_scatter.h \
+    models/naming_model.h \
+    plots/plot.h \
+    plots/plot_2d.h \
+    plots/plot_choise.h \
+    plots/plot_hist.h \
+    plots/plot_scatter.h \
     qcustomplot.h \
     strategy_io.h \
     variable_data.h \
-    visual_model.h
+    models/visual_model.h
 
 FORMS += \
     mainwindow.ui

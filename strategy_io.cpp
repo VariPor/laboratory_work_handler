@@ -104,9 +104,8 @@ void StrategyIO_JSON::load(const QString& input)
    {
        QJsonObject temp = array[i].toObject();
        QString short_name = temp["names"].toObject()["shortNaming"].toString();
-       int ind_variable = Manager::instance()->getVariable(short_name);
 
-       auto& variable = Manager::instance()->variables[ind_variable];
+       auto& variable = *Manager::instance()->getVariable(short_name);
 
        variable.fullNaming = temp["names"].toObject()["fullNaming"].toString();
 
