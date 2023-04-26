@@ -15,6 +15,8 @@ void StrategyIO_CSV::load(const QString& input)
         }
     QTextStream instream(&file);
 
+    Manager::instance()->clear();
+
     QString str = instream.readLine();
     QString name;
     for (int i = 0; i < str.size(); ++i)
@@ -75,7 +77,7 @@ void StrategyIO_CSV::save(const QString& output)
             else
                 outstream << "," << variables.at(i).shortNaming;
         }
-        outstream << '\r';
+        outstream << endl;
 
         for (int i = 0; i < manager->getMeasurementsCount(); ++i) {
             for (int j = 0; j < manager->getVariablesCount(); ++j)
@@ -85,7 +87,7 @@ void StrategyIO_CSV::save(const QString& output)
                 else
                     outstream << "," << variables.at(j).measurements.at(i);
             }
-            outstream << '\r';
+            outstream << endl;
         }
     file.close();
 }

@@ -35,5 +35,5 @@ double VariableData::error(int index)
 
 int VariableData::getMeasurementsCount() {return measurements.size();}
 
-VariableData::VariableData(QString shortN, QString fullN, QList<double> meas)
-    : measurements { meas }, fullNaming { fullN }, shortNaming { shortN } {}
+VariableData::VariableData(QString shortNaming, QString fullNaming, QList<double> meas)
+    : measurements { meas }, fullNaming { fullNaming }, shortNaming { shortNaming } {}
