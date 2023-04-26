@@ -49,6 +49,7 @@ bool MeasurementModel::setData(const QModelIndex &index, const QVariant &value, 
     if (role == Qt::EditRole)
     {
         if (!value.canConvert<double>()) return false;
+        if (m->variables[variable].instrumentError.type == VariableData::Instrument::ErrorType::calculated) return false;
         if (m->variables[variable].measurements.size() <= row)
         {
             m->variables[variable].measurements.append(value.toDouble());

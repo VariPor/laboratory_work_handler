@@ -27,7 +27,8 @@ double VariableData::error(int index)
     case Instrument::ErrorType::absolute:
       return VariableData::instrumentError.value;
     case Instrument::ErrorType::calculated:
-        return calcErrors.at(index);
+        //return calcErrors.at(index);
+      return VariableData::instrumentError.value; // ?
     default:
       throw "Wrong ErrorType!";
   }
