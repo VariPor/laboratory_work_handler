@@ -5,27 +5,22 @@ Q_GLOBAL_STATIC(Manager, GlobalManager)
 void Manager::addVariable(const VariableData& var)
 {
     variables.append(var);
-    if (measurement_count < var.measurements.size())
-        measurement_count = var.measurements.size();
+    Manager::instance()->recalculationMeasurementCount();
+}
+
+void Manager::recalculationMeasurementCount() {
+    measurement_count = 0;
+    for (int i = 0; i < this->getVariablesCount(); ++i)
+        if (variables.at(i).measurements.size() > measurement_count)
+            measurement_count = variables.at(i).measurements.size();
 }
 
 void Manager::deleteVariable(int index)
 {
     if (index < 0 || index > variables.count())
         throw std::out_of_range("There isn't a column with this index");
-    if (variables.at(index).measurements.size() == measurement_count)
-    {
-        measurement_count = 0;
-        for (int i = 0; i < this->getVariablesCount(); ++i)
-        {
-            if (variables.at(i).measurements.size() > measurement_count && i != index)
-                measurement_count = variables.at(i).measurements.size();
-            if (variables.at(i).measurements.size() == variables.at(index).measurements.size() && i != index)
-                break;
-        }
-    }
-
     variables.removeAt(index);
+    Manager::instance()->recalculationMeasurementCount();
 }
 
 void Manager::addMeasurementRow(QList<double>& meas)
@@ -42,18 +37,21 @@ void Manager::removeMeasurementRow(int num_row)
     if (num_row < 0 || num_row >= measurement_count)
         throw std::out_of_range("Can't remove row");
     for (int i = 0; i < variables.count(); ++i)
-        variables[i].measurements.removeAt(i);
-    measurement_count -= 1;
+        if (variables[i].measurements.count() > num_row)
+            variables[i].measurements.removeAt(num_row);
+    Manager::instance()->recalculationMeasurementCount();
 }
 
 void Manager::addCalculated(const VariableData& var)
 {
     calculated.append(var);
+    Manager::instance()->recalculationMeasurementCount();
 }
 
 void Manager::clearCalculated()
 {
     calculated.clear();
+    Manager::instance()->recalculationMeasurementCount();
 }
 
 Manager *Manager::instance()
@@ -81,5 +79,10 @@ void Manager::clear() {
     measurement_count = 0;
 }
 
+void Manager::toCalculated(int index) {
+    if (index > variables.size()) throw std::out_of_range("No such variable");
+    calculated.append(Manager::instance()->variables[index]);
+    Manager::instance()->deleteVariable(index);
+}
 
 

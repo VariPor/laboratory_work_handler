@@ -18,6 +18,7 @@ public:
    int getMeasurementsCount();
    VariableData* getVariable(const QString& shortName);
    void clear();
+   void toCalculated(int index);
 
    static Manager* instance();
 
@@ -27,6 +28,7 @@ public:
    Plot *plot;
 private:
    int measurement_count = 0;
+   void recalculationMeasurementCount();
 };
 
 #endif // MANAGER_H
