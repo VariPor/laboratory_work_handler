@@ -115,7 +115,7 @@ void MainWindow::openDirectory(){
     QString file_csv = dirName + QDir::separator() + "data.csv";
     QString file_json = dirName + QDir::separator() + "data.json";
 
-    //Manager::instance()->clear();
+    if (!QFile(file_csv).exists() || !QFile(file_json).exists()) return;
 
     StrategyIO_CSV loader_csv;
     loader_csv.load(file_csv);
