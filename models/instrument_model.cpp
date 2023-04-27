@@ -50,6 +50,7 @@ bool InstrumentModel::setData(const QModelIndex &index, const QVariant &value, i
             return true;
           case 1:
             instrument.value = value.toDouble();
+            emit dataChanged(index, index);
             return true;
         }
     }
@@ -64,15 +65,15 @@ QVariant InstrumentModel::headerData( int section, Qt::Orientation orientation, 
 
     if( orientation == Qt::Vertical )
     {
-        return QString(Manager::instance() -> variables[section].fullNaming);
+        return QString(Manager::instance() -> variables[section].shortNaming);
     }
 
     switch( section )
     {
     case 0:
-        return QString( "type" );
+        return QString( "Type" );
     case 1:
-        return QString( "value" );
+        return QString( "Value" );
     }
     return QVariant();
 }

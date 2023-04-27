@@ -65,15 +65,15 @@ QVariant NamingModel::headerData( int section, Qt::Orientation orientation, int 
 
     if( orientation == Qt::Vertical )
     {
-        return QString(Manager::instance() -> variables[section].fullNaming);
+        return QString(Manager::instance() -> variables[section].shortNaming);
     }
 
     switch( section )
     {
     case 0:
-        return QString( "full" );
+        return QString( "Full" );
     case 1:
-        return QString( "short" );
+        return QString( "Short" );
     }
     return QVariant();
 }

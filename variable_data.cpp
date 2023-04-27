@@ -13,9 +13,9 @@ QMap<QCPScatterStyle::ScatterShape, QString> VariableData::VisualOptions::point_
 };
 
 QMap<VariableData::Instrument::ErrorType, QString> VariableData::Instrument::error_types = {
-    {VariableData::Instrument::ErrorType::relative, "relative"},
-    {VariableData::Instrument::ErrorType::absolute, "absolute"},
-    {VariableData::Instrument::ErrorType::calculated, "calculated"},
+    {VariableData::Instrument::ErrorType::relative, "Relative"},
+    {VariableData::Instrument::ErrorType::absolute, "Absolute"},
+    {VariableData::Instrument::ErrorType::calculated, "Calculated"},
 };
 
 double VariableData::error(int index)
@@ -27,11 +27,14 @@ double VariableData::error(int index)
     case Instrument::ErrorType::absolute:
       return VariableData::instrumentError.value;
     case Instrument::ErrorType::calculated:
-        return calcErrors.at(index);
+        //return calcErrors.at(index);
+      return VariableData::instrumentError.value; // ?
     default:
       throw "Wrong ErrorType!";
-  }   
+  }
 }
 
-VariableData::VariableData(QString shortN, QString fullN, QList<double> meas)
-    : measurements { meas }, fullNaming { fullN }, shortNaming { shortN } {}
+int VariableData::getMeasurementsCount() {return measurements.size();}
+
+VariableData::VariableData(QString shortNaming, QString fullNaming, QList<double> meas)
+    : measurements { meas }, fullNaming { fullNaming }, shortNaming { shortNaming } {}

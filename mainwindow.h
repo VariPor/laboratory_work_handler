@@ -17,9 +17,12 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_open_as_action_triggered();
+    void openFile();
+    void saveFile();
     void draw();
     void plotOptions();
+    void saveDirectory();
+    void openDirectory();
 
 private:
     Ui::MainWindow *ui;

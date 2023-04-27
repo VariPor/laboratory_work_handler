@@ -109,7 +109,7 @@ QVariant VisualModel::headerData (int section, Qt::Orientation orientation, int 
 {
     if (role != Qt::DisplayRole) return QVariant();
 
-    if (orientation == Qt::Vertical) return QString(Manager::instance() -> variables[section].fullNaming);
+    if (orientation == Qt::Vertical) return QString(Manager::instance() -> variables[section].shortNaming);
 
     switch (section)
     {
