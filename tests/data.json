@@ -1,0 +1,36 @@
+[
+    {
+        "instrumentError": {
+            "type": "Absolute",
+            "value": 0.1
+        },
+        "names": {
+            "fullNaming": "brah",
+            "shortNaming": "meh"
+        },
+        "visualOptions": {
+            "color": "#000000",
+            "line_type": "Solid",
+            "point_type": "None",
+            "visible": true,
+            "width": 1
+        }
+    },
+    {
+        "instrumentError": {
+            "type": "Absolute",
+            "value": 0.1
+        },
+        "names": {
+            "fullNaming": "ohh",
+            "shortNaming": "foo"
+        },
+        "visualOptions": {
+            "color": "#000000",
+            "line_type": "Solid",
+            "point_type": "None",
+            "visible": true,
+            "width": 1
+        }
+    }
+]

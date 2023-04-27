@@ -15,19 +15,22 @@ public:
    void clearCalculated();
    void addCalculated(const VariableData&);
    int getVariablesCount();
+   int getVarAndCalcCount();
    int getMeasurementsCount();
    VariableData* getVariable(const QString& shortName);
+   VariableData* getVariable(int index);
+   VariableData* getCalculated(const QString& shortName);
+   VariableData* getCalculated(int index);
    void clear();
-   void toCalculated(int index);
+   int getCalculatedCount();
 
    static Manager* instance();
-
-   QList<VariableData> variables;
-   QList<VariableData> calculated;
 
    Plot *plot;
 private:
    int measurement_count = 0;
+   QList<VariableData> variables;
+   QList<VariableData> calculated;
    void recalculationMeasurementCount();
 };
 

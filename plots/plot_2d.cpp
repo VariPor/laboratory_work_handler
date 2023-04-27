@@ -14,8 +14,8 @@ void Plot2d::draw(QCustomPlot *plot)
     {
         if (m->getVariablesCount() > 0)
         {
-            xv = &m->variables[0];
-            yv = &m->variables[0];
+            xv = m->getVariable(0);
+            yv = m->getVariable(0);
         } else return;
     }
 
@@ -76,10 +76,12 @@ Plot2dOptionsDialog::Plot2dOptionsDialog(QString xlable, QString ylable, QString
     QLabel *xLableLable = new QLabel(tr("X axis lable:"));
     mainlayout->addWidget(xLableLable);
     this->xLable.clear();
-    for (auto& v : Manager::instance()->variables)
+
+    auto* m = Manager::instance();
+    for (int i = 0; i < m->getVariablesCount(); ++i)
     {
-        this->xLable.addItem(v.fullNaming);
-        if (v.shortNaming == xlable)
+        this->xLable.addItem(m->getVariable(i)->fullNaming);
+        if (m->getVariable(i)->shortNaming == xlable)
             this->xLable.setCurrentIndex(this->xLable.count() - 1);
     }
     mainlayout->addWidget(&this->xLable);
@@ -87,10 +89,10 @@ Plot2dOptionsDialog::Plot2dOptionsDialog(QString xlable, QString ylable, QString
     QLabel *yLableLable = new QLabel(tr("Y axis lable:"));
     mainlayout->addWidget(yLableLable);
     this->yLable.clear();
-    for (auto& v : Manager::instance()->variables)
+    for (int i = 0; i < Manager::instance()->getVariablesCount(); ++i)
     {
-        this->yLable.addItem(v.fullNaming);
-        if (v.shortNaming == ylable)
+        this->yLable.addItem(Manager::instance()->getVariable(i)->fullNaming);
+        if (Manager::instance()->getVariable(i)->shortNaming == ylable)
             this->yLable.setCurrentIndex(this->yLable.count() - 1);
     }
     mainlayout->addWidget(&this->yLable);

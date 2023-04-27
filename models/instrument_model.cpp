@@ -18,7 +18,7 @@ QVariant InstrumentModel::data(const QModelIndex &index, int role) const
 {
     int variable = index.row();
     int option  = index.column();
-    auto& instrument = Manager::instance() -> variables[variable].instrumentError;
+    auto& instrument = Manager::instance() -> getVariable(variable)->instrumentError;
 
     switch (role)
     {
@@ -38,7 +38,7 @@ bool InstrumentModel::setData(const QModelIndex &index, const QVariant &value, i
 {
     int variable = index.row();
     int option  = index.column();
-    auto& instrument = Manager::instance() -> variables[variable].instrumentError;
+    auto& instrument = Manager::instance() -> getVariable(variable)->instrumentError;
 
     if (role == Qt::EditRole)
     {
@@ -65,7 +65,7 @@ QVariant InstrumentModel::headerData( int section, Qt::Orientation orientation, 
 
     if( orientation == Qt::Vertical )
     {
-        return QString(Manager::instance() -> variables[section].shortNaming);
+        return QString(Manager::instance() -> getVariable(section)->shortNaming);
     }
 
     switch( section )

@@ -67,15 +67,14 @@ void StrategyIO_CSV::save(const QString& output)
 
 
     auto* manager = Manager::instance();
-    auto& variables = Manager::instance()->variables;
 
     if (manager->getVariablesCount() > 0)
         for (int i = 0; i < manager->getVariablesCount(); ++i)
         {
             if (i == 0)
-                outstream << variables.at(i).shortNaming;
+                outstream << manager->getVariable(i)->shortNaming;
             else
-                outstream << "," << variables.at(i).shortNaming;
+                outstream << "," << manager->getVariable(i)->shortNaming;
         }
         outstream << endl;
 
@@ -83,9 +82,9 @@ void StrategyIO_CSV::save(const QString& output)
             for (int j = 0; j < manager->getVariablesCount(); ++j)
             {
                 if (j == 0)
-                    outstream << variables.at(j).measurements.at(i);
+                    outstream << manager->getVariable(j)->measurements.at(i);
                 else
-                    outstream << "," << variables.at(j).measurements.at(i);
+                    outstream << "," << manager->getVariable(j)->measurements.at(i);
             }
             outstream << endl;
         }
@@ -135,27 +134,27 @@ void StrategyIO_JSON::save(const QString& output)
     file.setFileName(output);
     file.open(QIODevice::WriteOnly | QIODevice::Text);
 
-    auto& variables = Manager::instance()->variables;
+    auto* manager = Manager::instance();
 
     QJsonArray array;
-    for (int i = 0; i < variables.size(); ++i)
+    for (int i = 0; i < manager->getVariablesCount(); ++i)
     {
         QJsonObject temp;
 
         QJsonObject names;
-        names["fullNaming"] = variables[i].fullNaming;
-        names["shortNaming"] = variables[i].shortNaming;
+        names["fullNaming"] = manager->getVariable(i)->fullNaming;
+        names["shortNaming"] = manager->getVariable(i)->shortNaming;
 
         QJsonObject instrumentError;
-        instrumentError["type"] =  VariableData::Instrument::error_types[variables[i].instrumentError.type];
-        instrumentError["value"] = variables[i].error();
+        instrumentError["type"] =  VariableData::Instrument::error_types[manager->getVariable(i)->instrumentError.type];
+        instrumentError["value"] = manager->getVariable(i)->error();
 
         QJsonObject visualOptions;
-        visualOptions["visible"] = variables[i].visual.visible;
-        visualOptions["width"] = variables[i].visual.width;
-        visualOptions["color"] = variables[i].visual.color.name();
-        visualOptions["point_type"] = VariableData::VisualOptions::point_types[variables[i].visual.point_type];
-        visualOptions["line_type"] = VariableData::VisualOptions::line_types[variables[i].visual.line_type];
+        visualOptions["visible"] = manager->getVariable(i)->visual.visible;
+        visualOptions["width"] = manager->getVariable(i)->visual.width;
+        visualOptions["color"] = manager->getVariable(i)->visual.color.name();
+        visualOptions["point_type"] = VariableData::VisualOptions::point_types[manager->getVariable(i)->visual.point_type];
+        visualOptions["line_type"] = VariableData::VisualOptions::line_types[manager->getVariable(i)->visual.line_type];
 
         temp["names"] = QJsonValue (names);
         temp["instrumentError"] = QJsonValue (instrumentError);

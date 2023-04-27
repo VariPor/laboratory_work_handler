@@ -18,7 +18,7 @@ QVariant NamingModel::data(const QModelIndex &index, int role) const
 {
     int variable = index.row();
     int option  = index.column();
-    auto& name = Manager::instance() -> variables[variable];
+    auto* name = Manager::instance() -> getVariable(variable);
 
     switch (role)
     {
@@ -26,9 +26,9 @@ QVariant NamingModel::data(const QModelIndex &index, int role) const
             switch (option)
             {
               case 0:
-                return name.fullNaming;
+                return name->fullNaming;
               case 1:
-                return name.shortNaming;
+                return name->shortNaming;
             }
     }
     return QVariant();
@@ -38,7 +38,7 @@ bool NamingModel::setData(const QModelIndex &index, const QVariant &value, int r
 {
     int variable = index.row();
     int option  = index.column();
-    auto& name = Manager::instance() -> variables[variable];
+    auto* name = Manager::instance() -> getVariable(variable);
 
     if (role == Qt::EditRole)
     {
@@ -46,11 +46,11 @@ bool NamingModel::setData(const QModelIndex &index, const QVariant &value, int r
         {
           case 0:
             if (value.toString().isEmpty()) return false;
-            name.fullNaming = value.toString();
+            name->fullNaming = value.toString();
             return true;
           case 1:
             if (value.toString().isEmpty()) return false;
-            name.shortNaming = value.toString();
+            name->shortNaming = value.toString();
             return true;
         }
     }
@@ -65,7 +65,7 @@ QVariant NamingModel::headerData( int section, Qt::Orientation orientation, int 
 
     if( orientation == Qt::Vertical )
     {
-        return QString(Manager::instance() -> variables[section].shortNaming);
+        return QString(Manager::instance() -> getVariable(section)->shortNaming);
     }
 
     switch( section )

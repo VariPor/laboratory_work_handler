@@ -18,7 +18,7 @@ QVariant VisualModel::data(const QModelIndex &index, int role) const
 {
     int variable = index.row();
     int option  = index.column();
-    auto& visual = Manager::instance() -> variables[variable].visual;
+    auto& visual = Manager::instance() -> getVariable(variable)->visual;
 
     switch (role)
     {
@@ -59,7 +59,7 @@ bool VisualModel::setData(const QModelIndex &index, const QVariant &value, int r
     int variable = index.row();
     int option  = index.column();
     bool ok = true;
-    auto& visual = Manager::instance() -> variables[variable].visual;
+    auto& visual = Manager::instance() -> getVariable(variable)->visual;
 
     if (role == Qt::CheckStateRole)
     {
@@ -109,7 +109,7 @@ QVariant VisualModel::headerData (int section, Qt::Orientation orientation, int 
 {
     if (role != Qt::DisplayRole) return QVariant();
 
-    if (orientation == Qt::Vertical) return QString(Manager::instance() -> variables[section].shortNaming);
+    if (orientation == Qt::Vertical) return QString(Manager::instance() -> getVariable(section)->shortNaming);
 
     switch (section)
     {
