@@ -6,21 +6,22 @@ void PlotHistogram::draw(QCustomPlot *plot)
     auto m = Manager::instance();
 
     plot->clearGraphs();
-    for (int i = 0; i < m->variables.size(); ++i)
+    plot->legend->clear();
+    for (int i = 0; i < m->getVariablesCount(); ++i)
     {
-        auto & v = m->variables[i];
-        if (!v.visual.visible) continue;
+        auto* v = m->getVariable(i);
+        if (!v->visual.visible) continue;
         auto graph = plot->addGraph();
         QPen pen;
-        pen.setColor(v.visual.color);
-        pen.setStyle(v.visual.line_type);
-        pen.setWidth(v.visual.width);
+        pen.setColor(v->visual.color);
+        pen.setStyle(v->visual.line_type);
+        pen.setWidth(v->visual.width);
         graph->setPen(pen);
-        graph->setName(v.fullNaming);
+        graph->setName(v->fullNaming);
         graph->setLineStyle(QCPGraph::LineStyle::lsStepCenter);
 
-        double min = v.measurements[0], max = v.measurements[0];
-        for (double k : v.measurements)
+        double min = v->measurements[0], max = v->measurements[0];
+        for (double k : v->measurements)
         {
             min = std::min(k, min);
             max = std::max(k, max);
@@ -38,7 +39,7 @@ void PlotHistogram::draw(QCustomPlot *plot)
             if ( j == bins - 1) x1 += 1e-10;
             int count = 0;
 
-            for (double k : v.measurements)
+            for (double k : v->measurements)
             {
                 if (x0 <= k && k < x1) count ++;
             }
@@ -56,8 +57,8 @@ void PlotHistogram::draw(QCustomPlot *plot)
         plot->plotLayout()->addElement(0, 0, new QCPTextElement(plot, title));
     }
     static_cast<QCPTextElement* >(plot->plotLayout()->element(0,0))->setText(title);
-    plot->xAxis->setLabel(xlable);
-    plot->yAxis->setLabel(ylable);
+    plot->xAxis->setLabel(xLable);
+    plot->yAxis->setLabel(yLable);
     plot->legend->setVisible(true);
     plot->legend->setBrush(QColor(255, 255, 255, 150));
     plot->rescaleAxes();
@@ -67,17 +68,17 @@ void PlotHistogram::draw(QCustomPlot *plot)
 
 void PlotHistogram::options()
 {
-    PlotHistogramOptionsDialog optionDialog{xlable, ylable, title, bins, this};
+    PlotHistogramOptionsDialog optionDialog{xLable, yLable, title, bins, this};
     optionDialog.show();
     optionDialog.exec();
-    xlable = optionDialog.xlable.text();
-    ylable = optionDialog.ylable.text();
+    xLable = optionDialog.xLable.text();
+    yLable = optionDialog.yLable.text();
     title = optionDialog.title.text();
     bins = optionDialog.bins.value();
 }
 
-PlotHistogramOptionsDialog::PlotHistogramOptionsDialog(QString xLable, QString yLable, QString title, int bins, QWidget *parent)
-    : xlable(xLable), ylable(yLable), title(title), QDialog{parent}
+PlotHistogramOptionsDialog::PlotHistogramOptionsDialog(QString xlable, QString ylable, QString title, int bins, QWidget *parent)
+    : xLable(xlable), yLable(ylable), title(title), QDialog{parent}
 {
     QVBoxLayout *mainlayout = new QVBoxLayout;
 
@@ -87,11 +88,11 @@ PlotHistogramOptionsDialog::PlotHistogramOptionsDialog(QString xLable, QString y
 
     QLabel *xLableLable = new QLabel(tr("X axis lable:"));
     mainlayout->addWidget(xLableLable);
-    mainlayout->addWidget(&this->xlable);
+    mainlayout->addWidget(&this->xLable);
 
     QLabel *yLableLable = new QLabel(tr("Y axis lable:"));
     mainlayout->addWidget(yLableLable);
-    mainlayout->addWidget(&this->ylable);
+    mainlayout->addWidget(&this->yLable);
 
     QLabel *binsLable = new QLabel(tr("Bin count:"));
     mainlayout->addWidget(binsLable);

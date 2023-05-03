@@ -1,6 +1,7 @@
 #include <QDataStream>
 #include <QTextStream>
 #include <QFile>
+#include <QDebug>
 
 #include "strategy_io.h"
 
@@ -14,6 +15,8 @@ void StrategyIO_CSV::load(const QString& input)
         }
     QTextStream instream(&file);
 
+    Manager::instance()->clear();
+
     QString str = instream.readLine();
     QString name;
     for (int i = 0; i < str.size(); ++i)
@@ -25,22 +28,28 @@ void StrategyIO_CSV::load(const QString& input)
             continue;
         }
         name += str[i];
-        if (i == str.size() - 1)
+        if (i + 1 == str.size())
             Manager::instance()->addVariable(VariableData (name));
     }
 
     QList<double> data;
     while (!instream.atEnd())
     {
-        double number;
-        instream >> number;
-        QString ch = instream.read(1);
-        data.push_back(number);
-        if (ch == '\r')      // end of string
+        QString str = instream.readLine();
+        QStringList num_strings = str.split(u',');
+        for (QString num_str : num_strings)
         {
-            Manager::instance()->addMeasurementRow(data);
-            data.clear();
+            bool ok;
+            int num = num_str.toInt(&ok, 10);
+            if (ok)
+                data.push_back(num);
+            else
+                data.push_back(NAN);
         }
+        for (int i = data.size(); i < Manager::instance()->getVariablesCount(); ++i)
+            data.push_back(NAN);
+        Manager::instance()->addMeasurementRow(data);
+        data.clear();
     }
     file.close();
 }
@@ -57,26 +66,106 @@ void StrategyIO_CSV::save(const QString& output)
     QTextStream outstream(&file);
 
 
-    auto& variables = Manager::instance()->variables;
+    auto* manager = Manager::instance();
 
-    if (variables.size() > 0)
-        for (int i = 0; i < variables.size(); ++i)
+    if (manager->getVariablesCount() > 0)
+        for (int i = 0; i < manager->getVariablesCount(); ++i)
         {
             if (i == 0)
-                outstream << variables[i].fullNaming;
+                outstream << manager->getVariable(i)->shortNaming;
             else
-                outstream << "," << variables[i].fullNaming;
+                outstream << "," << manager->getVariable(i)->shortNaming;
         }
+        outstream << endl;
 
-        for (int i = 0; i < variables[0].measurements.size(); ++i) {
-            for (int j = 0; j < variables.size(); ++j)
+        for (int i = 0; i < manager->getMeasurementsCount(); ++i) {
+            for (int j = 0; j < manager->getVariablesCount(); ++j)
             {
                 if (j == 0)
-                    outstream << variables[i].measurements[j];
+                    outstream << manager->getVariable(j)->measurements.at(i);
                 else
-                    outstream << "," << variables[i].measurements[j];
+                    outstream << "," << manager->getVariable(j)->measurements.at(i);
             }
-            outstream << '\n';
+            outstream << endl;
         }
+    file.close();
+}
+
+void StrategyIO_JSON::load(const QString& input)
+{
+   QString val;
+   QFile file;
+   file.setFileName(input);
+   file.open(QIODevice::ReadOnly | QIODevice::Text);
+   val = file.readAll();
+   file.close();
+
+   QJsonDocument d = QJsonDocument::fromJson(val.toUtf8());
+   QJsonArray array = d.array();
+   for (int i = 0; i < array.size(); ++i)
+   {
+       QJsonObject temp = array[i].toObject();
+       QString short_name = temp["names"].toObject()["shortNaming"].toString();
+
+       auto& variable = *Manager::instance()->getVariable(short_name);
+
+       variable.fullNaming = temp["names"].toObject()["fullNaming"].toString();
+
+       variable.instrumentError.type = VariableData::Instrument::error_types.key(temp["instrumentErrors"].toObject()["type"].toString());
+       if (variable.instrumentError.type != VariableData::Instrument::ErrorType::calculated)
+           variable.instrumentError.value = temp["instrumentErrors"].toObject()["value"].toDouble();
+       else {
+           auto list = temp["instrumentErrors"].toObject()["value"].toArray();
+           for (int i = 0; i < list.size(); ++i)
+               variable.calcErrors.push_back(list[i].toDouble());
+       }
+
+       variable.visual.visible = temp["visualOptions"].toObject()["visible"].toBool();
+       variable.visual.width = temp["visualOptions"].toObject()["width"].toInt();
+       variable.visual.line_type = VariableData::VisualOptions::line_types.key(temp["visualOptions"].toObject()["line_type"].toString());
+       variable.visual.point_type = VariableData::VisualOptions::point_types.key(temp["visualOptions"].toObject()["point_type"].toString());
+       variable.visual.color = temp["visualOptions"].toObject()["color"].toString();
+   }
+}
+
+void StrategyIO_JSON::save(const QString& output)
+{
+    QFile file;
+    file.setFileName(output);
+    file.open(QIODevice::WriteOnly | QIODevice::Text);
+
+    auto* manager = Manager::instance();
+
+    QJsonArray array;
+    for (int i = 0; i < manager->getVariablesCount(); ++i)
+    {
+        QJsonObject temp;
+
+        QJsonObject names;
+        names["fullNaming"] = manager->getVariable(i)->fullNaming;
+        names["shortNaming"] = manager->getVariable(i)->shortNaming;
+
+        QJsonObject instrumentError;
+        instrumentError["type"] =  VariableData::Instrument::error_types[manager->getVariable(i)->instrumentError.type];
+        instrumentError["value"] = manager->getVariable(i)->error();
+
+        QJsonObject visualOptions;
+        visualOptions["visible"] = manager->getVariable(i)->visual.visible;
+        visualOptions["width"] = manager->getVariable(i)->visual.width;
+        visualOptions["color"] = manager->getVariable(i)->visual.color.name();
+        visualOptions["point_type"] = VariableData::VisualOptions::point_types[manager->getVariable(i)->visual.point_type];
+        visualOptions["line_type"] = VariableData::VisualOptions::line_types[manager->getVariable(i)->visual.line_type];
+
+        temp["names"] = QJsonValue (names);
+        temp["instrumentError"] = QJsonValue (instrumentError);
+        temp["visualOptions"] = QJsonValue (visualOptions);
+
+
+        array.append(temp);
+    }
+
+    QJsonDocument d(array);
+    file.write(d.toJson());
+
     file.close();
 }

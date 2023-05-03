@@ -11,8 +11,10 @@ class VariableData
 {
 public:
     QList<double> measurements;
+    QList<double> calcErrors;
     QString fullNaming;
     QString shortNaming;
+
     struct Instrument
     {
         enum ErrorType
@@ -21,11 +23,11 @@ public:
             absolute,
             calculated
         } type = ErrorType::absolute;
-        double value = 0;
+        double value = 0.1;
 
+        static QMap<VariableData::Instrument::ErrorType, QString> error_types;
         static constexpr int FILEDS = 2;
     } instrumentError;
-    QList<double> calcErrors;
 
     struct VisualOptions
     {
@@ -41,7 +43,8 @@ public:
         static constexpr int FILEDS = 5;
     } visual;
 
-    double error(double measurement, int index = 0);
+    double error(int index = 0);
+    int getMeasurementsCount();
     VariableData(QString fullNaming, QString shortNaming = "", QList<double> meas = QList<double> {});
 };
 

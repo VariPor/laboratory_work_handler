@@ -1,4 +1,5 @@
-#include "variable_data.h"
+﻿#include "variable_data.h"
+
 QMap<Qt::PenStyle, QString> VariableData::VisualOptions::line_types = {
     {Qt::SolidLine, "Solid"},
     {Qt::DashLine, "Dashed"},
@@ -11,20 +12,29 @@ QMap<QCPScatterStyle::ScatterShape, QString> VariableData::VisualOptions::point_
     {QCPScatterStyle::ScatterShape::ssCircle, "Circle"},
 };
 
-double VariableData::error(double measurement, int index)
+QMap<VariableData::Instrument::ErrorType, QString> VariableData::Instrument::error_types = {
+    {VariableData::Instrument::ErrorType::relative, "Relative"},
+    {VariableData::Instrument::ErrorType::absolute, "Absolute"},
+    {VariableData::Instrument::ErrorType::calculated, "Calculated"},
+};
+
+double VariableData::error(int index)
 {
   switch(int(VariableData::instrumentError.type))
   {
     case Instrument::ErrorType::relative:
-      return VariableData::instrumentError.value * measurement;
+      return VariableData::instrumentError.value * VariableData::measurements.at(index);
     case Instrument::ErrorType::absolute:
       return VariableData::instrumentError.value;
     case Instrument::ErrorType::calculated:
-        return calcErrors.at(index);
+        //return calcErrors.at(index);
+      return VariableData::instrumentError.value; // ?
     default:
       throw "Wrong ErrorType!";
-  }   
+  }
 }
 
-VariableData::VariableData(QString fullN, QString shortN, QList<double> meas)
-    : measurements { meas }, fullNaming { fullN }, shortNaming { shortN } {}
+int VariableData::getMeasurementsCount() {return measurements.size();}
+
+VariableData::VariableData(QString shortNaming, QString fullNaming, QList<double> meas)
+    : measurements { meas }, fullNaming { fullNaming }, shortNaming { shortNaming } {}
