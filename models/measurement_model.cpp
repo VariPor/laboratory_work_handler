@@ -18,11 +18,7 @@ QVariant MeasurementModel::data(const QModelIndex &index, int role) const
 {
     int row = index.row();
     int variable  = index.column();
-    VariableData* v;
-    if (variable < Manager::instance()->getVariablesCount())
-        v = Manager::instance()->getVariable(variable);
-    else
-        v = Manager::instance()->getCalculated(variable);
+    VariableData* v = Manager::instance()->getVarOrCalc(variable);
 
     if (v->measurements.size() <= row) return QVariant();
 
@@ -41,7 +37,9 @@ QVariant MeasurementModel::headerData(int section, Qt::Orientation orientation, 
 
     if (orientation == Qt::Vertical) return section + 1;
 
-    return Manager::instance()->getVariable(section)->shortNaming;
+    VariableData* v = Manager::instance()->getVarOrCalc(section);
+
+    return v->shortNaming;
 }
 
 bool MeasurementModel::setData(const QModelIndex &index, const QVariant &value, int role)
@@ -53,14 +51,15 @@ bool MeasurementModel::setData(const QModelIndex &index, const QVariant &value, 
     if (role == Qt::EditRole)
     {
         if (!value.canConvert<double>()) return false;
-        //if (m->getVariable(variable)->instrumentError.type == VariableData::Instrument::ErrorType::calculated) return false;
-        if (m->getVariable(variable)->measurements.size() <= row)
+        VariableData* v = Manager::instance()->getVarOrCalc(variable);
+
+        if (v->measurements.size() <= row)
         {
-            m->getVariable(variable)->measurements.append(value.toDouble());
+            v->measurements.append(value.toDouble());
             emit dataChanged(index, index);
             return true;
         }
-        m->getVariable(variable)->measurements[row] = value.toDouble();
+        v->measurements[row] = value.toDouble();
         emit dataChanged(index, index);
         return true;
     }
@@ -69,5 +68,8 @@ bool MeasurementModel::setData(const QModelIndex &index, const QVariant &value, 
 
 Qt::ItemFlags MeasurementModel::flags(const QModelIndex &index) const
 {
-    return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
+    if (index.column() < Manager::instance()->getVariablesCount())
+        return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
+    else
+        return QAbstractItemModel::flags(index);
 }

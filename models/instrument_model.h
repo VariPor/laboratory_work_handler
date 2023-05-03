@@ -9,8 +9,8 @@
 class InstrumentModel : public QAbstractTableModel
 {
  public:
-  InstrumentModel(QObject* parent = nullptr) : QAbstractTableModel(parent){};
-  ~InstrumentModel(){};
+  InstrumentModel(QObject* parent = nullptr) : QAbstractTableModel(parent){}
+  ~InstrumentModel(){}
 
   int rowCount(const QModelIndex& parent = QModelIndex()) const override;
   int columnCount(const QModelIndex& parent = QModelIndex()) const override;

@@ -80,7 +80,7 @@ VariableData* Manager::getVariable(const QString& name)
 
 VariableData* Manager::getVariable(int index)
 {
-    if (index >= variables.size()) throw std::runtime_error("No such index");
+    if (index >= variables.size()) throw std::runtime_error("No such index (in getVariable(int index))");
     return &variables[index];
 }
 
@@ -91,18 +91,25 @@ VariableData* Manager::getCalculated(const QString& name)
         if (v.shortNaming == name || v.fullNaming == name)
             return &v;
     }
-    throw std::runtime_error("No such index");
+    throw std::runtime_error("No such index (in getCalculated(const QString& name))");
 }
 
 VariableData* Manager::getCalculated(int index)
 {
-    if (index >= variables.size()) throw std::runtime_error("No such index");
+    if (index >= variables.size()) throw std::runtime_error("No such index (in getCalculated(int index))");
     return &calculated[index];
 }
 
 
 int Manager::getVarAndCalcCount() {
     return this->getCalculatedCount() + this->getVariablesCount();
+}
+
+VariableData* Manager::getVarOrCalc(int index)
+{
+    if (index >= getVarAndCalcCount()) throw std::runtime_error("No such index (in getVarOrCalc(int index))");
+    if (index < getVariablesCount()) return getVariable(index);
+    else return getCalculated(index - getVariablesCount());
 }
 
 void Manager::clear() {

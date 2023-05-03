@@ -36,5 +36,9 @@ double VariableData::error(int index)
 
 int VariableData::getMeasurementsCount() {return measurements.size();}
 
-VariableData::VariableData(QString shortNaming, QString fullNaming, QList<double> meas)
-    : measurements { meas }, fullNaming { fullNaming }, shortNaming { shortNaming } {}
+VariableData::VariableData(QString shortNaming, QString fullNaming, QList<double> meas, QList<double> calcErrors)
+    : measurements { meas }, fullNaming { fullNaming }, shortNaming { shortNaming }, calcErrors{ calcErrors }
+{
+    if (!calcErrors.empty())
+        instrumentError.type = Instrument::ErrorType::calculated;
+}

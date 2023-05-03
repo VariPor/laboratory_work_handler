@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    Manager::instance()->addVariable(VariableData{"meh", "brah", {1,2,3,4,4}});
+    Manager::instance()->addCalculated(VariableData{"meh", "brah", {1,2,3,4,4}, {1, 1, 2, 3}});
     Manager::instance()->addVariable(VariableData{"foo", "ohh", {1,2,3,4,5}});
 
     ui->variable_tableView->setModel(new MeasurementModel);
