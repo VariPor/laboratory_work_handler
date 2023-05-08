@@ -16,6 +16,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    editor_odf.cpp \
     models/colordelegate.cpp \
     models/comboboxdelegate.cpp \
     models/instrument_model.cpp \
@@ -30,6 +31,7 @@ SOURCES += \
     plots/plot_scatter.cpp \
     qcustomplot.cpp \
     strategy_io.cpp \
+    text_block.cpp \
     variable_data.cpp \
     models/visual_model.cpp
 

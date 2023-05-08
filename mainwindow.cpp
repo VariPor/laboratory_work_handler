@@ -12,6 +12,7 @@
 #include "plots/plot_scatter.h"
 #include "plots/plot_2d.h"
 #include "plots/plot_choise.h"
+#include "editor_odf.h"
 #include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -39,6 +40,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->naming_tableView->setModel(new NamingModel);
     ui->naming_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
+    ui->ODF_export->setDocument(EditorODF::instance()->getDocument());
+
     Manager::instance()->plot = new PlotChoise({
                                                     {"Scatter plot", new PlotScatter},
                                                     {"Histogram plot", new PlotHistogram},
@@ -53,7 +56,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(saveFile()));
     connect(ui->actionOpen_directory, SIGNAL(triggered()), this, SLOT(openDirectory()));
     connect(ui->actionSave_to_directory, SIGNAL(triggered()), this, SLOT(saveDirectory()));
+    connect(ui->actiontext_block, SIGNAL(triggered()), this, SLOT(addText()));
+    connect(ui->actiontable_block, SIGNAL(triggered()), this, SLOT(addTable()));
 }
+
 
 MainWindow::~MainWindow()
 {
@@ -142,4 +148,14 @@ void MainWindow::saveDirectory()
 
     StrategyIO_JSON saver_json;
     saver_json.save(file_json);
+}
+
+void MainWindow::addText() {
+    EditorODF::instance()->addTextBlock();
+    ui->ODF_export->show();
+}
+
+void MainWindow::addTable() {
+    EditorODF::instance()->addTableBlock();
+    ui->ODF_export->show();
 }

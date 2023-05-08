@@ -23,6 +23,8 @@ private slots:
     void plotOptions();
     void saveDirectory();
     void openDirectory();
+    void addText();
+    void addTable();
 
 private:
     Ui::MainWindow *ui;
