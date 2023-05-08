@@ -26,10 +26,11 @@ class TextBlock : public Block
     ~TextBlock() {}
 };
 
-class PlotBlock : Block
+class PlotBlock : public Block
 {
+    QTextFrame plot_frame;
   public:
-    PlotBlock(QWidget *parent = nullptr) : Block(parent){}
+    PlotBlock(QTextDocument *parent = nullptr) : Block(parent), plot_frame(parent){}
     ~PlotBlock() {}
 };
 

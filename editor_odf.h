@@ -14,7 +14,7 @@ class EditorODF
 
 public:
     void removeBlock();
-    void addPlotBlock();
+    void addPlotBlock(QCustomPlot* plot);
     void addTextBlock();
     void addTableBlock();
     void exportBlocks();

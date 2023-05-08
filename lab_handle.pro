@@ -29,6 +29,7 @@ SOURCES += \
     plots/plot_choise.cpp \
     plots/plot_hist.cpp \
     plots/plot_scatter.cpp \
+    qcpdocumentobject.cpp \
     qcustomplot.cpp \
     strategy_io.cpp \
     text_block.cpp \
@@ -50,6 +51,7 @@ HEADERS += \
     plots/plot_choise.h \
     plots/plot_hist.h \
     plots/plot_scatter.h \
+    qcpdocumentobject.h \
     qcustomplot.h \
     strategy_io.h \
     variable_data.h \

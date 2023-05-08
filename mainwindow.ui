@@ -247,10 +247,10 @@
         <widget class="QTextEdit" name="ODF_export">
          <property name="geometry">
           <rect>
-           <x>270</x>
-           <y>110</y>
-           <width>331</width>
-           <height>301</height>
+           <x>200</x>
+           <y>0</y>
+           <width>591</width>
+           <height>551</height>
           </rect>
          </property>
         </widget>
@@ -323,6 +323,7 @@
     <addaction name="actiontext_block"/>
     <addaction name="actiontable_block"/>
     <addaction name="actionplot_block"/>
+    <addaction name="actionexport"/>
    </widget>
    <addaction name="menuMenu"/>
    <addaction name="menuGraph"/>
@@ -385,6 +386,11 @@
   <action name="actionplot_block">
    <property name="text">
     <string>plot block</string>
+   </property>
+  </action>
+  <action name="actionexport">
+   <property name="text">
+    <string>export</string>
    </property>
   </action>
  </widget>

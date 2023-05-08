@@ -25,6 +25,8 @@ private slots:
     void openDirectory();
     void addText();
     void addTable();
+    void addPlot();
+    void exportODF();
 
 private:
     Ui::MainWindow *ui;

@@ -13,6 +13,7 @@
 #include "plots/plot_2d.h"
 #include "plots/plot_choise.h"
 #include "editor_odf.h"
+#include "qcpdocumentobject.h"
 #include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -58,6 +59,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionSave_to_directory, SIGNAL(triggered()), this, SLOT(saveDirectory()));
     connect(ui->actiontext_block, SIGNAL(triggered()), this, SLOT(addText()));
     connect(ui->actiontable_block, SIGNAL(triggered()), this, SLOT(addTable()));
+    connect(ui->actionplot_block, SIGNAL(triggered()), this, SLOT(addPlot()));
+    connect(ui->actionexport, SIGNAL(triggered()), this, SLOT(exportODF()));
 }
 
 
@@ -158,4 +161,17 @@ void MainWindow::addText() {
 void MainWindow::addTable() {
     EditorODF::instance()->addTableBlock();
     ui->ODF_export->show();
+}
+
+void MainWindow::addPlot() {
+
+    EditorODF::instance()->addPlotBlock(ui->plot);
+}
+
+void MainWindow::exportODF() {
+    QString fileName = QFileDialog::getSaveFileName(nullptr,QObject::tr("Save File"),"output_file.odf",QObject::tr("Open Document ('''.odf)"));
+    QTextDocumentWriter fileWriter (fileName);
+    fileWriter.setFormat("odf");
+    bool temp = fileWriter.write(EditorODF::instance()->getDocument());
+    qInfo() << temp;
 }
