@@ -9,36 +9,35 @@
 
 #include "mainwindow.h"
 
-class Block : QObject
+class Block
 {
-    Q_OBJECT
   public:
-    Block(QObject* parent = nullptr) : QObject(parent) {}
+    Block() {}
     ~Block() {}
 
 };
 
 class TextBlock : public Block
 {
-   QTextFrame text_frame;
+    QString text;
   public:
-   TextBlock(QTextDocument *parent = nullptr) : Block(parent), text_frame(parent) {  }
+   TextBlock(QString text = "") : text{text} {  }
     ~TextBlock() {}
 };
 
 class PlotBlock : public Block
 {
-    QTextFrame plot_frame;
+    QPicture picture;
   public:
-    PlotBlock(QTextDocument *parent = nullptr) : Block(parent), plot_frame(parent){}
+    PlotBlock(QPicture picture) : picture{picture} {}
     ~PlotBlock() {}
 };
 
 class TableBlock : public Block
 {
-    QTextTable text_table;
+    QList<QList<QVariant>> table;
   public:
-    TableBlock(QTextDocument *parent = nullptr) : text_table(parent), Block(parent) { text_table.appendColumns(3); }
+    TableBlock(QList<QList<QVariant>> table = QList<QList<QVariant>>()) : table{table} { }
     ~TableBlock() {}
 };
 

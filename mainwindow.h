@@ -27,6 +27,8 @@ private slots:
     void addTable();
     void addPlot();
     void exportODF();
+    void deleteBlock();
+    void changeCursorPositional();
 
 private:
     Ui::MainWindow *ui;

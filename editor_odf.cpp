@@ -1,5 +1,6 @@
 #include "editor_odf.h"
 #include "qcpdocumentobject.h"
+#include "qcustomplot.h"
 
 Q_GLOBAL_STATIC(EditorODF, GlobalEditor)
 
@@ -9,27 +10,42 @@ EditorODF *EditorODF::instance()
 }
 
 void EditorODF::addTextBlock() {
-    blocks.push_back(new TextBlock(this->getDocument()));
+    cursor.movePosition(QTextCursor::End);
+    blocks.push_back(new TextBlock("New text block"));
     cursor.insertText("New text block");
-    cursor.insertBlock();
 }
 
 void EditorODF::addTableBlock() {
-    blocks.push_back(new TableBlock(this->getDocument()));
-        // Creating table
-    cursor.insertTable(5, 5);
-    qInfo() << 8;
-    for (int r = 0; r < Manager::instance()->getMeasurementsCount(); r++) {
-        for (int c = 0; c < Manager::instance()->getVariablesCount(); c++) {
-            qInfo() << 1;
-            cursor.insertText(QString::number(Manager::instance()->getVariable(c)->measurements.at(r)));
+    cursor.movePosition(QTextCursor::End);
+    blocks.push_back(new TableBlock());
+
+    // Creating table
+    int var_count = Manager::instance()->getVariablesCount();
+    int meas_count = Manager::instance()->getMeasurementsCount();;
+    cursor.insertTable(var_count, meas_count + 1);
+
+    for (int r = -1; r < meas_count; r++) {
+        for (int c = 0; c < var_count; c++) {
+            if (r == -1)
+                cursor.insertText(Manager::instance()->getVariable(c)->shortNaming);
+            else
+                cursor.insertText(QString::number(Manager::instance()->getVariable(c)->measurements.at(r)));
             cursor.movePosition(QTextCursor::NextCell);
         }
     }
 }
 
 void EditorODF::addPlotBlock(QCustomPlot* plot) {
-    blocks.push_back(new PlotBlock(this->getDocument()));
+    cursor.movePosition(QTextCursor::End);
+    double width = plot->width();
+    double height = plot->height();
+    QPicture picture;
+    QCPPainter qcpPainter;
+    qcpPainter.begin(&picture);
+    plot->toPainter(&qcpPainter, width, height);
+    qcpPainter.end();
+
+    blocks.push_back(new PlotBlock(picture));
 
     // register the plot document object (only needed once, no matter how many plots will be in the QTextDocument):
     QCPDocumentObject *plotObjectHandler = new QCPDocumentObject(EditorODF::instance()->getDocument());
@@ -39,8 +55,13 @@ void EditorODF::addPlotBlock(QCustomPlot* plot) {
     // insert the current plot at the cursor position. QCPDocumentObject::generatePlotFormat creates a
     // vectorized snapshot of the passed plot (with the specified width and height) which gets inserted
     // into the text document.
-    double width = plot->width();
-    double heigh = plot->height();
     EditorODF::instance()->getCursor()->insertText(QString(QChar::ObjectReplacementCharacter),
-                      QCPDocumentObject::generatePlotFormat(plot, width, heigh));
+                      QCPDocumentObject::generatePlotFormat(plot, width, height));
+
+}
+
+void EditorODF::createDocument(QObject* parent) {
+    document = new QTextDocument(parent);
+    cursor = QTextCursor(document);
+    cursor.insertBlock();
 }

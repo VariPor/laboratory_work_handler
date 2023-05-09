@@ -22,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+
     Manager::instance()->addCalculated(VariableData{"meh", "brah", {1,2,3,4,4}, {1, 1, 2, 3}});
     Manager::instance()->addVariable(VariableData{"foo", "ohh", {1,2,3,4,5}});
 
@@ -41,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->naming_tableView->setModel(new NamingModel);
     ui->naming_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
+    EditorODF::instance()->createDocument(this);
     ui->ODF_export->setDocument(EditorODF::instance()->getDocument());
 
     Manager::instance()->plot = new PlotChoise({
@@ -61,6 +63,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actiontable_block, SIGNAL(triggered()), this, SLOT(addTable()));
     connect(ui->actionplot_block, SIGNAL(triggered()), this, SLOT(addPlot()));
     connect(ui->actionexport, SIGNAL(triggered()), this, SLOT(exportODF()));
+    connect(ui->delete_block, SIGNAL(clicked()), this, SLOT(deleteBlock()));
+    connect(ui->ODF_export, SIGNAL(cursorPositionChanged()), this, SLOT(changeCursorPositional()));
 }
 
 
@@ -155,16 +159,13 @@ void MainWindow::saveDirectory()
 
 void MainWindow::addText() {
     EditorODF::instance()->addTextBlock();
-    ui->ODF_export->show();
 }
 
 void MainWindow::addTable() {
     EditorODF::instance()->addTableBlock();
-    ui->ODF_export->show();
 }
 
 void MainWindow::addPlot() {
-
     EditorODF::instance()->addPlotBlock(ui->plot);
 }
 
@@ -172,6 +173,31 @@ void MainWindow::exportODF() {
     QString fileName = QFileDialog::getSaveFileName(nullptr,QObject::tr("Save File"),"output_file.odf",QObject::tr("Open Document ('''.odf)"));
     QTextDocumentWriter fileWriter (fileName);
     fileWriter.setFormat("odf");
-    bool temp = fileWriter.write(EditorODF::instance()->getDocument());
+    QTextDocument* doc = EditorODF::instance()->getDocument();
+    bool temp = fileWriter.write(doc);
     qInfo() << temp;
+}
+
+void MainWindow::deleteBlock() {
+    QTextCursor* cursor = EditorODF::instance()->getCursor();
+    qInfo() << cursor->position();
+    qInfo() << cursor->block().previous().position();
+    cursor->setPosition(cursor->block().position());
+    qInfo() << cursor->position();
+
+    /*qInfo() << cursor->position();
+    cursor->setPosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+    qInfo() << cursor->position();*/
+    /*cursor.setPosition(QTextCursor::StartOfBlock);
+    qInfo() << cursor.position();*/
+
+    cursor->select(QTextCursor::BlockUnderCursor);
+    qInfo() << cursor->position();
+    qInfo() << cursor->selectedText();
+    cursor->removeSelectedText();
+}
+
+
+void MainWindow::changeCursorPositional() {
+    EditorODF::instance()->getCursor()->setPosition(ui->ODF_export->textCursor().position());
 }

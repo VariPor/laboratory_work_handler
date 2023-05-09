@@ -9,7 +9,7 @@
 class EditorODF
 {
     QList<Block*> blocks;
-    QTextDocument document;
+    QTextDocument* document;
     QTextCursor cursor;
 
 public:
@@ -20,13 +20,14 @@ public:
     void exportBlocks();
     void moveBlockUp();
     void moveBlockDown();
+    void createDocument(QObject* parent);
 
-    QTextDocument* getDocument() { return &document; }
+    QTextDocument* getDocument() { return document; }
     QTextCursor* getCursor() { return &cursor; }
 
     static EditorODF* instance();
 
-    EditorODF() { cursor = QTextCursor(&document); }
+    EditorODF() {  }
 
 };
 
