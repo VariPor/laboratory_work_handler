@@ -23,6 +23,12 @@ private slots:
     void plotOptions();
     void saveDirectory();
     void openDirectory();
+    void addText();
+    void addTable();
+    void addPlot();
+    void exportODF();
+    void deleteBlock();
+    void changeCursorPositional();
 
 private:
     Ui::MainWindow *ui;

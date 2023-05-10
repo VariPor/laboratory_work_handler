@@ -5,7 +5,7 @@
 int NamingModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return Manager::instance()->getVariablesCount();
+    return Manager::instance()->getVarAndCalcCount();
 }
 
 int NamingModel::columnCount(const QModelIndex &parent) const
@@ -18,7 +18,7 @@ QVariant NamingModel::data(const QModelIndex &index, int role) const
 {
     int variable = index.row();
     int option  = index.column();
-    auto* name = Manager::instance() -> getVariable(variable);
+    auto* name = Manager::instance()->getVarOrCalc(variable);
 
     switch (role)
     {
@@ -38,7 +38,7 @@ bool NamingModel::setData(const QModelIndex &index, const QVariant &value, int r
 {
     int variable = index.row();
     int option  = index.column();
-    auto* name = Manager::instance() -> getVariable(variable);
+    auto* name = Manager::instance()->getVarOrCalc(variable);
 
     if (role == Qt::EditRole)
     {
@@ -65,7 +65,7 @@ QVariant NamingModel::headerData( int section, Qt::Orientation orientation, int 
 
     if( orientation == Qt::Vertical )
     {
-        return QString(Manager::instance() -> getVariable(section)->shortNaming);
+        return QString(Manager::instance()->getVarOrCalc(section)->shortNaming);
     }
 
     switch( section )
@@ -80,13 +80,6 @@ QVariant NamingModel::headerData( int section, Qt::Orientation orientation, int 
 
 Qt::ItemFlags NamingModel::flags(const QModelIndex &index) const
 {
-    int option  = index.column();
-    switch (option) {
-        case 0:
-            return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
-        case 1:
-            return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
-    }
-    return Qt::ItemIsEditable;
+    return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
 }
 

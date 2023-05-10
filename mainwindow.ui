@@ -46,7 +46,7 @@
         </sizepolicy>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>4</number>
        </property>
        <widget class="QWidget" name="variable_tab">
         <attribute name="title">
@@ -207,6 +207,54 @@
          </item>
         </layout>
        </widget>
+       <widget class="QWidget" name="export_tab">
+        <attribute name="title">
+         <string>export</string>
+        </attribute>
+        <widget class="QWidget" name="verticalLayoutWidget">
+         <property name="geometry">
+          <rect>
+           <x>20</x>
+           <y>20</y>
+           <width>160</width>
+           <height>89</height>
+          </rect>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="QPushButton" name="delete_block">
+            <property name="text">
+             <string>delete</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="up">
+            <property name="text">
+             <string>up</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="down">
+            <property name="text">
+             <string>down</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QTextEdit" name="ODF_export">
+         <property name="geometry">
+          <rect>
+           <x>200</x>
+           <y>0</y>
+           <width>591</width>
+           <height>551</height>
+          </rect>
+         </property>
+        </widget>
+       </widget>
       </widget>
       <widget class="QTabWidget" name="tabWidget_1">
        <property name="enabled">
@@ -268,8 +316,18 @@
     <addaction name="actionReplot"/>
     <addaction name="actionOptions"/>
    </widget>
+   <widget class="QMenu" name="menuadd_blocks">
+    <property name="title">
+     <string>add blocks</string>
+    </property>
+    <addaction name="actiontext_block"/>
+    <addaction name="actiontable_block"/>
+    <addaction name="actionplot_block"/>
+    <addaction name="actionexport"/>
+   </widget>
    <addaction name="menuMenu"/>
    <addaction name="menuGraph"/>
+   <addaction name="menuadd_blocks"/>
   </widget>
   <action name="actionOpenAs">
    <property name="text">
@@ -313,6 +371,26 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actiontext_block">
+   <property name="text">
+    <string>text block</string>
+   </property>
+  </action>
+  <action name="actiontable_block">
+   <property name="text">
+    <string>table block</string>
+   </property>
+  </action>
+  <action name="actionplot_block">
+   <property name="text">
+    <string>plot block</string>
+   </property>
+  </action>
+  <action name="actionexport">
+   <property name="text">
+    <string>export</string>
    </property>
   </action>
  </widget>

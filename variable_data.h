@@ -45,7 +45,8 @@ public:
 
     double error(int index = 0);
     int getMeasurementsCount();
-    VariableData(QString fullNaming, QString shortNaming = "", QList<double> meas = QList<double> {});
+    VariableData(QString fullNaming, QString shortNaming = "",
+                 QList<double> meas = QList<double> {}, QList<double> calcErrors = QList<double> {});
 };
 
 #endif // VARIABLEDATA_H

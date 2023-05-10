@@ -23,6 +23,7 @@ public:
    VariableData* getCalculated(int index);
    void clear();
    int getCalculatedCount();
+   VariableData* getVarOrCalc(int index);
 
    static Manager* instance();
 

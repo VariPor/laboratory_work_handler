@@ -9,7 +9,7 @@
 class MeasurementModel : public QAbstractTableModel
 {
  public:
-  MeasurementModel(QObject* parent = nullptr) : QAbstractTableModel(parent){};
+  MeasurementModel(QObject* parent = nullptr) : QAbstractTableModel(parent){}
   ~MeasurementModel(){};
 
   int rowCount(const QModelIndex& parent = QModelIndex()) const override;

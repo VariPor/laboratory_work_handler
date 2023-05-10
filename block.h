@@ -1,29 +1,44 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 
-struct Block
+#include <QWidget>
+#include <QTextDocument>
+#include <QTextCursor>
+#include <QTextEdit>
+#include <QTextFrame>
+
+#include "mainwindow.h"
+
+class Block
 {
-    virtual void update() = 0;
-    virtual void getVisibleWidgets() = 0;
-    void exportBlock();
+  public:
+    Block() {}
+    ~Block() {}
+
 };
 
-struct TextBlock : Block
+class TextBlock : public Block
 {
-    virtual void update() override;
-    virtual void getVisibleWidgets() override;
+    QString text;
+  public:
+   TextBlock(QString text = "") : text{text} {  }
+    ~TextBlock() {}
 };
 
-struct PlotBlock : Block
+class PlotBlock : public Block
 {
-    virtual void update() override;
-    virtual void getVisibleWidgets() override;
+    QPicture picture;
+  public:
+    PlotBlock(QPicture picture) : picture{picture} {}
+    ~PlotBlock() {}
 };
 
-struct TableBlock : Block
+class TableBlock : public Block
 {
-    virtual void update() override;
-    virtual void getVisibleWidgets() override;
+    QList<QList<QVariant>> table;
+  public:
+    TableBlock(QList<QList<QVariant>> table = QList<QList<QVariant>>()) : table{table} { }
+    ~TableBlock() {}
 };
 
 #endif // BLOCK_H
