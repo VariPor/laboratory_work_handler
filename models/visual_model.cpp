@@ -142,3 +142,9 @@ Qt::ItemFlags VisualModel::flags(const QModelIndex &index) const
     }
     return Qt::ItemIsEditable;
 }
+
+void VisualModel::insertRow(int row)
+{
+    beginInsertRows(QModelIndex(), row, row);
+    endInsertRows();
+}

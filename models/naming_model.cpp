@@ -83,3 +83,9 @@ Qt::ItemFlags NamingModel::flags(const QModelIndex &index) const
     return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
 }
 
+void NamingModel::insertRow(int row)
+{
+    beginInsertRows(QModelIndex(), row, row);
+    endInsertRows();
+}
+

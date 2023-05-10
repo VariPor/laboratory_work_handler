@@ -22,9 +22,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-
+    Manager::instance()->addVariable(VariableData{"foo", "ohh", {6,6.5,6,7,8}});
     Manager::instance()->addCalculated(VariableData{"meh", "brah", {1,2,3,4,4}, {1, 1, 2, 3}});
-    Manager::instance()->addVariable(VariableData{"foo", "ohh", {1,2,3,4,5}});
+
 
     ui->variable_tableView->setModel(new MeasurementModel);
     ui->variable_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -63,6 +63,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionexport, SIGNAL(triggered()), this, SLOT(exportODF()));
     connect(ui->delete_block, SIGNAL(clicked()), this, SLOT(deleteBlock()));
     connect(ui->ODF_export, SIGNAL(cursorPositionChanged()), this, SLOT(changeCursorPositional()));
+    connect(ui->pushButtonColumnAdd, SIGNAL(clicked()), this, SLOT(addVariable()));
+    connect(ui->pushButtonRowAdd, SIGNAL(clicked()), this, SLOT(addRow()));
 }
 
 
@@ -100,8 +102,11 @@ void MainWindow::openFile()
 
     ui->variable_tableView->model()->deleteLater();
     ui->variable_tableView->setModel(new MeasurementModel);
+    ui->visual_tableView->model()->deleteLater();
     ui->visual_tableView->setModel(new VisualModel);
+    ui->instruments_tableView->model()->deleteLater();
     ui->instruments_tableView->setModel(new InstrumentModel);
+    ui->naming_tableView->model()->deleteLater();
     ui->naming_tableView->setModel(new NamingModel);
 }
 
@@ -198,4 +203,20 @@ void MainWindow::deleteBlock() {
 
 void MainWindow::changeCursorPositional() {
     EditorODF::instance()->getCursor()->setPosition(ui->ODF_export->textCursor().position());
+}
+
+void MainWindow::addVariable()
+{
+    auto m = Manager::instance();
+    m->addVariable(VariableData{m->getMeasurementsCount()});
+    static_cast<MeasurementModel*>(ui->variable_tableView->model())->insertColumn(m->getCalculatedCount());
+    static_cast<VisualModel*>(ui->visual_tableView->model())->insertRow(m->getCalculatedCount());
+    static_cast<InstrumentModel*>(ui->instruments_tableView->model())->insertRow(m->getCalculatedCount());
+    static_cast<NamingModel*>(ui->naming_tableView->model())->insertRow(m->getCalculatedCount());
+}
+
+void MainWindow::addRow()
+{
+    auto m = Manager::instance();
+    static_cast<MeasurementModel*>(ui->variable_tableView->model())->insertRow(m->getMeasurementsCount());
 }

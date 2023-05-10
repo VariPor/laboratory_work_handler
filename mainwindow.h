@@ -29,6 +29,8 @@ private slots:
     void exportODF();
     void deleteBlock();
     void changeCursorPositional();
+    void addVariable();
+    void addRow();
 
 private:
     Ui::MainWindow *ui;
