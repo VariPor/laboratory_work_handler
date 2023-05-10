@@ -42,8 +42,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->naming_tableView->setModel(new NamingModel);
     ui->naming_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
-    EditorODF::instance()->createDocument(this);
-    ui->ODF_export->setDocument(EditorODF::instance()->getDocument());
+    //EditorODF::instance()->createDocument(this);
+    //ui->ODF_export->setDocument(EditorODF::instance()->getDocument());
 
     Manager::instance()->plot = new PlotChoise({
                                                     {"Scatter plot", new PlotScatter},
@@ -64,7 +64,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionplot_block, SIGNAL(triggered()), this, SLOT(addPlot()));
     connect(ui->actionexport, SIGNAL(triggered()), this, SLOT(exportODF()));
     connect(ui->delete_block, SIGNAL(clicked()), this, SLOT(deleteBlock()));
-    connect(ui->ODF_export, SIGNAL(cursorPositionChanged()), this, SLOT(changeCursorPositional()));
 }
 
 
@@ -159,45 +158,38 @@ void MainWindow::saveDirectory()
 
 void MainWindow::addText() {
     EditorODF::instance()->addTextBlock();
+    ui->verticalLayout_2->addWidget(EditorODF::instance()->textBlock()->editor);
 }
 
 void MainWindow::addTable() {
     EditorODF::instance()->addTableBlock();
+    ui->verticalLayout_2->addWidget(EditorODF::instance()->tableBlock()->table);
 }
 
 void MainWindow::addPlot() {
     EditorODF::instance()->addPlotBlock(ui->plot);
+    ui->verticalLayout_2->addWidget(EditorODF::instance()->plotBlock()->label);
 }
 
 void MainWindow::exportODF() {
     QString fileName = QFileDialog::getSaveFileName(nullptr,QObject::tr("Save File"),"output_file.odf",QObject::tr("Open Document ('''.odf)"));
     QTextDocumentWriter fileWriter (fileName);
     fileWriter.setFormat("odf");
-    QTextDocument* doc = EditorODF::instance()->getDocument();
-    bool temp = fileWriter.write(doc);
-    qInfo() << temp;
+    //QTextDocument* doc = EditorODF::instance()->getDocument();
+    //bool temp = fileWriter.write(doc);
+   // qInfo() << temp;
 }
 
 void MainWindow::deleteBlock() {
-    QTextCursor* cursor = EditorODF::instance()->getCursor();
-    qInfo() << cursor->position();
-    qInfo() << cursor->block().previous().position();
+    //QTextCursor* cursor = EditorODF::instance()->getCursor();
+    //QTextDocument* document = EditorODF::instance()->getDocument();
+    /*qInfo() << document->blockCount();
     cursor->setPosition(cursor->block().position());
-    qInfo() << cursor->position();
-
-    /*qInfo() << cursor->position();
-    cursor->setPosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
-    qInfo() << cursor->position();*/
-    /*cursor.setPosition(QTextCursor::StartOfBlock);
-    qInfo() << cursor.position();*/
-
     cursor->select(QTextCursor::BlockUnderCursor);
-    qInfo() << cursor->position();
-    qInfo() << cursor->selectedText();
-    cursor->removeSelectedText();
+    cursor->removeSelectedText();*/
 }
 
 
 void MainWindow::changeCursorPositional() {
-    EditorODF::instance()->getCursor()->setPosition(ui->ODF_export->textCursor().position());
+    //EditorODF::instance()->getCursor()->setPosition(ui->ODF_export->textCursor().position());
 }
