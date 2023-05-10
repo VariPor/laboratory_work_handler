@@ -7,9 +7,9 @@ void PlotHistogram::draw(QCustomPlot *plot)
 
     plot->clearGraphs();
     plot->legend->clear();
-    for (int i = 0; i < m->getVariablesCount(); ++i)
+    for (int i = 0; i < m->getVarAndCalcCount(); ++i)
     {
-        auto* v = m->getVariable(i);
+        auto* v = m->getVarOrCalc(i);
         if (!v->visual.visible) continue;
         auto graph = plot->addGraph();
         QPen pen;

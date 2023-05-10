@@ -48,9 +48,7 @@ MainWindow::MainWindow(QWidget *parent)
     Manager::instance()->plot = new PlotChoise({
                                                     {"Scatter plot", new PlotScatter},
                                                     {"Histogram plot", new PlotHistogram},
-                                                    {"2d scatter plot", new Plot2d("",
-                                                                                   "")}
-                                                });
+                                                    {"2d scatter plot", new Plot2d("", "")}});
     Manager::instance()->plot->draw(ui->plot);
 
     connect(ui->actionReplot, SIGNAL(triggered()), this, SLOT(draw()));

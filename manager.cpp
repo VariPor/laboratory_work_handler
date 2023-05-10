@@ -112,6 +112,21 @@ VariableData* Manager::getVarOrCalc(int index)
     else return getCalculated(index - getVariablesCount());
 }
 
+VariableData* Manager::getVarOrCalc(const QString& name)
+{
+    for (auto& v: variables)
+    {
+        if (v.shortNaming == name || v.fullNaming == name)
+            return &v;
+    }
+    for (auto& v: calculated)
+    {
+        if (v.shortNaming == name || v.fullNaming == name)
+            return &v;
+    }
+    return nullptr;
+}
+
 void Manager::clear() {
     variables.clear();
     calculated.clear();

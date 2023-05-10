@@ -29,8 +29,8 @@
    <property name="layoutDirection">
     <enum>Qt::LeftToRight</enum>
    </property>
-   <layout class="QGridLayout" name="gridLayout_2">
-    <item row="0" column="0">
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <item>
      <widget class="QSplitter" name="splitter">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
@@ -46,43 +46,60 @@
         </sizepolicy>
        </property>
        <property name="currentIndex">
-        <number>4</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="variable_tab">
         <attribute name="title">
          <string>variable</string>
         </attribute>
-        <layout class="QGridLayout" name="gridLayout_3">
-         <item row="1" column="3">
-          <widget class="QPushButton" name="pushButton_10">
-           <property name="text">
-            <string>-column</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QPushButton" name="pushButton">
-           <property name="text">
-            <string>+ row</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0" colspan="4">
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
           <widget class="QTableView" name="variable_tableView"/>
          </item>
-         <item row="1" column="1">
-          <widget class="QPushButton" name="pushButton_3">
-           <property name="text">
-            <string>- row</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="2">
-          <widget class="QPushButton" name="pushButton_2">
-           <property name="text">
-            <string>+ column</string>
-           </property>
-          </widget>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <widget class="QPushButton" name="pushButton_4">
+             <property name="text">
+              <string>Add column</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_2">
+             <property name="text">
+              <string>Del column</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_3">
+             <property name="text">
+              <string>Add row</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton">
+             <property name="text">
+              <string>Del row</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
          </item>
         </layout>
        </widget>
@@ -98,7 +115,7 @@
        </widget>
        <widget class="QWidget" name="instruments_tab">
         <attribute name="title">
-         <string>instruments</string>
+         <string>errors</string>
         </attribute>
         <layout class="QGridLayout" name="gridLayout_9">
          <item row="0" column="0">
@@ -211,49 +228,49 @@
         <attribute name="title">
          <string>export</string>
         </attribute>
-        <widget class="QWidget" name="verticalLayoutWidget">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>20</y>
-           <width>160</width>
-           <height>89</height>
-          </rect>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout">
-          <item>
-           <widget class="QPushButton" name="delete_block">
-            <property name="text">
-             <string>delete</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="up">
-            <property name="text">
-             <string>up</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="down">
-            <property name="text">
-             <string>down</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QTextEdit" name="ODF_export">
-         <property name="geometry">
-          <rect>
-           <x>200</x>
-           <y>0</y>
-           <width>591</width>
-           <height>551</height>
-          </rect>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <widget class="QPushButton" name="delete_block">
+             <property name="text">
+              <string>delete</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="up">
+             <property name="text">
+              <string>up</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="down">
+             <property name="text">
+              <string>down</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QTextEdit" name="ODF_export"/>
+         </item>
+        </layout>
        </widget>
       </widget>
       <widget class="QTabWidget" name="tabWidget_1">
@@ -296,12 +313,12 @@
      <x>0</x>
      <y>0</y>
      <width>964</width>
-     <height>22</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuMenu">
     <property name="title">
-     <string>menu</string>
+     <string>Menu</string>
     </property>
     <addaction name="actionOpenAs"/>
     <addaction name="actionSave"/>
@@ -311,14 +328,14 @@
    </widget>
    <widget class="QMenu" name="menuGraph">
     <property name="title">
-     <string>graph</string>
+     <string>Graph</string>
     </property>
     <addaction name="actionReplot"/>
     <addaction name="actionOptions"/>
    </widget>
    <widget class="QMenu" name="menuadd_blocks">
     <property name="title">
-     <string>add blocks</string>
+     <string>ODF export</string>
     </property>
     <addaction name="actiontext_block"/>
     <addaction name="actiontable_block"/>
@@ -375,22 +392,22 @@
   </action>
   <action name="actiontext_block">
    <property name="text">
-    <string>text block</string>
+    <string>Add text block</string>
    </property>
   </action>
   <action name="actiontable_block">
    <property name="text">
-    <string>table block</string>
+    <string>Add table block</string>
    </property>
   </action>
   <action name="actionplot_block">
    <property name="text">
-    <string>plot block</string>
+    <string>Add plot block</string>
    </property>
   </action>
   <action name="actionexport">
    <property name="text">
-    <string>export</string>
+    <string>Save ODF </string>
    </property>
   </action>
  </widget>
