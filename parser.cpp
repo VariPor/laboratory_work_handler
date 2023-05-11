@@ -1,4 +1,6 @@
 #include <ctype.h>
+#include <stdio.h>
+
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
@@ -7,7 +9,6 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <stdio.h>
 
 using namespace std;
 
@@ -115,7 +116,6 @@ vector<string> parse(string s) {
   lvalue = "";
 
   while (s[i] != '\0') {
-      
     // Проверка на число
 
     if (isdigit(s[i])) {
@@ -142,9 +142,9 @@ vector<string> parse(string s) {
         ++i;
       }
       int number_of_comma = 0;
-        
+
       // Если это функция
-        
+
       if (s[i] == '{') {
         ++i;
         string word_for_func = "";
@@ -165,12 +165,11 @@ vector<string> parse(string s) {
             output.push_back(word_for_func);
             word_for_func = "";
           }
-        
+
           ++i;
         }
-          if (isalpha(s[i])) {
-              
-          }
+        if (isalpha(s[i])) {
+        }
 
         if (s[i] == '}') {
           output.push_back(lvalue);
@@ -180,9 +179,9 @@ vector<string> parse(string s) {
           output.push_back(tmp_word);
         }
       }
-        
+
       // Если это переменная-вектор с диапазоном
-        
+
       else if (s[i] == '[') {
         if (isdigit(s[i + 1])) {
           ++i;
@@ -208,9 +207,9 @@ vector<string> parse(string s) {
         }
 
       }
-        
+
       // Если это переменная-вектор без диапазона
-        
+
       else {
         if (VariableCheck(lvalue)) {
           output.push_back(lvalue);
@@ -219,7 +218,7 @@ vector<string> parse(string s) {
       }
       lvalue = "";
     }
-      
+
     // Проверка на операцию
 
     else {
@@ -245,7 +244,7 @@ vector<string> parse(string s) {
       } else {
         if ((symPriority(s[i + 1]) > 0 and symPriority(s[i + 1]) <= 4) or
             symPriority(s[i - 1]) == 0) {
-                throw "BAD INPUT";
+          throw "BAD INPUT";
         }
 
         else {
@@ -276,9 +275,8 @@ vector<string> parse(string s) {
   }
 
   if (number_of_brackets == 0) {
-      for (auto i : output)
-          cout << i << " ";
-      cout << endl;
+    for (auto i : output) cout << i << " ";
+    cout << endl;
     return output;
   } else {
     cout << "WRONG NUMBER OF BRACKETS";
@@ -320,6 +318,8 @@ int isArgumentNumber(string s) {
   return 0;
 }
 
+// Простейшие операции
+
 double add(double a, double b) { return a + b; }
 
 double substract(double a, double b) { return b - a; }
@@ -334,7 +334,7 @@ double division(double a, double b) { return b / a; }
 
 vector<double> op_func(vector<double> a, vector<double> b,
                        double (*op)(double, double)) {
-    cout << endl << a.size() << " " << b.size() << endl;
+  cout << endl << a.size() << " " << b.size() << endl;
   vector<double> tmp;
   if (a.size() == 1) {
     for (auto elem : b) {
@@ -377,17 +377,16 @@ vector<double> calculate(vector<string> vec) {
   double tmp_num = 0;
 
   for (int i = 0; i < vec.size(); ++i) {
-      
     // Если это число
-      
+
     if (strtod(vec[i].c_str(), NULL)) {
       elements.push_back({vector<double>{strtod(vec[i].c_str(), NULL)}});
     }
-      
+
     // Если это переменная с диапазоном
-      
+
     else if (VariableCheck(vec[i]) and !isArgumentNumber(vec[i + 1]) and
-               (isrange(vec[i + 1]).first or isrange(vec[i + 1]).second)) {
+             (isrange(vec[i + 1]).first or isrange(vec[i + 1]).second)) {
       int first = isrange(vec[i + 1]).first;
       int second = isrange(vec[i + 1]).second;
       vector<double> actual_vec = VariableGet(vec[i]).getValue();
@@ -398,67 +397,63 @@ vector<double> calculate(vector<string> vec) {
         elements.push_back({changed_vec});
       }
     }
-      
+
     // Если это переменная без диапазона
-      
+
     else if (VariableCheck(vec[i]) and !isArgumentNumber(vec[i + 1]) and
-               (!isrange(vec[i + 1]).first and !isrange(vec[i + 1]).second)) {
+             (!isrange(vec[i + 1]).first and !isrange(vec[i + 1]).second)) {
       elements.push_back({VariableGet(vec[i]).getValue()});
     }
-    
+
     // Если это функция min
-      
+
     else if (vec[i] == "min" and isArgumentNumber(vec[i + 1])) {
-        vector<Variable> tmp_elements = elements;
-        cout << elements.size() << endl;
-        for (auto i : elements) {
-            cout << i.getValue()[0] << ". ";
-        }
-        cout << "WORKS";
-        cout << endl;
-        int argnum = isArgumentNumber(vec[i + 1]);
-        for (int i = 0; i < argnum; ++i) {
-            elements.pop_back();
-        }
-        vector<double> k = minimality(tmp_elements, isArgumentNumber(vec[i + 1]));
-        for (auto i : k)
-            cout << i << " ";
-        cout << endl;
-      elements.push_back(minimality(tmp_elements, isArgumentNumber(vec[i + 1])));
-        
+      vector<Variable> tmp_elements = elements;
+      cout << elements.size() << endl;
+      for (auto i : elements) {
+        cout << i.getValue()[0] << ". ";
+      }
+      cout << "WORKS";
+      cout << endl;
+      int argnum = isArgumentNumber(vec[i + 1]);
+      for (int i = 0; i < argnum; ++i) {
+        elements.pop_back();
+      }
+      vector<double> k = minimality(tmp_elements, isArgumentNumber(vec[i + 1]));
+      for (auto i : k) cout << i << " ";
+      cout << endl;
+      elements.push_back(
+          minimality(tmp_elements, isArgumentNumber(vec[i + 1])));
+
     }
-    
+
     // Если это простейшие операции
-      
+
     else if (vec[i] == "+") {
       vector<double> a = elements.back().getValue();
       elements.pop_back();
       vector<double> b = elements.back().getValue();
       elements.pop_back();
       elements.push_back(op_func(a, b, add));
-    }
-    else if (vec[i] == "-") {
+    } else if (vec[i] == "-") {
       vector<double> a = elements.back().getValue();
       elements.pop_back();
       vector<double> b = elements.back().getValue();
       elements.pop_back();
       elements.push_back(op_func(a, b, substract));
-    }
-    else if (vec[i] == "*") {
+    } else if (vec[i] == "*") {
       vector<double> a = elements.back().getValue();
       elements.pop_back();
       vector<double> b = elements.back().getValue();
       elements.pop_back();
       elements.push_back(op_func(a, b, multiplication));
-    }
-    else if (vec[i] == "/") {
+    } else if (vec[i] == "/") {
       vector<double> a = elements.back().getValue();
       elements.pop_back();
       vector<double> b = elements.back().getValue();
       elements.pop_back();
       elements.push_back(op_func(a, b, division));
-    }
-    else if (vec[i] == "^") {
+    } else if (vec[i] == "^") {
       vector<double> a = elements.back().getValue();
       elements.pop_back();
       vector<double> b = elements.back().getValue();
@@ -512,7 +507,7 @@ vector<double> minimality(vector<Variable> elems, int count) {
     vector<Variable> tmp_elems = elems;
     vector<Variable> actual_elems;
     for (int i = 0; i < count; ++i) {
-        if (tmp_elems.back().getValue().size() == 1) number_existence = 1;
+      if (tmp_elems.back().getValue().size() == 1) number_existence = 1;
       actual_elems.push_back(tmp_elems.back());
       tmp_elems.pop_back();
     }
@@ -525,7 +520,7 @@ vector<double> minimality(vector<Variable> elems, int count) {
           tmp_min = min(tmp_min, j);
         }
       }
-        cout << tmp_min << "THATS RESULT" << endl;
+      cout << tmp_min << "THATS RESULT" << endl;
       vector<double> tmp_min_holder{tmp_min};
       return tmp_min_holder;
     } else {
