@@ -20,17 +20,19 @@ void EditorODF::addTableBlock() {
     // Creating table
     auto* manager = Manager::instance();
     table->setColumnCount(manager->getVariablesCount());
-    table->setRowCount(manager->getMeasurementsCount() + 1);
+    table->setRowCount(manager->getMeasurementsCount());
+
+    for (int i = 0; i < manager->getVariablesCount(); ++i) {
+        QTableWidgetItem* item = new QTableWidgetItem (manager->getVariable(i)->shortNaming);
+        table->setHorizontalHeaderItem(i, item);
+    }
+
     for (int i = 0; i < manager->getVariablesCount(); ++i)
-        for (int j = 0; j < manager->getMeasurementsCount() + 1; ++j) {
-            if (j != 0) {
-                QTableWidgetItem* item = new QTableWidgetItem (QString::number(manager->getVariable(i)->measurements.at(j - 1)));
-                table->setItem(i, j, item);
-            }
-            else {
-                QTableWidgetItem* item = new QTableWidgetItem (manager->getVariable(i)->shortNaming);
-                table->setItem(i, j, item);;
-            }
+        for (int j = 0; j < manager->getMeasurementsCount(); ++j) {
+                QTableWidgetItem* item = new QTableWidgetItem
+                        (QString::number(manager->getVariable(i)->measurements.at(j)), QTableWidgetItem::Type);
+                table->setItem(j, i, item);
+                table->item(j, i)->setFlags(Qt::NoItemFlags);
         }
 }
 

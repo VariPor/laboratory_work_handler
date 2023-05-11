@@ -253,7 +253,7 @@
            <height>531</height>
           </rect>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_2"/>
+         <layout class="QVBoxLayout" name="ODFEditor"/>
         </widget>
        </widget>
       </widget>

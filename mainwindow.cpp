@@ -42,9 +42,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->naming_tableView->setModel(new NamingModel);
     ui->naming_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
-    //EditorODF::instance()->createDocument(this);
-    //ui->ODF_export->setDocument(EditorODF::instance()->getDocument());
-
     Manager::instance()->plot = new PlotChoise({
                                                     {"Scatter plot", new PlotScatter},
                                                     {"Histogram plot", new PlotHistogram},
@@ -158,38 +155,68 @@ void MainWindow::saveDirectory()
 
 void MainWindow::addText() {
     EditorODF::instance()->addTextBlock();
-    ui->verticalLayout_2->addWidget(EditorODF::instance()->textBlock()->editor);
+    ui->ODFEditor->addWidget(EditorODF::instance()->textBlock()->editor);
 }
 
 void MainWindow::addTable() {
     EditorODF::instance()->addTableBlock();
-    ui->verticalLayout_2->addWidget(EditorODF::instance()->tableBlock()->table);
+    ui->ODFEditor->addWidget(EditorODF::instance()->tableBlock()->table);
 }
 
 void MainWindow::addPlot() {
     EditorODF::instance()->addPlotBlock(ui->plot);
-    ui->verticalLayout_2->addWidget(EditorODF::instance()->plotBlock()->label);
+    ui->ODFEditor->addWidget(EditorODF::instance()->plotBlock()->label);
 }
 
 void MainWindow::exportODF() {
     QString fileName = QFileDialog::getSaveFileName(nullptr,QObject::tr("Save File"),"output_file.odf",QObject::tr("Open Document ('''.odf)"));
     QTextDocumentWriter fileWriter (fileName);
     fileWriter.setFormat("odf");
-    //QTextDocument* doc = EditorODF::instance()->getDocument();
-    //bool temp = fileWriter.write(doc);
-   // qInfo() << temp;
+
+    //setting up document
+    QTextDocument *document = new QTextDocument();
+    QTextCursor cursor(document);
+
+    for (auto* block : EditorODF::instance()->blocks) {
+        if (block->plotBlock() != nullptr) {
+            QImage chartImage = block->plotBlock()->pixmap.toImage();
+            document->addResource(QTextDocument::ImageResource, QUrl(""), chartImage);
+            // Prepare to insert into the document
+            QTextImageFormat imageFormat;
+            imageFormat.setQuality(100);
+            // Insert into the document
+            cursor.insertImage(imageFormat);
+            cursor.insertBlock();
+        }
+        if (block->textBlock() != nullptr) {
+            cursor.insertText(block->textBlock()->editor->text());
+            cursor.insertBlock();
+        }
+        if (block->tableBlock() != nullptr) {
+            QTableWidget* table = block->tableBlock()->table;
+            cursor.insertTable(table->rowCount() + 1, table->columnCount());
+            for (int i = 0; i < table->columnCount(); ++i) {
+                cursor.insertText(table->horizontalHeaderItem(i)->text());
+                cursor.movePosition(QTextCursor::NextCell);
+            }
+
+            for (int i = 0; i < table->rowCount(); ++i)
+                for (int j = 0; j < table->columnCount(); ++j) {
+                    cursor.insertText(table->item(i, j)->text());
+                    cursor.movePosition(QTextCursor::NextCell);
+                }
+        }
+    }
+
+    fileWriter.setFormat("odf");
+    fileWriter.write(document);
 }
 
 void MainWindow::deleteBlock() {
-    //QTextCursor* cursor = EditorODF::instance()->getCursor();
-    //QTextDocument* document = EditorODF::instance()->getDocument();
-    /*qInfo() << document->blockCount();
-    cursor->setPosition(cursor->block().position());
-    cursor->select(QTextCursor::BlockUnderCursor);
-    cursor->removeSelectedText();*/
+
 }
 
 
 void MainWindow::changeCursorPositional() {
-    //EditorODF::instance()->getCursor()->setPosition(ui->ODF_export->textCursor().position());
+
 }

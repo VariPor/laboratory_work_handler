@@ -11,7 +11,6 @@ class EditorODF
 
     //QTextDocument* document;
     //QTextCursor cursor;
-    QList<Block*> blocks;
 
 public:
     void removeBlock();
@@ -29,6 +28,8 @@ public:
     //QTextCursor* getCursor() { return &cursor; }
 
     static EditorODF* instance();
+    QList<Block*> blocks;
+
 
     EditorODF() { }
 

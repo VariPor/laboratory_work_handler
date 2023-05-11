@@ -40,7 +40,6 @@ class TextBlock : public Block
 
 class PlotBlock : public Block
 {
-    QPixmap pixmap;
   public:
     PlotBlock(QPixmap pixmap) : pixmap{ pixmap }, label { new QLabel } {}
     ~PlotBlock() {}
@@ -49,6 +48,7 @@ class PlotBlock : public Block
     virtual TableBlock* tableBlock() override { return nullptr; }
     virtual PlotBlock* plotBlock() override { return this; }
     QLabel* label;
+    QPixmap pixmap;
 };
 
 class TableBlock : public Block
