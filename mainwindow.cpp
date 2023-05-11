@@ -56,11 +56,13 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(saveFile()));
     connect(ui->actionOpen_directory, SIGNAL(triggered()), this, SLOT(openDirectory()));
     connect(ui->actionSave_to_directory, SIGNAL(triggered()), this, SLOT(saveDirectory()));
-    connect(ui->actiontext_block, SIGNAL(triggered()), this, SLOT(addText()));
-    connect(ui->actiontable_block, SIGNAL(triggered()), this, SLOT(addTable()));
-    connect(ui->actionplot_block, SIGNAL(triggered()), this, SLOT(addPlot()));
-    connect(ui->actionexport, SIGNAL(triggered()), this, SLOT(exportODF()));
+    connect(ui->actionAdd_text_block, SIGNAL(triggered()), this, SLOT(addText()));
+    connect(ui->actionAdd_table_block, SIGNAL(triggered()), this, SLOT(addTable()));
+    connect(ui->actionAdd_plot_block, SIGNAL(triggered()), this, SLOT(addPlot()));
+    connect(ui->actionExport, SIGNAL(triggered()), this, SLOT(exportODF()));
     connect(ui->delete_block, SIGNAL(clicked()), this, SLOT(deleteBlock()));
+    connect(ui->pushButtonColumnAdd, SIGNAL(clicked()), this, SLOT(addVariable()));
+    connect(ui->pushButtonRowAdd, SIGNAL(clicked()), this, SLOT(addRow()));
 }
 
 
@@ -219,4 +221,20 @@ void MainWindow::deleteBlock() {
 
 void MainWindow::changeCursorPositional() {
 
+}
+
+void MainWindow::addVariable()
+{
+    auto m = Manager::instance();
+    m->addVariable(VariableData{m->getMeasurementsCount()});
+    static_cast<MeasurementModel*>(ui->variable_tableView->model())->insertColumn(m->getCalculatedCount());
+    static_cast<VisualModel*>(ui->visual_tableView->model())->insertRow(m->getCalculatedCount());
+    static_cast<InstrumentModel*>(ui->instruments_tableView->model())->insertRow(m->getCalculatedCount());
+    static_cast<NamingModel*>(ui->naming_tableView->model())->insertRow(m->getCalculatedCount());
+}
+
+void MainWindow::addRow()
+{
+    auto m = Manager::instance();
+    static_cast<MeasurementModel*>(ui->variable_tableView->model())->insertRow(m->getMeasurementsCount());
 }

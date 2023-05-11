@@ -24,6 +24,7 @@ public:
    void clear();
    int getCalculatedCount();
    VariableData* getVarOrCalc(int index);
+   VariableData* getVarOrCalc(const QString& name);
 
    static Manager* instance();
 
