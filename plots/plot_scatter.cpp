@@ -7,18 +7,18 @@ void PlotScatter::draw(QCustomPlot *plot)
 
     plot->clearGraphs();
     plot->legend->clear();
-    for (int i = 0; i < m->getVariablesCount(); ++i)
+    for (int i = 0; i < m->getVarAndCalcCount(); ++i)
     {
-        auto & v = m->variables[i];
-        if (!v.visual.visible) continue;
+        auto* v = m->getVarOrCalc(i);
+        if (!v->visual.visible) continue;
         auto graph = plot->addGraph();
         QPen pen;
-        pen.setColor(v.visual.color);
-        pen.setStyle(v.visual.line_type);
-        pen.setWidth(v.visual.width);
+        pen.setColor(v->visual.color);
+        pen.setStyle(v->visual.line_type);
+        pen.setWidth(v->visual.width);
         graph->setPen(pen);
-        graph->setScatterStyle(v.visual.point_type);
-        graph->setName(v.fullNaming);
+        graph->setScatterStyle(v->visual.point_type);
+        graph->setName(v->fullNaming);
 
         QCPErrorBars *errorBars = new QCPErrorBars(plot->xAxis, plot->yAxis);
         errorBars->removeFromLegend();
@@ -26,11 +26,11 @@ void PlotScatter::draw(QCustomPlot *plot)
 
         QVector<double> x,y,e;
 
-        for (int j = 0; j < v.getMeasurementsCount(); ++j)
+        for (int j = 0; j < v->getMeasurementsCount(); ++j)
         {
             x.append(j);
-            y.append(v.measurements[j]);
-            e.append(v.instrumentError.value);
+            y.append(v->measurements[j]);
+            e.append(v->instrumentError.value);
         }
         graph->setData(x,y);
         errorBars->setData(e);

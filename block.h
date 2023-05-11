@@ -1,30 +1,67 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 
-struct Block
+#include <QWidget>
+#include <QTextDocument>
+#include <QTextCursor>
+#include <QTextEdit>
+#include <QTextFrame>
+
+#include "mainwindow.h"
+
+class TextBlock;
+class TableBlock;
+class PlotBlock;
+
+class Block
 {
-    virtual void update() = 0;
-    virtual void getVisibleWidgets() = 0;
-    void exportBlock();
+
+  public:
+    Block() {}
+    ~Block() {}
+    virtual void saveToDocument() = 0;
+    virtual TextBlock* textBlock() = 0;
+    virtual TableBlock* tableBlock() = 0;
+    virtual PlotBlock* plotBlock() = 0;
 };
 
-struct TextBlock : Block
+class TextBlock : public Block
 {
-    virtual void update() override;
-    virtual void getVisibleWidgets() override;
+  public:
+   TextBlock() : Block(), editor(new QLineEdit) {}
+    ~TextBlock() {}
+   virtual void saveToDocument() override {}
+   virtual TextBlock* textBlock() override { return this; }
+   virtual TableBlock* tableBlock() override { return nullptr; }
+   virtual PlotBlock* plotBlock() override { return nullptr; }
+   QLineEdit* editor;
+
 };
 
-struct PlotBlock : Block
+class PlotBlock : public Block
 {
-    virtual void update() override;
-    virtual void getVisibleWidgets() override;
+  public:
+    PlotBlock(QPixmap pixmap) : pixmap{ pixmap }, label { new QLabel } {}
+    ~PlotBlock() {}
+    virtual void saveToDocument() override {}
+    virtual TextBlock* textBlock() override { return nullptr; }
+    virtual TableBlock* tableBlock() override { return nullptr; }
+    virtual PlotBlock* plotBlock() override { return this; }
+    QLabel* label;
+    QPixmap pixmap;
 };
 
-struct TableBlock : Block
+class TableBlock : public Block
 {
-    virtual void update() override;
-    virtual void getVisibleWidgets() override;
+
+  public:
+    TableBlock() : table { new QTableWidget } {}
+    ~TableBlock() {}
+    virtual void saveToDocument() override {}
+    virtual TextBlock* textBlock() override { return nullptr; }
+    virtual TableBlock* tableBlock() override { return this; }
+    virtual PlotBlock* plotBlock() override { return nullptr; }
+    QTableWidget* table;
 };
 
 #endif // BLOCK_H
-

@@ -9,8 +9,8 @@
 class InstrumentModel : public QAbstractTableModel
 {
  public:
-  InstrumentModel(QObject* parent = nullptr) : QAbstractTableModel(parent){};
-  ~InstrumentModel(){};
+  InstrumentModel(QObject* parent = nullptr) : QAbstractTableModel(parent){}
+  ~InstrumentModel(){}
 
   int rowCount(const QModelIndex& parent = QModelIndex()) const override;
   int columnCount(const QModelIndex& parent = QModelIndex()) const override;
@@ -25,6 +25,8 @@ class InstrumentModel : public QAbstractTableModel
                const QVariant& value,
                int role = Qt::EditRole) override;
   Qt::ItemFlags flags(const QModelIndex& index) const override;
+
+  void insertRow(int row);
 };
 
 #endif // INSTRUMENT_MODEL_H

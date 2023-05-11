@@ -13,7 +13,12 @@ void Manager::recalculationMeasurementCount() {
     for (int i = 0; i < this->getVariablesCount(); ++i)
         if (variables.at(i).measurements.size() > measurement_count)
             measurement_count = variables.at(i).measurements.size();
+    for (int i = 0; i < this->getCalculatedCount(); ++i)
+        if (calculated.at(i).measurements.size() > measurement_count)
+            measurement_count = calculated.at(i).measurements.size();
 }
+
+int Manager::getCalculatedCount() { return calculated.size(); }
 
 void Manager::deleteVariable(int index)
 {
@@ -73,16 +78,59 @@ VariableData* Manager::getVariable(const QString& name)
     return nullptr;
 }
 
+VariableData* Manager::getVariable(int index)
+{
+    if (index >= variables.size()) throw std::runtime_error("No such index (in getVariable(int index))");
+    return &variables[index];
+}
+
+VariableData* Manager::getCalculated(const QString& name)
+{
+    for (auto& v: calculated)
+    {
+        if (v.shortNaming == name || v.fullNaming == name)
+            return &v;
+    }
+    throw std::runtime_error("No such index (in getCalculated(const QString& name))");
+}
+
+VariableData* Manager::getCalculated(int index)
+{
+    if (index >= variables.size()) throw std::runtime_error("No such index (in getCalculated(int index))");
+    return &calculated[index];
+}
+
+
+int Manager::getVarAndCalcCount() {
+    return this->getCalculatedCount() + this->getVariablesCount();
+}
+
+VariableData* Manager::getVarOrCalc(int index)
+{
+    if (index >= getVarAndCalcCount()) throw std::runtime_error("No such index (in getVarOrCalc(int index))");
+    if (index < getVariablesCount()) return getVariable(index);
+    else return getCalculated(index - getVariablesCount());
+}
+
+VariableData* Manager::getVarOrCalc(const QString& name)
+{
+    for (auto& v: variables)
+    {
+        if (v.shortNaming == name || v.fullNaming == name)
+            return &v;
+    }
+    for (auto& v: calculated)
+    {
+        if (v.shortNaming == name || v.fullNaming == name)
+            return &v;
+    }
+    return nullptr;
+}
+
 void Manager::clear() {
     variables.clear();
     calculated.clear();
     measurement_count = 0;
-}
-
-void Manager::toCalculated(int index) {
-    if (index > variables.size()) throw std::out_of_range("No such variable");
-    calculated.append(Manager::instance()->variables[index]);
-    Manager::instance()->deleteVariable(index);
 }
 
 

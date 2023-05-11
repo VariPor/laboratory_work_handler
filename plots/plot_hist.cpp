@@ -7,21 +7,21 @@ void PlotHistogram::draw(QCustomPlot *plot)
 
     plot->clearGraphs();
     plot->legend->clear();
-    for (int i = 0; i < m->getVariablesCount(); ++i)
+    for (int i = 0; i < m->getVarAndCalcCount(); ++i)
     {
-        auto & v = m->variables[i];
-        if (!v.visual.visible) continue;
+        auto* v = m->getVarOrCalc(i);
+        if (!v->visual.visible) continue;
         auto graph = plot->addGraph();
         QPen pen;
-        pen.setColor(v.visual.color);
-        pen.setStyle(v.visual.line_type);
-        pen.setWidth(v.visual.width);
+        pen.setColor(v->visual.color);
+        pen.setStyle(v->visual.line_type);
+        pen.setWidth(v->visual.width);
         graph->setPen(pen);
-        graph->setName(v.fullNaming);
+        graph->setName(v->fullNaming);
         graph->setLineStyle(QCPGraph::LineStyle::lsStepCenter);
 
-        double min = v.measurements[0], max = v.measurements[0];
-        for (double k : v.measurements)
+        double min = v->measurements[0], max = v->measurements[0];
+        for (double k : v->measurements)
         {
             min = std::min(k, min);
             max = std::max(k, max);
@@ -39,7 +39,7 @@ void PlotHistogram::draw(QCustomPlot *plot)
             if ( j == bins - 1) x1 += 1e-10;
             int count = 0;
 
-            for (double k : v.measurements)
+            for (double k : v->measurements)
             {
                 if (x0 <= k && k < x1) count ++;
             }

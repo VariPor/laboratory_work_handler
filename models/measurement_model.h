@@ -9,7 +9,7 @@
 class MeasurementModel : public QAbstractTableModel
 {
  public:
-  MeasurementModel(QObject* parent = nullptr) : QAbstractTableModel(parent){};
+  MeasurementModel(QObject* parent = nullptr) : QAbstractTableModel(parent){}
   ~MeasurementModel(){};
 
   int rowCount(const QModelIndex& parent = QModelIndex()) const override;
@@ -25,6 +25,10 @@ class MeasurementModel : public QAbstractTableModel
                const QVariant& value,
                int role = Qt::EditRole) override;
   Qt::ItemFlags flags(const QModelIndex& index) const override;
+  void insertColumn(int column);
+  void insertRow(int row);
+private:
+  int extraRows = 0;
 };
 
 #endif // MEASUREMENT_MODEL_H

@@ -5,27 +5,27 @@
 int MeasurementModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return Manager::instance()->getMeasurementsCount();
+    return Manager::instance()->getMeasurementsCount() + extraRows;
 }
 
 int MeasurementModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return Manager::instance()->getVariablesCount();
+    return Manager::instance()->getVarAndCalcCount();
 }
 
 QVariant MeasurementModel::data(const QModelIndex &index, int role) const
 {
     int row = index.row();
     int variable  = index.column();
-    auto v = Manager::instance()->variables[variable];
+    VariableData* v = Manager::instance()->getVarOrCalc(variable);
 
-    if (v.measurements.size() <= row) return QVariant();
+    if (v->measurements.size() <= row) return QVariant();
 
     if (role == Qt::DisplayRole)
     {
-        QVariant r = QVariant(v.measurements[row]).toString() + " ± " +
-                    QVariant(v.error(row)).toString();
+        QVariant r = QVariant(v->measurements[row]).toString() + " ± " +
+                    QVariant(v->error(row)).toString();
         return r;
     }
     return QVariant();
@@ -37,26 +37,28 @@ QVariant MeasurementModel::headerData(int section, Qt::Orientation orientation, 
 
     if (orientation == Qt::Vertical) return section + 1;
 
-    return Manager::instance()->variables[section].shortNaming;
+    VariableData* v = Manager::instance()->getVarOrCalc(section);
+
+    return v->shortNaming;
 }
 
 bool MeasurementModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     int row = index.row();
     int variable = index.column();
-    auto m = Manager::instance();
 
     if (role == Qt::EditRole)
     {
         if (!value.canConvert<double>()) return false;
-        if (m->variables[variable].instrumentError.type == VariableData::Instrument::ErrorType::calculated) return false;
-        if (m->variables[variable].measurements.size() <= row)
+        VariableData* v = Manager::instance()->getVarOrCalc(variable);
+
+        if (v->measurements.size() <= row)
         {
-            m->variables[variable].measurements.append(value.toDouble());
+            v->measurements.append(value.toDouble());
             emit dataChanged(index, index);
             return true;
         }
-        m->variables[variable].measurements[row] = value.toDouble();
+        v->measurements[row] = value.toDouble();
         emit dataChanged(index, index);
         return true;
     }
@@ -65,5 +67,22 @@ bool MeasurementModel::setData(const QModelIndex &index, const QVariant &value, 
 
 Qt::ItemFlags MeasurementModel::flags(const QModelIndex &index) const
 {
-    return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
+    if (index.column() < Manager::instance()->getVariablesCount())
+        return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
+    else
+        return QAbstractItemModel::flags(index);
 }
+
+void MeasurementModel::insertColumn(int column)
+{
+    beginInsertColumns(QModelIndex(), column, column);
+    endInsertColumns();
+}
+
+void MeasurementModel::insertRow(int row)
+{
+    beginInsertRows(QModelIndex(), row, row);
+    endInsertRows();
+    extraRows++;
+}
+

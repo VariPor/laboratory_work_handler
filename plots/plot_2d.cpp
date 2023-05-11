@@ -6,16 +6,16 @@ Plot2d::Plot2d(QString xLable, QString yLable, QWidget *parent) : Plot(parent), 
 void Plot2d::draw(QCustomPlot *plot)
 {
     auto m = Manager::instance();
-    VariableData *xv = m->getVariable(xLable), *yv = m->getVariable(yLable);
+    VariableData *xv = m->getVarOrCalc(xLable), *yv = m->getVarOrCalc(yLable);
 
     plot->clearGraphs();
     plot->legend->setVisible(false);
     if (!yv)
     {
-        if (m->getVariablesCount() > 0)
+        if (m->getVarAndCalcCount() > 0)
         {
-            xv = &m->variables[0];
-            yv = &m->variables[0];
+            xv = m->getVarOrCalc(0);
+            yv = m->getVarOrCalc(0);
         } else return;
     }
 
@@ -59,8 +59,8 @@ void Plot2d::options()
     Plot2dOptionsDialog optionDialog{xLable, yLable, title, this};
     optionDialog.show();
     optionDialog.exec();
-    xLable = Manager::instance()->getVariable(optionDialog.xLable.currentText())->shortNaming;
-    yLable = Manager::instance()->getVariable(optionDialog.yLable.currentText())->shortNaming;
+    xLable = Manager::instance()->getVarOrCalc(optionDialog.xLable.currentText())->shortNaming;
+    yLable = Manager::instance()->getVarOrCalc(optionDialog.yLable.currentText())->shortNaming;
     title = optionDialog.title.text();
 }
 
@@ -76,10 +76,12 @@ Plot2dOptionsDialog::Plot2dOptionsDialog(QString xlable, QString ylable, QString
     QLabel *xLableLable = new QLabel(tr("X axis lable:"));
     mainlayout->addWidget(xLableLable);
     this->xLable.clear();
-    for (auto& v : Manager::instance()->variables)
+
+    auto* m = Manager::instance();
+    for (int i = 0; i < m->getVarAndCalcCount(); ++i)
     {
-        this->xLable.addItem(v.fullNaming);
-        if (v.shortNaming == xlable)
+        this->xLable.addItem(m->getVarOrCalc(i)->fullNaming);
+        if (m->getVarOrCalc(i)->shortNaming == xlable)
             this->xLable.setCurrentIndex(this->xLable.count() - 1);
     }
     mainlayout->addWidget(&this->xLable);
@@ -87,10 +89,10 @@ Plot2dOptionsDialog::Plot2dOptionsDialog(QString xlable, QString ylable, QString
     QLabel *yLableLable = new QLabel(tr("Y axis lable:"));
     mainlayout->addWidget(yLableLable);
     this->yLable.clear();
-    for (auto& v : Manager::instance()->variables)
+    for (int i = 0; i < Manager::instance()->getVarAndCalcCount(); ++i)
     {
-        this->yLable.addItem(v.fullNaming);
-        if (v.shortNaming == ylable)
+        this->yLable.addItem(Manager::instance()->getVarOrCalc(i)->fullNaming);
+        if (Manager::instance()->getVarOrCalc(i)->shortNaming == ylable)
             this->yLable.setCurrentIndex(this->yLable.count() - 1);
     }
     mainlayout->addWidget(&this->yLable);

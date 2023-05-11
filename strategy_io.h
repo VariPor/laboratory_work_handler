@@ -9,12 +9,6 @@ struct StrategyIO
     virtual void load(const QString&) = 0;
 };
 
-struct StrategyIO_Choose : StrategyIO
-{
-    virtual void save(const QString&) override;
-    virtual void load(const QString&) override;
-};
-
 struct StrategyIO_JSON : StrategyIO
 {
     virtual void save(const QString&) override;
@@ -26,13 +20,6 @@ struct StrategyIO_BD : StrategyIO
     virtual void save(const QString&) override;
     virtual void load(const QString&) override;
 };
-
-struct StrategyIO_Custom : StrategyIO
-{
-    virtual void save(const QString&) override;
-    virtual void load(const QString&) override;
-};
-
 
 struct StrategyIO_CSV : StrategyIO
 {
