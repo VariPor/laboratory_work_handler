@@ -22,9 +22,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    Manager::instance()->addVariable(VariableData{"foo", "ohh", {6,6.5,6,7,8}});
-    Manager::instance()->addCalculated(VariableData{"meh", "brah", {1,2,3,4,4}, {1, 1, 2, 3}});
 
+    Manager::instance()->addCalculated(VariableData{"meh", "brah", {1,2,3,4,4}, {1, 1, 2, 3}});
+    Manager::instance()->addVariable(VariableData{"foo", "ohh", {1,2,3,4,5}});
 
     ui->variable_tableView->setModel(new MeasurementModel);
     ui->variable_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -42,13 +42,12 @@ MainWindow::MainWindow(QWidget *parent)
     ui->naming_tableView->setModel(new NamingModel);
     ui->naming_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
-    EditorODF::instance()->createDocument(this);
-    ui->ODF_export->setDocument(EditorODF::instance()->getDocument());
-
     Manager::instance()->plot = new PlotChoise({
                                                     {"Scatter plot", new PlotScatter},
                                                     {"Histogram plot", new PlotHistogram},
-                                                    {"2d scatter plot", new Plot2d("", "")}});
+                                                    {"2d scatter plot", new Plot2d("",
+                                                                                   "")}
+                                                });
     Manager::instance()->plot->draw(ui->plot);
 
     connect(ui->actionReplot, SIGNAL(triggered()), this, SLOT(draw()));
@@ -57,12 +56,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(saveFile()));
     connect(ui->actionOpen_directory, SIGNAL(triggered()), this, SLOT(openDirectory()));
     connect(ui->actionSave_to_directory, SIGNAL(triggered()), this, SLOT(saveDirectory()));
-    connect(ui->actiontext_block, SIGNAL(triggered()), this, SLOT(addText()));
-    connect(ui->actiontable_block, SIGNAL(triggered()), this, SLOT(addTable()));
-    connect(ui->actionplot_block, SIGNAL(triggered()), this, SLOT(addPlot()));
-    connect(ui->actionexport, SIGNAL(triggered()), this, SLOT(exportODF()));
+    connect(ui->actionAdd_text_block, SIGNAL(triggered()), this, SLOT(addText()));
+    connect(ui->actionAdd_table_block, SIGNAL(triggered()), this, SLOT(addTable()));
+    connect(ui->actionAdd_plot_block, SIGNAL(triggered()), this, SLOT(addPlot()));
+    connect(ui->actionExport, SIGNAL(triggered()), this, SLOT(exportODF()));
     connect(ui->delete_block, SIGNAL(clicked()), this, SLOT(deleteBlock()));
-    connect(ui->ODF_export, SIGNAL(cursorPositionChanged()), this, SLOT(changeCursorPositional()));
     connect(ui->pushButtonColumnAdd, SIGNAL(clicked()), this, SLOT(addVariable()));
     connect(ui->pushButtonRowAdd, SIGNAL(clicked()), this, SLOT(addRow()));
 }
@@ -102,11 +100,8 @@ void MainWindow::openFile()
 
     ui->variable_tableView->model()->deleteLater();
     ui->variable_tableView->setModel(new MeasurementModel);
-    ui->visual_tableView->model()->deleteLater();
     ui->visual_tableView->setModel(new VisualModel);
-    ui->instruments_tableView->model()->deleteLater();
     ui->instruments_tableView->setModel(new InstrumentModel);
-    ui->naming_tableView->model()->deleteLater();
     ui->naming_tableView->setModel(new NamingModel);
 }
 
@@ -162,47 +157,70 @@ void MainWindow::saveDirectory()
 
 void MainWindow::addText() {
     EditorODF::instance()->addTextBlock();
+    ui->ODFEditor->addWidget(EditorODF::instance()->textBlock()->editor);
 }
 
 void MainWindow::addTable() {
     EditorODF::instance()->addTableBlock();
+    ui->ODFEditor->addWidget(EditorODF::instance()->tableBlock()->table);
 }
 
 void MainWindow::addPlot() {
     EditorODF::instance()->addPlotBlock(ui->plot);
+    ui->ODFEditor->addWidget(EditorODF::instance()->plotBlock()->label);
 }
 
 void MainWindow::exportODF() {
     QString fileName = QFileDialog::getSaveFileName(nullptr,QObject::tr("Save File"),"output_file.odf",QObject::tr("Open Document ('''.odf)"));
     QTextDocumentWriter fileWriter (fileName);
     fileWriter.setFormat("odf");
-    QTextDocument* doc = EditorODF::instance()->getDocument();
-    bool temp = fileWriter.write(doc);
-    qInfo() << temp;
+
+    //setting up document
+    QTextDocument *document = new QTextDocument();
+    QTextCursor cursor(document);
+
+    for (auto* block : EditorODF::instance()->blocks) {
+        if (block->plotBlock() != nullptr) {
+            QImage chartImage = block->plotBlock()->pixmap.toImage();
+            document->addResource(QTextDocument::ImageResource, QUrl(""), chartImage);
+            // Prepare to insert into the document
+            QTextImageFormat imageFormat;
+            imageFormat.setQuality(100);
+            // Insert into the document
+            cursor.insertImage(imageFormat);
+            cursor.insertBlock();
+        }
+        if (block->textBlock() != nullptr) {
+            cursor.insertText(block->textBlock()->editor->text());
+            cursor.insertBlock();
+        }
+        if (block->tableBlock() != nullptr) {
+            QTableWidget* table = block->tableBlock()->table;
+            cursor.insertTable(table->rowCount() + 1, table->columnCount());
+            for (int i = 0; i < table->columnCount(); ++i) {
+                cursor.insertText(table->horizontalHeaderItem(i)->text());
+                cursor.movePosition(QTextCursor::NextCell);
+            }
+
+            for (int i = 0; i < table->rowCount(); ++i)
+                for (int j = 0; j < table->columnCount(); ++j) {
+                    cursor.insertText(table->item(i, j)->text());
+                    cursor.movePosition(QTextCursor::NextCell);
+                }
+        }
+    }
+
+    fileWriter.setFormat("odf");
+    fileWriter.write(document);
 }
 
 void MainWindow::deleteBlock() {
-    QTextCursor* cursor = EditorODF::instance()->getCursor();
-    qInfo() << cursor->position();
-    qInfo() << cursor->block().previous().position();
-    cursor->setPosition(cursor->block().position());
-    qInfo() << cursor->position();
 
-    /*qInfo() << cursor->position();
-    cursor->setPosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
-    qInfo() << cursor->position();*/
-    /*cursor.setPosition(QTextCursor::StartOfBlock);
-    qInfo() << cursor.position();*/
-
-    cursor->select(QTextCursor::BlockUnderCursor);
-    qInfo() << cursor->position();
-    qInfo() << cursor->selectedText();
-    cursor->removeSelectedText();
 }
 
 
 void MainWindow::changeCursorPositional() {
-    EditorODF::instance()->getCursor()->setPosition(ui->ODF_export->textCursor().position());
+
 }
 
 void MainWindow::addVariable()

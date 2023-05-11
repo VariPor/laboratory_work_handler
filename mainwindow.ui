@@ -46,7 +46,7 @@
         </sizepolicy>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>5</number>
        </property>
        <widget class="QWidget" name="variable_tab">
         <attribute name="title">
@@ -217,6 +217,9 @@
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
           <layout class="QVBoxLayout" name="verticalLayout">
+           <property name="sizeConstraint">
+            <enum>QLayout::SetMinimumSize</enum>
+           </property>
            <item>
             <widget class="QPushButton" name="delete_block">
              <property name="text">
@@ -254,7 +257,21 @@
           </layout>
          </item>
          <item>
-          <widget class="QTextEdit" name="ODF_export"/>
+          <layout class="QVBoxLayout" name="ODFEditor">
+           <item>
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
          </item>
         </layout>
        </widget>
@@ -329,10 +346,10 @@
     <property name="title">
      <string>ODF export</string>
     </property>
-    <addaction name="actiontext_block"/>
-    <addaction name="actiontable_block"/>
-    <addaction name="actionplot_block"/>
-    <addaction name="actionexport"/>
+    <addaction name="actionAdd_text_block"/>
+    <addaction name="actionAdd_table_block"/>
+    <addaction name="actionAdd_plot_block"/>
+    <addaction name="actionExport"/>
    </widget>
    <addaction name="menuMenu"/>
    <addaction name="menuGraph"/>
@@ -382,22 +399,22 @@
     <string>Ctrl+S</string>
    </property>
   </action>
-  <action name="actiontext_block">
+  <action name="actionAdd_text_block">
    <property name="text">
     <string>Add text block</string>
    </property>
   </action>
-  <action name="actiontable_block">
+  <action name="actionAdd_table_block">
    <property name="text">
     <string>Add table block</string>
    </property>
   </action>
-  <action name="actionplot_block">
+  <action name="actionAdd_plot_block">
    <property name="text">
     <string>Add plot block</string>
    </property>
   </action>
-  <action name="actionexport">
+  <action name="actionExport">
    <property name="text">
     <string>Save ODF </string>
    </property>

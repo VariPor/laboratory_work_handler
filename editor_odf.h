@@ -8,9 +8,9 @@
 
 class EditorODF
 {
-    QList<Block*> blocks;
-    QTextDocument* document;
-    QTextCursor cursor;
+
+    //QTextDocument* document;
+    //QTextCursor cursor;
 
 public:
     void removeBlock();
@@ -20,14 +20,18 @@ public:
     void exportBlocks();
     void moveBlockUp();
     void moveBlockDown();
-    void createDocument(QObject* parent);
+    TextBlock* textBlock() { return blocks.back()->textBlock(); }
+    TableBlock* tableBlock() { return blocks.back()->tableBlock(); }
+    PlotBlock* plotBlock() { return blocks.back()->plotBlock(); }
 
-    QTextDocument* getDocument() { return document; }
-    QTextCursor* getCursor() { return &cursor; }
+    //QTextDocument* getDocument() { return document; }
+    //QTextCursor* getCursor() { return &cursor; }
 
     static EditorODF* instance();
+    QList<Block*> blocks;
 
-    EditorODF() {  }
+
+    EditorODF() { }
 
 };
 
