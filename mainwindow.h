@@ -31,6 +31,7 @@ private slots:
     void changeCursorPositional();
     void addVariable();
     void addRow();
+    void callParser();
 
 private:
     Ui::MainWindow *ui;

@@ -1,5 +1,4 @@
 #include "editor_odf.h"
-#include "qcpdocumentobject.h"
 #include "qcustomplot.h"
 
 Q_GLOBAL_STATIC(EditorODF, GlobalEditor)

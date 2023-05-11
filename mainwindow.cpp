@@ -13,7 +13,7 @@
 #include "plots/plot_2d.h"
 #include "plots/plot_choise.h"
 #include "editor_odf.h"
-#include "qcpdocumentobject.h"
+#include "parser.cpp"
 #include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
 
-    Manager::instance()->addCalculated(VariableData{"meh", "brah", {1,2,3,4,4}, {1, 1, 2, 3}});
+    Manager::instance()->addCalculated(VariableData{"meh", "brah", {1,2,3,4,4}, {1, 1, 2, 3, 4}});
     Manager::instance()->addVariable(VariableData{"foo", "ohh", {1,2,3,4,5}});
 
     ui->variable_tableView->setModel(new MeasurementModel);
@@ -63,6 +63,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->delete_block, SIGNAL(clicked()), this, SLOT(deleteBlock()));
     connect(ui->pushButtonColumnAdd, SIGNAL(clicked()), this, SLOT(addVariable()));
     connect(ui->pushButtonRowAdd, SIGNAL(clicked()), this, SLOT(addRow()));
+    connect(ui->calc, SIGNAL(clicked()), this, SLOT(callParser()));
 }
 
 
@@ -88,6 +89,8 @@ void MainWindow::openFile()
                                                     tr("Open CSV (*.csv);;Open json (*.json)"));
 
     if (fileName.isEmpty()) return;
+
+    if (fileName.isEmpty()) return;
     if (fileName.endsWith(".csv")) {
         Manager::instance()->clear();
         StrategyIO_CSV loader;
@@ -110,6 +113,8 @@ void MainWindow::saveFile()
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                     "data.csv",
                                                     tr("Open CSV (*.csv);;Open json (*.json)"));
+    if (fileName.isEmpty()) return;
+
     if (fileName.endsWith(".csv")) {
         StrategyIO_CSV saver;
         saver.save(fileName);
@@ -120,9 +125,11 @@ void MainWindow::saveFile()
     }
 }
 
-void MainWindow::openDirectory(){
+void MainWindow::openDirectory() {
     auto dirName = QFileDialog::getExistingDirectory(this, tr("Open directory"), "",
                                                      QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    if (dirName.isEmpty()) return;
+
     QString file_csv = dirName + QDir::separator() + "data.csv";
     QString file_json = dirName + QDir::separator() + "data.json";
 
@@ -145,6 +152,8 @@ void MainWindow::saveDirectory()
 {
     auto dirName = QFileDialog::getExistingDirectory(this, tr("Open directory"), "",
                                                      QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    if (dirName.isEmpty()) return;
+
     QString file_csv = dirName + QDir::separator() + "data.csv";
     QString file_json = dirName + QDir::separator() + "data.json";
 
@@ -171,7 +180,7 @@ void MainWindow::addPlot() {
 }
 
 void MainWindow::exportODF() {
-    QString fileName = QFileDialog::getSaveFileName(nullptr,QObject::tr("Save File"),"output_file.odf",QObject::tr("Open Document ('''.odf)"));
+    QString fileName = QFileDialog::getSaveFileName(nullptr,QObject::tr("Save File"), "output_file.odf", QObject::tr("Open Document ('''.odf)"));
     QTextDocumentWriter fileWriter (fileName);
     fileWriter.setFormat("odf");
 
@@ -181,12 +190,12 @@ void MainWindow::exportODF() {
 
     for (auto* block : EditorODF::instance()->blocks) {
         if (block->plotBlock() != nullptr) {
-            QImage chartImage = block->plotBlock()->pixmap.toImage();
+            QImage chartImage = block->plotBlock()->pixmap->toImage();
             document->addResource(QTextDocument::ImageResource, QUrl(""), chartImage);
-            // Prepare to insert into the document
+
             QTextImageFormat imageFormat;
             imageFormat.setQuality(100);
-            // Insert into the document
+
             cursor.insertImage(imageFormat);
             cursor.insertBlock();
         }
@@ -207,6 +216,7 @@ void MainWindow::exportODF() {
                     cursor.insertText(table->item(i, j)->text());
                     cursor.movePosition(QTextCursor::NextCell);
                 }
+            cursor.insertBlock();
         }
     }
 
@@ -237,4 +247,10 @@ void MainWindow::addRow()
 {
     auto m = Manager::instance();
     static_cast<MeasurementModel*>(ui->variable_tableView->model())->insertRow(m->getMeasurementsCount());
+}
+
+
+void MainWindow::callParser() {
+    QString str = ui->lineEdit->text();
+    parser::calculate(parser::parse(str.toStdString()));
 }

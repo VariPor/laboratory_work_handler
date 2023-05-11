@@ -14,17 +14,18 @@ public:
    void removeMeasurementRow(int);
    void clearCalculated();
    void addCalculated(const VariableData&);
-   int getVariablesCount();
-   int getVarAndCalcCount();
-   int getMeasurementsCount();
+   int getVariablesCount() const;
+   int getVarAndCalcCount() const;
+   int getMeasurementsCount() const;
    VariableData* getVariable(const QString& shortName);
    VariableData* getVariable(int index);
    VariableData* getCalculated(const QString& shortName);
    VariableData* getCalculated(int index);
    void clear();
-   int getCalculatedCount();
+   int getCalculatedCount() const;
    VariableData* getVarOrCalc(int index);
    VariableData* getVarOrCalc(const QString& name);
+   bool isInManager(QString name);
 
    static Manager* instance();
 

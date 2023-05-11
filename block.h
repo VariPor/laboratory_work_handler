@@ -30,7 +30,7 @@ class TextBlock : public Block
   public:
    TextBlock() : Block(), editor(new QLineEdit) {}
     ~TextBlock() {}
-   virtual void saveToDocument() override {}
+   virtual void saveToDocument() override { }
    virtual TextBlock* textBlock() override { return this; }
    virtual TableBlock* tableBlock() override { return nullptr; }
    virtual PlotBlock* plotBlock() override { return nullptr; }
@@ -41,14 +41,14 @@ class TextBlock : public Block
 class PlotBlock : public Block
 {
   public:
-    PlotBlock(QPixmap pixmap) : pixmap{ pixmap }, label { new QLabel } {}
+    PlotBlock(QPixmap pixmap) : pixmap{ new QPixmap (pixmap) }, label { new QLabel } {}
     ~PlotBlock() {}
     virtual void saveToDocument() override {}
     virtual TextBlock* textBlock() override { return nullptr; }
     virtual TableBlock* tableBlock() override { return nullptr; }
     virtual PlotBlock* plotBlock() override { return this; }
     QLabel* label;
-    QPixmap pixmap;
+    QPixmap* pixmap;
 };
 
 class TableBlock : public Block

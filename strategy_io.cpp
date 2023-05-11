@@ -111,14 +111,10 @@ void StrategyIO_JSON::load(const QString& input)
 
        variable.fullNaming = temp["names"].toObject()["fullNaming"].toString();
 
-       variable.instrumentError.type = VariableData::Instrument::error_types.key(temp["instrumentErrors"].toObject()["type"].toString());
-       if (variable.instrumentError.type != VariableData::Instrument::ErrorType::calculated)
-           variable.instrumentError.value = temp["instrumentErrors"].toObject()["value"].toDouble();
-       else {
-           auto list = temp["instrumentErrors"].toObject()["value"].toArray();
-           for (int i = 0; i < list.size(); ++i)
-               variable.calcErrors.push_back(list[i].toDouble());
-       }
+       variable.instrumentError.type = VariableData::Instrument::error_types.key((temp["instrumentErrors"].toObject()["type"]).toString());
+
+       variable.instrumentError.value = temp["instrumentError"].toObject()["value"].toDouble();
+
 
        variable.visual.visible = temp["visualOptions"].toObject()["visible"].toBool();
        variable.visual.width = temp["visualOptions"].toObject()["width"].toInt();

@@ -18,7 +18,7 @@ void Manager::recalculationMeasurementCount() {
             measurement_count = calculated.at(i).measurements.size();
 }
 
-int Manager::getCalculatedCount() { return calculated.size(); }
+int Manager::getCalculatedCount() const { return calculated.size(); }
 
 void Manager::deleteVariable(int index)
 {
@@ -64,9 +64,9 @@ Manager *Manager::instance()
     return GlobalManager;
 }
 
-int Manager::getVariablesCount() { return variables.size(); }
+int Manager::getVariablesCount() const { return variables.size(); }
 
-int Manager::getMeasurementsCount() { return measurement_count; }
+int Manager::getMeasurementsCount() const { return measurement_count; }
 
 VariableData* Manager::getVariable(const QString& name)
 {
@@ -101,7 +101,7 @@ VariableData* Manager::getCalculated(int index)
 }
 
 
-int Manager::getVarAndCalcCount() {
+int Manager::getVarAndCalcCount() const {
     return this->getCalculatedCount() + this->getVariablesCount();
 }
 
@@ -131,6 +131,14 @@ void Manager::clear() {
     variables.clear();
     calculated.clear();
     measurement_count = 0;
+}
+
+bool Manager::isInManager(QString name) {
+    for (auto var : variables)
+        if (var.shortNaming == name) return true;
+    for (auto var : calculated)
+        if (var.shortNaming == name) return true;
+    return false;
 }
 
 

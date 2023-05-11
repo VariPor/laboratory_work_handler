@@ -25,14 +25,13 @@ SOURCES += \
     manager.cpp \
     models/measurement_model.cpp \
     models/naming_model.cpp \
+    parser.cpp \
     plots/plot_2d.cpp \
     plots/plot_choise.cpp \
     plots/plot_hist.cpp \
     plots/plot_scatter.cpp \
-    qcpdocumentobject.cpp \
     qcustomplot.cpp \
     strategy_io.cpp \
-    text_block.cpp \
     variable_data.cpp \
     models/visual_model.cpp
 
@@ -51,7 +50,6 @@ HEADERS += \
     plots/plot_choise.h \
     plots/plot_hist.h \
     plots/plot_scatter.h \
-    qcpdocumentobject.h \
     qcustomplot.h \
     strategy_io.h \
     variable_data.h \

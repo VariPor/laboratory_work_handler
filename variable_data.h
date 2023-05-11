@@ -43,7 +43,7 @@ public:
         static constexpr int FILEDS = 5;
     } visual;
 
-    double error(int index = 0);
+    double error(int index = 0) const;
     int getMeasurementsCount();
     VariableData(QString fullNaming, QString shortNaming = "",
                  QList<double> meas = QList<double> {}, QList<double> calcErrors = QList<double> {});
