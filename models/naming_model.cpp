@@ -5,7 +5,7 @@
 int NamingModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return Manager::instance()->getVarAndCalcCount();
+    return Manager::instance()->getVariableAndCalculatedCount();
 }
 
 int NamingModel::columnCount(const QModelIndex &parent) const
@@ -18,7 +18,7 @@ QVariant NamingModel::data(const QModelIndex &index, int role) const
 {
     int variable = index.row();
     int option  = index.column();
-    auto* name = Manager::instance()->getVarOrCalc(variable);
+    auto* name = Manager::instance()->getVariableOrCalculated(variable);
 
     switch (role)
     {
@@ -38,7 +38,7 @@ bool NamingModel::setData(const QModelIndex &index, const QVariant &value, int r
 {
     int variable = index.row();
     int option  = index.column();
-    auto* name = Manager::instance()->getVarOrCalc(variable);
+    auto* name = Manager::instance()->getVariableOrCalculated(variable);
 
     if (role == Qt::EditRole)
     {
@@ -65,7 +65,7 @@ QVariant NamingModel::headerData( int section, Qt::Orientation orientation, int 
 
     if( orientation == Qt::Vertical )
     {
-        return QString(Manager::instance()->getVarOrCalc(section)->shortNaming);
+        return QString(Manager::instance()->getVariableOrCalculated(section)->shortNaming);
     }
 
     switch( section )

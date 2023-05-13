@@ -7,7 +7,7 @@ void PlotScatter::draw(QCustomPlot *plot)
 
     plot->clearGraphs();
     plot->legend->clear();
-    for (int i = 0; i < m->getVariablesCount(); ++i)
+    for (int i = 0; i < m->getVariableCount(); ++i)
     {
         auto* v = m->getVariable(i);
         if (!v->visual.visible) continue;
@@ -26,7 +26,7 @@ void PlotScatter::draw(QCustomPlot *plot)
 
         QVector<double> x,y,e;
 
-        for (int j = 0; j < v->getMeasurementsCount(); ++j)
+        for (int j = 0; j < v->getMeasurementCount(); ++j)
         {
             x.append(j);
             y.append(v->measurements[j]);

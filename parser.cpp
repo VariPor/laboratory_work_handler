@@ -34,7 +34,7 @@ class Variable {
   void setValue(vector<double> n) { value = n; }
   Variable(const VariableData& VD) : name{ VD.shortNaming.toStdString() } {
       value = VD.measurements.toVector().toStdVector();
-      err = VD.error();
+      err = VD.getError();
   }
 
  private:
@@ -62,7 +62,7 @@ void remove(std::vector<T>& v, size_t index) {
 }*/
 
 Variable VariableGet(string s) {
-  VariableData* var = Manager::instance()->getVarOrCalc(QString::fromStdString(s));
+  VariableData* var = Manager::instance()->getVariableOrCalculated(QString::fromStdString(s));
   return Variable(*var);
 }
 

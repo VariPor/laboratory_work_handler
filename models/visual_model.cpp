@@ -5,7 +5,7 @@
 int VisualModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return Manager::instance()->getVarAndCalcCount();
+    return Manager::instance()->getVariableAndCalculatedCount();
 }
 
 int VisualModel::columnCount(const QModelIndex &parent) const
@@ -18,7 +18,7 @@ QVariant VisualModel::data(const QModelIndex &index, int role) const
 {
     int variable = index.row();
     int option  = index.column();
-    auto& visual = Manager::instance()->getVarOrCalc(variable)->visual;
+    auto& visual = Manager::instance()->getVariableOrCalculated(variable)->visual;
 
     switch (role)
     {
@@ -59,7 +59,7 @@ bool VisualModel::setData(const QModelIndex &index, const QVariant &value, int r
     int variable = index.row();
     int option  = index.column();
     bool ok = true;
-    auto& visual = Manager::instance()->getVarOrCalc(variable)->visual;
+    auto& visual = Manager::instance()->getVariableOrCalculated(variable)->visual;
 
     if (role == Qt::CheckStateRole)
     {
@@ -109,7 +109,7 @@ QVariant VisualModel::headerData (int section, Qt::Orientation orientation, int 
 {
     if (role != Qt::DisplayRole) return QVariant();
 
-    if (orientation == Qt::Vertical) return QString(Manager::instance()->getVarOrCalc(section)->shortNaming);
+    if (orientation == Qt::Vertical) return QString(Manager::instance()->getVariableOrCalculated(section)->shortNaming);
 
     switch (section)
     {

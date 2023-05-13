@@ -60,7 +60,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionAdd_table_block, SIGNAL(triggered()), this, SLOT(addTable()));
     connect(ui->actionAdd_plot_block, SIGNAL(triggered()), this, SLOT(addPlot()));
     connect(ui->actionExport, SIGNAL(triggered()), this, SLOT(exportODF()));
-    connect(ui->delete_block, SIGNAL(clicked()), this, SLOT(deleteBlock()));
     connect(ui->pushButtonColumnAdd, SIGNAL(clicked()), this, SLOT(addVariable()));
     connect(ui->pushButtonRowAdd, SIGNAL(clicked()), this, SLOT(addRow()));
     connect(ui->calc, SIGNAL(clicked()), this, SLOT(callParser()));
@@ -165,18 +164,18 @@ void MainWindow::saveDirectory()
 }
 
 void MainWindow::addText() {
-    EditorODF::instance()->addTextBlock();
-    ui->ODFEditor->addWidget(EditorODF::instance()->textBlock()->editor);
+    EditorODF::instance()->addTextBlock(ui->ODFEditor, EditorODF::instance()->blocks.size());
+    connect(EditorODF::instance()->blocks.back()->returnButton(), SIGNAL(clicked()), this, SLOT(deleteBlock()));
 }
 
 void MainWindow::addTable() {
-    EditorODF::instance()->addTableBlock();
-    ui->ODFEditor->addWidget(EditorODF::instance()->tableBlock()->table);
+    EditorODF::instance()->addTableBlock(ui->ODFEditor, EditorODF::instance()->blocks.size());
+    connect(EditorODF::instance()->blocks.back()->returnButton(), SIGNAL(clicked()), this, SLOT(deleteBlock()));
 }
 
 void MainWindow::addPlot() {
-    EditorODF::instance()->addPlotBlock(ui->plot);
-    ui->ODFEditor->addWidget(EditorODF::instance()->plotBlock()->label);
+    EditorODF::instance()->addPlotBlock(ui->plot, ui->ODFEditor, EditorODF::instance()->blocks.size());
+    connect(EditorODF::instance()->blocks.back()->returnButton(), SIGNAL(clicked()), this, SLOT(deleteBlock()));
 }
 
 void MainWindow::exportODF() {
@@ -189,35 +188,7 @@ void MainWindow::exportODF() {
     QTextCursor cursor(document);
 
     for (auto* block : EditorODF::instance()->blocks) {
-        if (block->plotBlock() != nullptr) {
-            QImage chartImage = block->plotBlock()->pixmap->toImage();
-            document->addResource(QTextDocument::ImageResource, QUrl(""), chartImage);
-
-            QTextImageFormat imageFormat;
-            imageFormat.setQuality(100);
-
-            cursor.insertImage(imageFormat);
-            cursor.insertBlock();
-        }
-        if (block->textBlock() != nullptr) {
-            cursor.insertText(block->textBlock()->editor->text());
-            cursor.insertBlock();
-        }
-        if (block->tableBlock() != nullptr) {
-            QTableWidget* table = block->tableBlock()->table;
-            cursor.insertTable(table->rowCount() + 1, table->columnCount());
-            for (int i = 0; i < table->columnCount(); ++i) {
-                cursor.insertText(table->horizontalHeaderItem(i)->text());
-                cursor.movePosition(QTextCursor::NextCell);
-            }
-
-            for (int i = 0; i < table->rowCount(); ++i)
-                for (int j = 0; j < table->columnCount(); ++j) {
-                    cursor.insertText(table->item(i, j)->text());
-                    cursor.movePosition(QTextCursor::NextCell);
-                }
-            cursor.insertBlock();
-        }
+        block->saveToDocument(&cursor);
     }
 
     fileWriter.setFormat("odf");
@@ -226,17 +197,36 @@ void MainWindow::exportODF() {
 
 void MainWindow::deleteBlock() {
 
+    QObject *senderObj = sender(); // This will give Sender object
+    QString senderObjName = senderObj->objectName();
+
+    for (int i = 0; i < EditorODF::instance()->blocks.size(); ++i) {
+        QString temp_name = EditorODF::instance()->blocks.at(i)->returnButton()->objectName();
+        if (senderObjName != temp_name) continue;
+        EditorODF::instance()->blocks[i]->removeFromBlockHolder(ui->ODFEditor);
+        delete EditorODF::instance()->blocks[i];
+        EditorODF::instance()->blocks.removeAt(i);
+    }
 }
 
 
-void MainWindow::changeCursorPositional() {
+void MainWindow::moveUpBlock() {
+    auto blocks = EditorODF::instance()->blocks;
+    if (blocks.size() < 2) return;
+    blocks.back()->removeFromBlockHolder(ui->ODFEditor);
+    blocks.swap(EditorODF::instance()->blocks.size() - 1, EditorODF::instance()->blocks.size() - 2);
+    ui->ODFEditor->insertWidget(ui->ODFEditor->count() - 1, blocks.at(blocks.size() - 2)->returnWidget());
+    //blocks.at(blocks.size() - 2)->returnWidget()->show();
+}
+
+void MainWindow::moveDownBlock() {
 
 }
 
 void MainWindow::addVariable()
 {
     auto m = Manager::instance();
-    m->addVariable(VariableData{m->getMeasurementsCount()});
+    m->addVariable(VariableData{m->getMeasurementCount()});
     static_cast<MeasurementModel*>(ui->variable_tableView->model())->insertColumn(m->getCalculatedCount());
     static_cast<VisualModel*>(ui->visual_tableView->model())->insertRow(m->getCalculatedCount());
     static_cast<InstrumentModel*>(ui->instruments_tableView->model())->insertRow(m->getCalculatedCount());
@@ -246,7 +236,7 @@ void MainWindow::addVariable()
 void MainWindow::addRow()
 {
     auto m = Manager::instance();
-    static_cast<MeasurementModel*>(ui->variable_tableView->model())->insertRow(m->getMeasurementsCount());
+    static_cast<MeasurementModel*>(ui->variable_tableView->model())->insertRow(m->getMeasurementCount());
 }
 
 

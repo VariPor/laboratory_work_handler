@@ -12,7 +12,7 @@ void Plot2d::draw(QCustomPlot *plot)
     plot->legend->setVisible(false);
     if (!yv)
     {
-        if (m->getVariablesCount() > 0)
+        if (m->getVariableCount() > 0)
         {
             xv = m->getVariable(0);
             yv = m->getVariable(0);
@@ -31,7 +31,7 @@ void Plot2d::draw(QCustomPlot *plot)
     errorBarsY->setDataPlottable(graph);
 
     QVector<double> x,y,ex,ey;
-    for (int j = 0; j < xv->getMeasurementsCount(); ++j)
+    for (int j = 0; j < xv->getMeasurementCount(); ++j)
     {
         x.append(xv->measurements[j]);
         y.append(yv->measurements[j]);
@@ -78,7 +78,7 @@ Plot2dOptionsDialog::Plot2dOptionsDialog(QString xlable, QString ylable, QString
     this->xLable.clear();
 
     auto* m = Manager::instance();
-    for (int i = 0; i < m->getVariablesCount(); ++i)
+    for (int i = 0; i < m->getVariableCount(); ++i)
     {
         this->xLable.addItem(m->getVariable(i)->fullNaming);
         if (m->getVariable(i)->shortNaming == xlable)
@@ -89,7 +89,7 @@ Plot2dOptionsDialog::Plot2dOptionsDialog(QString xlable, QString ylable, QString
     QLabel *yLableLable = new QLabel(tr("Y axis lable:"));
     mainlayout->addWidget(yLableLable);
     this->yLable.clear();
-    for (int i = 0; i < Manager::instance()->getVariablesCount(); ++i)
+    for (int i = 0; i < Manager::instance()->getVariableCount(); ++i)
     {
         this->yLable.addItem(Manager::instance()->getVariable(i)->fullNaming);
         if (Manager::instance()->getVariable(i)->shortNaming == ylable)

@@ -28,7 +28,8 @@ private slots:
     void addPlot();
     void exportODF();
     void deleteBlock();
-    void changeCursorPositional();
+    void moveUpBlock();
+    void moveDownBlock();
     void addVariable();
     void addRow();
     void callParser();
