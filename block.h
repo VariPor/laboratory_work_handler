@@ -17,14 +17,19 @@ class Block
 {
   protected:
     QPushButton* deleteButton;
+    QPushButton* upButton;
+    QPushButton* downButton;
     QHBoxLayout* layout;
   public:
     Block(int number);
     virtual ~Block();
     virtual void saveToDocument(QTextCursor* cursor) = 0;
     virtual void removeFromBlockHolder(QVBoxLayout* blockHolder) = 0;
+    virtual void addToBlockHolder(QVBoxLayout* blockHolder, int position) = 0;
     virtual QWidget* returnWidget() = 0;
-    QPushButton* returnButton() { return deleteButton; }
+    QPushButton* returnDeleteButton() { return deleteButton; }
+    QPushButton* returnUpButton() { return upButton; }
+    QPushButton* returnDownButton() { return downButton; }
 };
 
 class TextBlock : public Block
@@ -35,6 +40,7 @@ class TextBlock : public Block
     ~TextBlock();
    virtual void saveToDocument(QTextCursor* cursor) override;
    virtual void removeFromBlockHolder(QVBoxLayout* blockHolder) override;
+   virtual void addToBlockHolder(QVBoxLayout* blockHolder, int position) override;
    virtual QWidget* returnWidget() override { editor; }
 
 };
@@ -49,6 +55,7 @@ class PlotBlock : public Block
     ~PlotBlock();
     virtual void saveToDocument(QTextCursor* cursor) override;
     virtual void removeFromBlockHolder(QVBoxLayout* blockHolder) override;
+    virtual void addToBlockHolder(QVBoxLayout* blockHolder, int position) override;
     virtual QWidget* returnWidget() override { return label; }
 };
 
@@ -60,6 +67,7 @@ class TableBlock : public Block
     ~TableBlock();
     virtual void saveToDocument(QTextCursor* cursor) override;
     virtual void removeFromBlockHolder(QVBoxLayout* blockHolder) override;
+    virtual void addToBlockHolder(QVBoxLayout* blockHolder, int position) override;
     virtual QWidget* returnWidget() override { return table; }
 };
 

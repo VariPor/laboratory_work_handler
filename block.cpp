@@ -1,16 +1,31 @@
 #include "block.h"
 
-Block::Block(int number) : deleteButton(new QPushButton), layout(new QHBoxLayout) {
+Block::Block(int number) : deleteButton(new QPushButton), upButton(new QPushButton), downButton(new QPushButton), layout(new QHBoxLayout) {
     deleteButton->setObjectName("delete" + QString::number(number));
+    upButton->setObjectName("up" + QString::number(number));
+    downButton->setObjectName("down" + QString::number(number));
     layout->addWidget(deleteButton);
+    layout->addWidget(upButton);
+    layout->addWidget(downButton);
     deleteButton->setText("delete");
+    upButton->setText("up");
+    downButton->setText("down");
     deleteButton->show();
+    upButton->show();
+    downButton->show();
 }
 
 Block::~Block() {
     layout->removeWidget(deleteButton);
+    layout->removeWidget(downButton);
+    layout->removeWidget(upButton);
+    layout->disconnect();
     deleteButton->hide();
+    upButton->hide();
+    upButton->hide();
     if (deleteButton != nullptr) delete deleteButton;
+    if (upButton != nullptr) delete upButton;
+    if (downButton != nullptr) delete downButton;
     if (layout != nullptr) delete layout;
 }
 
@@ -26,13 +41,23 @@ void TextBlock::saveToDocument(QTextCursor* cursor) {
 }
 
 void TextBlock::removeFromBlockHolder(QVBoxLayout* blockHolder) {
-    layout->disconnect();
     blockHolder->removeItem(layout);
-    layout->removeWidget(editor);
     editor->hide();
+    deleteButton->hide();
+    upButton->hide();
+    downButton->hide();
+}
+
+void TextBlock::addToBlockHolder(QVBoxLayout* blockHolder, int position) {
+    blockHolder->insertItem(position, layout);
+    editor->show();
+    deleteButton->show();
+    upButton->show();
+    downButton->show();
 }
 
 TextBlock::~TextBlock() {
+    layout->removeWidget(editor);
     if (editor != nullptr) delete editor;
 }
 
@@ -74,14 +99,24 @@ void TableBlock::saveToDocument(QTextCursor* cursor) {
 }
 
 void TableBlock::removeFromBlockHolder(QVBoxLayout* blockHolder) {
-    layout->disconnect();
     blockHolder->removeItem(layout);
-    layout->removeWidget(table);
     table->hide();
+    deleteButton->hide();
+    upButton->hide();
+    downButton->hide();
+}
+
+void TableBlock::addToBlockHolder(QVBoxLayout* blockHolder, int position) {
+    blockHolder->insertItem(position, layout);
+    table->show();
+    deleteButton->show();
+    upButton->show();
+    downButton->show();
 }
 
 TableBlock::~TableBlock() {
-    if (table != nullptr) delete table;
+    layout->removeWidget(table);
+    if (table != nullptr) delete table;       
 }
 
 PlotBlock::PlotBlock(QPixmap pixmap, QVBoxLayout* blockHolder, int number) : Block(number), pixmap{ new QPixmap (pixmap) }, label { new QLabel } {
@@ -104,13 +139,23 @@ void PlotBlock::saveToDocument(QTextCursor* cursor) {
 }
 
 void PlotBlock::removeFromBlockHolder(QVBoxLayout* blockHolder) {
-    layout->disconnect();
     blockHolder->removeItem(layout);
-    layout->removeWidget(label);
     label->hide();
+    deleteButton->hide();
+    upButton->hide();
+    downButton->hide();
+}
+
+void PlotBlock::addToBlockHolder(QVBoxLayout* blockHolder, int position) {
+    blockHolder->insertItem(position, layout);
+    label->show();
+    deleteButton->show();
+    upButton->show();
+    downButton->show();
 }
 
 PlotBlock::~PlotBlock() {
+    layout->removeWidget(label);
     if (pixmap != nullptr) delete pixmap;
     if (label != nullptr) delete label;
 }
