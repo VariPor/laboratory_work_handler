@@ -13,7 +13,7 @@
 #include "plots/plot_2d.h"
 #include "plots/plot_choise.h"
 #include "editor_odf.h"
-#include "parser.cpp"
+#include "parser.h"
 #include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent)
