@@ -33,7 +33,8 @@ class Variable {
   void setName(string s) { name = s; }
   void setValue(vector<double> n) { value = n; }
   Variable(const VariableData& VD) : name{ VD.shortNaming.toStdString() } {
-      value = VD.measurements.toVector().toStdVector();
+      for (auto&e: VD.measurements) value.push_back(e);
+      //value = VD.measurements.toVector().toStdVector();
       err = VD.getError();
   }
 
@@ -107,7 +108,9 @@ pair<vector<string>, pair<bool, string>> parse(string s) {
 
   if (!eq) {
       vector<double> k = {0};
-      QVector<double> v_d = QVector<double>::fromStdVector(k);
+      QVector<double> v_d;
+      for (auto&e: k) v_d.push_back(e);
+      //QVector<double> v_d = QVector<double>::fromStdVector(k);
       QList<double> l_d = QList<double>::fromVector(v_d);
       Manager::instance()->addVariable(VariableData (QString::fromStdString(lvalue), QString::fromStdString(lvalue), l_d));
       vector<string> str {};
@@ -116,7 +119,9 @@ pair<vector<string>, pair<bool, string>> parse(string s) {
   else {
       if (isUnique(QString::fromStdString(lvalue))) {
           vector<double> k = {0};
-          QVector<double> v_d = QVector<double>::fromStdVector(k);
+          QVector<double> v_d;
+          for (auto&e: k) v_d.push_back(e);
+          //QVector<double> v_d = QVector<double>::fromStdVector(k);
           QList<double> l_d = QList<double>::fromVector(v_d);
           Manager::instance()->addCalculated(VariableData (QString::fromStdString(lvalue), QString::fromStdString(lvalue), l_d));
         }
@@ -475,7 +480,9 @@ void calculate(pair<vector<string>, pair<bool, string>> Pair_d) {
     }
   }
 
-  QList<double> temp_list = QList<double>::fromVector(QVector<double>::fromStdVector(elements[0].getValue()));
+  //QList<double> temp_list = QList<double>::fromVector(QVector<double>::fromStdVector(elements[0].getValue()));
+  QList<double> temp_list;
+  for (auto&e: elements[0].getValue()) temp_list.append(e);
   Manager::instance()->getCalculated(QString::fromStdString(name))->measurements = temp_list;
   }
 }
