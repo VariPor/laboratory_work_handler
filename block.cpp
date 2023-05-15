@@ -128,14 +128,20 @@ PlotBlock::PlotBlock(QPixmap pixmap, QVBoxLayout* blockHolder, int number) : Blo
 }
 
 void PlotBlock::saveToDocument(QTextCursor* cursor) {
+    static unsigned int imageCounter = 0;
+    QString name = QString("mydata://image%1.png").arg(imageCounter);
+
     QImage chartImage = image;
-    cursor->document()->addResource(QTextDocument::ImageResource, QUrl(""), chartImage);
+    cursor->document()->addResource(QTextDocument::ImageResource, QUrl(name), chartImage);
 
     QTextImageFormat imageFormat;
     imageFormat.setQuality(100);
+    imageFormat.setName(name);
 
     cursor->insertImage(imageFormat);
     cursor->insertBlock();
+
+    imageCounter++;
 }
 
 void PlotBlock::removeFromBlockHolder(QVBoxLayout* blockHolder) {

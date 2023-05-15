@@ -41,8 +41,7 @@ class TextBlock : public Block
    virtual void saveToDocument(QTextCursor* cursor) override;
    virtual void removeFromBlockHolder(QVBoxLayout* blockHolder) override;
    virtual void addToBlockHolder(QVBoxLayout* blockHolder, int position) override;
-   virtual QWidget* returnWidget() override { editor; }
-
+   virtual QWidget* returnWidget() override { return editor; }
 };
 
 class PlotBlock : public Block

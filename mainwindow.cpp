@@ -164,21 +164,21 @@ void MainWindow::saveDirectory()
 }
 
 void MainWindow::addText() {
-    EditorODF::instance()->addTextBlock(ui->ODFEditor, EditorODF::instance()->blocks.size());
+    EditorODF::instance()->addTextBlock(ui->blockHolder, EditorODF::instance()->blocks.size());
     connect(EditorODF::instance()->blocks.back()->returnDeleteButton(), SIGNAL(clicked()), this, SLOT(deleteBlock()));
     connect(EditorODF::instance()->blocks.back()->returnUpButton(), SIGNAL(clicked()), this, SLOT(moveUpBlock()));
     connect(EditorODF::instance()->blocks.back()->returnDownButton(), SIGNAL(clicked()), this, SLOT(moveDownBlock()));
 }
 
 void MainWindow::addTable() {
-    EditorODF::instance()->addTableBlock(ui->ODFEditor, EditorODF::instance()->blocks.size());
+    EditorODF::instance()->addTableBlock(ui->blockHolder, EditorODF::instance()->blocks.size());
     connect(EditorODF::instance()->blocks.back()->returnDeleteButton(), SIGNAL(clicked()), this, SLOT(deleteBlock()));
     connect(EditorODF::instance()->blocks.back()->returnUpButton(), SIGNAL(clicked()), this, SLOT(moveUpBlock()));
     connect(EditorODF::instance()->blocks.back()->returnDownButton(), SIGNAL(clicked()), this, SLOT(moveDownBlock()));
 }
 
 void MainWindow::addPlot() {
-    EditorODF::instance()->addPlotBlock(ui->plot, ui->ODFEditor, EditorODF::instance()->blocks.size());
+    EditorODF::instance()->addPlotBlock(ui->plot, ui->blockHolder, EditorODF::instance()->blocks.size());
     connect(EditorODF::instance()->blocks.back()->returnDeleteButton(), SIGNAL(clicked()), this, SLOT(deleteBlock()));
     connect(EditorODF::instance()->blocks.back()->returnUpButton(), SIGNAL(clicked()), this, SLOT(moveUpBlock()));
     connect(EditorODF::instance()->blocks.back()->returnDownButton(), SIGNAL(clicked()), this, SLOT(moveDownBlock()));
@@ -210,7 +210,7 @@ void MainWindow::deleteBlock() {
         QString temp_name = EditorODF::instance()->blocks.at(i)->returnDeleteButton()->objectName();
         if (senderObjName != temp_name) continue;
 
-        EditorODF::instance()->blocks[i]->removeFromBlockHolder(ui->ODFEditor);
+        EditorODF::instance()->blocks[i]->removeFromBlockHolder(ui->blockHolder);
         delete EditorODF::instance()->blocks[i];
         EditorODF::instance()->blocks.removeAt(i);
     }
@@ -226,11 +226,11 @@ void MainWindow::moveUpBlock() {
         QString temp_name = EditorODF::instance()->blocks.at(i)->returnUpButton()->objectName();
         if (senderObjName != temp_name || i == 0) continue;
 
-        EditorODF::instance()->blocks[i]->removeFromBlockHolder(ui->ODFEditor);
-        EditorODF::instance()->blocks[i]->addToBlockHolder(ui->ODFEditor, i - 1);
+        EditorODF::instance()->blocks[i]->removeFromBlockHolder(ui->blockHolder);
+        EditorODF::instance()->blocks[i]->addToBlockHolder(ui->blockHolder, i - 1);
 
-        EditorODF::instance()->blocks[i - 1]->removeFromBlockHolder(ui->ODFEditor);
-        EditorODF::instance()->blocks[i - 1]->addToBlockHolder(ui->ODFEditor, i);
+        EditorODF::instance()->blocks[i - 1]->removeFromBlockHolder(ui->blockHolder);
+        EditorODF::instance()->blocks[i - 1]->addToBlockHolder(ui->blockHolder, i);
 
         EditorODF::instance()->blocks.swap(i, i - 1);
     }
@@ -244,11 +244,11 @@ void MainWindow::moveDownBlock() {
         QString temp_name = EditorODF::instance()->blocks.at(i)->returnDownButton()->objectName();
         if (senderObjName != temp_name || i == EditorODF::instance()->blocks.size() - 1) continue;
 
-        EditorODF::instance()->blocks[i]->removeFromBlockHolder(ui->ODFEditor);
-        EditorODF::instance()->blocks[i]->addToBlockHolder(ui->ODFEditor, i + 1);
+        EditorODF::instance()->blocks[i]->removeFromBlockHolder(ui->blockHolder);
+        EditorODF::instance()->blocks[i]->addToBlockHolder(ui->blockHolder, i + 1);
 
-        EditorODF::instance()->blocks[i + 1]->removeFromBlockHolder(ui->ODFEditor);
-        EditorODF::instance()->blocks[i + 1]->addToBlockHolder(ui->ODFEditor, i);
+        EditorODF::instance()->blocks[i + 1]->removeFromBlockHolder(ui->blockHolder);
+        EditorODF::instance()->blocks[i + 1]->addToBlockHolder(ui->blockHolder, i);
 
         EditorODF::instance()->blocks.swap(i, i + 1);
     }
