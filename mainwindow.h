@@ -36,6 +36,7 @@ private slots:
     void deleteVariable();
     void deleteRow();
 
+
 private:
     Ui::MainWindow *ui;
 };

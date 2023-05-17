@@ -294,6 +294,4 @@ void MainWindow::deleteVariable()
     }
 }
 
-void MainWindow::deleteRow()
-{
-}
+void MainWindow::deleteRow(){}
