@@ -2,19 +2,10 @@
 #include "variable_data.h"
 #include "manager.h"
 
-enum Fields
-{
-    visibleField,
-    widthField,
-    pointTypeField,
-    lineTypeField,
-    colorField
-};
-
 int VisualModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return Manager::instance()->getVarAndCalcCount();
+    return Manager::instance()->getVariableAndCalculatedCount();
 }
 
 int VisualModel::columnCount(const QModelIndex &parent) const
@@ -27,16 +18,16 @@ QVariant VisualModel::data(const QModelIndex &index, int role) const
 {
     int variable = index.row();
     int option  = index.column();
-    auto& visual = Manager::instance()->getVarOrCalc(variable)->visual;
+    auto& visual = Manager::instance()->getVariableOrCalculated(variable)->visual;
 
     switch (role)
     {
         case Qt::BackgroundColorRole:
             switch (option)
             {
-              case Fields::visibleField:
+              case 0:
                 return visual.visible ? Qt::Checked : Qt::Unchecked;
-              case Fields::colorField:
+              case 4:
                 return visual.color;
             }
          break;
@@ -44,7 +35,7 @@ QVariant VisualModel::data(const QModelIndex &index, int role) const
         case Qt::CheckStateRole:
             switch (option)
             {
-              case Fields::visibleField:
+              case 0:
                 return visual.visible ? Qt::Checked : Qt::Unchecked;
             }
             break;
@@ -52,11 +43,11 @@ QVariant VisualModel::data(const QModelIndex &index, int role) const
         case Qt::DisplayRole:
             switch (option)
             {
-              case Fields::widthField:
+              case 1:
                 return visual.width;
-              case Fields::pointTypeField:
+              case 2:
                 return visual.point_types.value(visual.point_type);
-              case Fields::lineTypeField:
+              case 3:
                 return visual.line_types.value(visual.line_type);
             }
     }
@@ -68,13 +59,13 @@ bool VisualModel::setData(const QModelIndex &index, const QVariant &value, int r
     int variable = index.row();
     int option  = index.column();
     bool ok = true;
-    auto& visual = Manager::instance()->getVarOrCalc(variable)->visual;
+    auto& visual = Manager::instance()->getVariableOrCalculated(variable)->visual;
 
     if (role == Qt::CheckStateRole)
     {
         switch (option)
         {
-          case Fields::visibleField:
+          case 0:
             if (!value.canConvert<int>()) return false;
             if (value.toInt() < Qt::Unchecked || value.toInt()> Qt::Checked) return false;
             auto state = static_cast<Qt::CheckState>(value.toInt());
@@ -88,21 +79,21 @@ bool VisualModel::setData(const QModelIndex &index, const QVariant &value, int r
     {
         switch (option)
         {
-          case Fields::widthField:
+          case 1:
             if (!value.toInt(&ok)) return false;
             if (!ok) return false;
             visual.width = value.toInt();
             emit dataChanged(index, index);
             return true;
-          case Fields::pointTypeField:
+          case 2:
             visual.point_type = VariableData::VisualOptions::point_types.key(value.toString());
             emit dataChanged(index, index);
             return true;
-          case Fields::lineTypeField:
+          case 3:
             visual.line_type = VariableData::VisualOptions::line_types.key(value.toString());
             emit dataChanged(index, index);
             return true;
-          case Fields::colorField:
+          case 4:
             visual.color = value.value<QColor>();
             emit dataChanged(index, index);
             return true;
@@ -118,19 +109,19 @@ QVariant VisualModel::headerData (int section, Qt::Orientation orientation, int 
 {
     if (role != Qt::DisplayRole) return QVariant();
 
-    if (orientation == Qt::Vertical) return QString(Manager::instance()->getVarOrCalc(section)->shortNaming);
+    if (orientation == Qt::Vertical) return QString(Manager::instance()->getVariableOrCalculated(section)->shortNaming);
 
     switch (section)
     {
-      case Fields::visibleField:
+      case 0:
         return QString("Visible");
-      case Fields::widthField:
+      case 1:
         return QString("Width");
-      case Fields::pointTypeField:
+      case 2:
         return QString("Point type");
-      case Fields::lineTypeField:
+      case 3:
         return QString("Line type");
-      case Fields::colorField:
+      case 4:
         return QString("Color");
     }
     return QVariant();
@@ -141,14 +132,15 @@ Qt::ItemFlags VisualModel::flags(const QModelIndex &index) const
     int option  = index.column();
     switch (option)
     {
-      case Fields::visibleField:
+      case 0:
         return Qt::ItemIsEnabled | Qt::ItemIsUserCheckable | QAbstractItemModel::flags(index);
-
-      case Fields::widthField: case Fields::lineTypeField:
-      case Fields::colorField:case Fields::pointTypeField:
+      case 1:
+      case 2:
+      case 3:
+      case 4:
         return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
     }
-    return QAbstractItemModel::flags(index);
+    return Qt::ItemIsEditable;
 }
 
 void VisualModel::insertRow(int row)

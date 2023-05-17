@@ -8,28 +8,13 @@
 
 class EditorODF
 {
-
-    //QTextDocument* document;
-    //QTextCursor cursor;
-
 public:
-    void removeBlock();
-    void addPlotBlock(QCustomPlot* plot);
-    void addTextBlock();
-    void addTableBlock();
-    void exportBlocks();
-    void moveBlockUp();
-    void moveBlockDown();
-    TextBlock* textBlock() { return blocks.back()->textBlock(); }
-    TableBlock* tableBlock() { return blocks.back()->tableBlock(); }
-    PlotBlock* plotBlock() { return blocks.back()->plotBlock(); }
-
-    //QTextDocument* getDocument() { return document; }
-    //QTextCursor* getCursor() { return &cursor; }
+    void addPlotBlock(QCustomPlot* plot, QVBoxLayout* blockHolder, int number);
+    void addTextBlock(QVBoxLayout* blockHolder, int number);
+    void addTableBlock(QVBoxLayout* blockHolder, int number);
 
     static EditorODF* instance();
     QList<Block*> blocks;
-
 
     EditorODF() { }
 

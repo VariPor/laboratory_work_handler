@@ -9,27 +9,32 @@ class Manager
 {
 public:
    void addVariable(const VariableData&);
-   void deleteVariable(int);
+   void deleteVariable(int index);
    void addMeasurementRow(QList<double>&);
-   void removeMeasurementRow(int);
+   void removeMeasurementRow(int index);
    void clearCalculated();
    void addCalculated(const VariableData&);
    void deleteCalculated(int index);
-   int getVariablesCount();
-   int getVarAndCalcCount();
-   int getMeasurementsCount();
+
+   int getVariableCount() const;
+   int getVariableAndCalculatedCount() const;
+   int getMeasurementCount() const;
+
    VariableData* getVariable(const QString& shortName);
    VariableData* getVariable(int index);
    VariableData* getCalculated(const QString& shortName);
    VariableData* getCalculated(int index);
+   VariableData* getVariableOrCalculated(int index);
+   VariableData* getVariableOrCalculated(const QString& name);
+
    void clear();
-   int getCalculatedCount();
-   VariableData* getVarOrCalc(int index);
-   VariableData* getVarOrCalc(const QString& name);
+   int getCalculatedCount() const;
+
+   bool isInManager(QString name);
 
    static Manager* instance();
-
    Plot *plot;
+
 private:
    int measurement_count = 0;
    QList<VariableData> variables;

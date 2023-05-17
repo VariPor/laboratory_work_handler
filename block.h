@@ -15,53 +15,59 @@ class PlotBlock;
 
 class Block
 {
-
+  protected:
+    QPushButton* deleteButton;
+    QPushButton* upButton;
+    QPushButton* downButton;
+    QHBoxLayout* layout;
   public:
-    Block() {}
-    ~Block() {}
-    virtual void saveToDocument() = 0;
-    virtual TextBlock* textBlock() = 0;
-    virtual TableBlock* tableBlock() = 0;
-    virtual PlotBlock* plotBlock() = 0;
+    Block(int number);
+    virtual ~Block();
+    virtual void saveToDocument(QTextCursor* cursor) = 0;
+    virtual void removeFromBlockHolder(QVBoxLayout* blockHolder) = 0;
+    virtual void addToBlockHolder(QVBoxLayout* blockHolder, int position) = 0;
+    virtual QWidget* returnWidget() = 0;
+    QPushButton* returnDeleteButton() { return deleteButton; }
+    QPushButton* returnUpButton() { return upButton; }
+    QPushButton* returnDownButton() { return downButton; }
 };
 
 class TextBlock : public Block
 {
+    QLineEdit* editor;
   public:
-   TextBlock() : Block(), editor(new QLineEdit) {}
-    ~TextBlock() {}
-   virtual void saveToDocument() override {}
-   virtual TextBlock* textBlock() override { return this; }
-   virtual TableBlock* tableBlock() override { return nullptr; }
-   virtual PlotBlock* plotBlock() override { return nullptr; }
-   QLineEdit* editor;
-
+   TextBlock(QVBoxLayout* blockHolder, int number);
+    ~TextBlock();
+   virtual void saveToDocument(QTextCursor* cursor) override;
+   virtual void removeFromBlockHolder(QVBoxLayout* blockHolder) override;
+   virtual void addToBlockHolder(QVBoxLayout* blockHolder, int position) override;
+   virtual QWidget* returnWidget() override { return editor; }
 };
 
 class PlotBlock : public Block
 {
-  public:
-    PlotBlock(QPixmap pixmap) : pixmap{ pixmap }, label { new QLabel } {}
-    ~PlotBlock() {}
-    virtual void saveToDocument() override {}
-    virtual TextBlock* textBlock() override { return nullptr; }
-    virtual TableBlock* tableBlock() override { return nullptr; }
-    virtual PlotBlock* plotBlock() override { return this; }
     QLabel* label;
-    QPixmap pixmap;
+    QPixmap* pixmap;
+    QImage image;
+  public:
+    PlotBlock(QPixmap pixmap, QVBoxLayout* blockHolder, int number);
+    ~PlotBlock();
+    virtual void saveToDocument(QTextCursor* cursor) override;
+    virtual void removeFromBlockHolder(QVBoxLayout* blockHolder) override;
+    virtual void addToBlockHolder(QVBoxLayout* blockHolder, int position) override;
+    virtual QWidget* returnWidget() override { return label; }
 };
 
 class TableBlock : public Block
 {
-
-  public:
-    TableBlock() : table { new QTableWidget } {}
-    ~TableBlock() {}
-    virtual void saveToDocument() override {}
-    virtual TextBlock* textBlock() override { return nullptr; }
-    virtual TableBlock* tableBlock() override { return this; }
-    virtual PlotBlock* plotBlock() override { return nullptr; }
     QTableWidget* table;
+  public:
+    TableBlock(QVBoxLayout* blockHolder, int number);
+    ~TableBlock();
+    virtual void saveToDocument(QTextCursor* cursor) override;
+    virtual void removeFromBlockHolder(QVBoxLayout* blockHolder) override;
+    virtual void addToBlockHolder(QVBoxLayout* blockHolder, int position) override;
+    virtual QWidget* returnWidget() override { return table; }
 };
 
 #endif // BLOCK_H

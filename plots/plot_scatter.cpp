@@ -7,9 +7,9 @@ void PlotScatter::draw(QCustomPlot *plot)
 
     plot->clearGraphs();
     plot->legend->clear();
-    for (int i = 0; i < m->getVarAndCalcCount(); ++i)
+    for (int i = 0; i < m->getVariableAndCalculatedCount(); ++i)
     {
-        auto* v = m->getVarOrCalc(i);
+        auto* v = m->getVariableOrCalculated(i);
         if (!v->visual.visible) continue;
         auto graph = plot->addGraph();
         QPen pen;
@@ -26,7 +26,7 @@ void PlotScatter::draw(QCustomPlot *plot)
 
         QVector<double> x,y,e;
 
-        for (int j = 0; j < v->getMeasurementsCount(); ++j)
+        for (int j = 0; j < v->getMeasurementCount(); ++j)
         {
             x.append(j);
             y.append(v->measurements[j]);

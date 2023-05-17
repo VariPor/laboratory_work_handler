@@ -5,27 +5,27 @@
 int MeasurementModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return Manager::instance()->getMeasurementsCount() + extraRows;
+    return Manager::instance()->getMeasurementCount() + extraRows;
 }
 
 int MeasurementModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return Manager::instance()->getVarAndCalcCount();
+    return Manager::instance()->getVariableAndCalculatedCount();
 }
 
 QVariant MeasurementModel::data(const QModelIndex &index, int role) const
 {
     int row = index.row();
     int variable  = index.column();
-    VariableData* v = Manager::instance()->getVarOrCalc(variable);
+    VariableData* v = Manager::instance()->getVariableOrCalculated(variable);
 
     if (v->measurements.size() <= row) return QVariant();
 
     if (role == Qt::DisplayRole)
     {
         QVariant r = QVariant(v->measurements[row]).toString() + " ± " +
-                    QVariant(v->error(row)).toString();
+                    QVariant(v->getError(row)).toString();
         return r;
     }
     return QVariant();
@@ -37,7 +37,7 @@ QVariant MeasurementModel::headerData(int section, Qt::Orientation orientation, 
 
     if (orientation == Qt::Vertical) return section + 1;
 
-    VariableData* v = Manager::instance()->getVarOrCalc(section);
+    VariableData* v = Manager::instance()->getVariableOrCalculated(section);
 
     return v->shortNaming;
 }
@@ -50,10 +50,9 @@ bool MeasurementModel::setData(const QModelIndex &index, const QVariant &value, 
     if (role == Qt::EditRole)
     {
         if (!value.canConvert<double>()) return false;
-        if (value == "") return false;
-        VariableData* v = Manager::instance()->getVarOrCalc(variable);
+        VariableData* v = Manager::instance()->getVariableOrCalculated(variable);
 
-        if (v->getMeasurementsCount() <= row)
+        if (v->measurements.size() <= row)
         {
             v->measurements.append(value.toDouble());
             emit dataChanged(index, index);
@@ -68,7 +67,7 @@ bool MeasurementModel::setData(const QModelIndex &index, const QVariant &value, 
 
 Qt::ItemFlags MeasurementModel::flags(const QModelIndex &index) const
 {
-    if (index.column() < Manager::instance()->getVariablesCount())
+    if (index.column() < Manager::instance()->getVariableCount())
         return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
     else
         return QAbstractItemModel::flags(index);
@@ -90,7 +89,7 @@ void MeasurementModel::insertRow(int row)
 {
     beginInsertRows(QModelIndex(), row, row);
     extraRows++;
-    endInsertRows();   
+    endInsertRows();
 }
 
 void MeasurementModel::removeRows(int row, int count)

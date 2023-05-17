@@ -6,16 +6,16 @@ Plot2d::Plot2d(QString xLable, QString yLable, QWidget *parent) : Plot(parent), 
 void Plot2d::draw(QCustomPlot *plot)
 {
     auto m = Manager::instance();
-    VariableData *xv = m->getVarOrCalc(xLable), *yv = m->getVarOrCalc(yLable);
+    VariableData *xv = m->getVariableOrCalculated(xLable), *yv = m->getVariableOrCalculated(yLable);
 
     plot->clearGraphs();
     plot->legend->setVisible(false);
     if (!yv)
     {
-        if (m->getVarAndCalcCount() > 0)
+        if (m->getVariableAndCalculatedCount() > 0)
         {
-            xv = m->getVarOrCalc(0);
-            yv = m->getVarOrCalc(0);
+            xv = m->getVariableOrCalculated(0);
+            yv = m->getVariableOrCalculated(0);
         } else return;
     }
     if (!xv) return;
@@ -32,7 +32,7 @@ void Plot2d::draw(QCustomPlot *plot)
     errorBarsY->setDataPlottable(graph);
 
     QVector<double> x,y,ex,ey;
-    for (int j = 0; j < xv->getMeasurementsCount(); ++j)
+    for (int j = 0; j < xv->getMeasurementCount(); ++j)
     {
         x.append(xv->measurements[j]);
         y.append(yv->measurements[j]);
@@ -60,8 +60,8 @@ void Plot2d::options()
     Plot2dOptionsDialog optionDialog{xLable, yLable, title, this};
     optionDialog.show();
     optionDialog.exec();
-    xLable = Manager::instance()->getVarOrCalc(optionDialog.xLable.currentText())->shortNaming;
-    yLable = Manager::instance()->getVarOrCalc(optionDialog.yLable.currentText())->shortNaming;
+    xLable = Manager::instance()->getVariableOrCalculated(optionDialog.xLable.currentText())->shortNaming;
+    yLable = Manager::instance()->getVariableOrCalculated(optionDialog.yLable.currentText())->shortNaming;
     title = optionDialog.title.text();
 }
 
@@ -79,10 +79,10 @@ Plot2dOptionsDialog::Plot2dOptionsDialog(QString xlable, QString ylable, QString
     this->xLable.clear();
 
     auto* m = Manager::instance();
-    for (int i = 0; i < m->getVarAndCalcCount(); ++i)
+    for (int i = 0; i < m->getVariableAndCalculatedCount(); ++i)
     {
-        this->xLable.addItem(m->getVarOrCalc(i)->fullNaming);
-        if (m->getVarOrCalc(i)->shortNaming == xlable)
+        this->xLable.addItem(m->getVariableOrCalculated(i)->fullNaming);
+        if (m->getVariableOrCalculated(i)->shortNaming == xlable)
             this->xLable.setCurrentIndex(this->xLable.count() - 1);
     }
     mainlayout->addWidget(&this->xLable);
@@ -90,15 +90,14 @@ Plot2dOptionsDialog::Plot2dOptionsDialog(QString xlable, QString ylable, QString
     QLabel *yLableLable = new QLabel(tr("Y axis lable:"));
     mainlayout->addWidget(yLableLable);
     this->yLable.clear();
-    for (int i = 0; i < Manager::instance()->getVarAndCalcCount(); ++i)
+    for (int i = 0; i < Manager::instance()->getVariableAndCalculatedCount(); ++i)
     {
-        this->yLable.addItem(Manager::instance()->getVarOrCalc(i)->fullNaming);
-        if (Manager::instance()->getVarOrCalc(i)->shortNaming == ylable)
+        this->yLable.addItem(Manager::instance()->getVariableOrCalculated(i)->fullNaming);
+        if (Manager::instance()->getVariableOrCalculated(i)->shortNaming == ylable)
             this->yLable.setCurrentIndex(this->yLable.count() - 1);
     }
     mainlayout->addWidget(&this->yLable);
 
     setLayout(mainlayout);
 }
-
 
