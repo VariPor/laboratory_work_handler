@@ -31,7 +31,7 @@ void Plot2d::draw(QCustomPlot *plot)
     errorBarsY->setDataPlottable(graph);
 
     QVector<double> x,y,ex,ey;
-    for (int j = 0; j < xv->getMeasurementsCount(); ++j)
+    for (int j = 0; j < xv->getMeasurementCount(); ++j)
     {
         x.append(xv->measurements[j]);
         y.append(yv->measurements[j]);

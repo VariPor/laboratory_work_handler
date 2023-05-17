@@ -13,7 +13,7 @@
 #include "plots/plot_2d.h"
 #include "plots/plot_choise.h"
 #include "editor_odf.h"
-#include "qcpdocumentobject.h"
+#include "parser.h"
 #include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
 
-    Manager::instance()->addCalculated(VariableData{"meh", "brah", {1,2,3,4,4}, {1, 1, 2, 3}});
+    Manager::instance()->addCalculated(VariableData{"meh", "brah", {1,2,3,4,4}, {1, 1, 2, 3, 4}});
     Manager::instance()->addVariable(VariableData{"foo", "ohh", {1,2,3,4,5}});
 
     ui->variable_tableView->setModel(new MeasurementModel);
@@ -60,9 +60,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionAdd_table_block, SIGNAL(triggered()), this, SLOT(addTable()));
     connect(ui->actionAdd_plot_block, SIGNAL(triggered()), this, SLOT(addPlot()));
     connect(ui->actionExport, SIGNAL(triggered()), this, SLOT(exportODF()));
-    connect(ui->delete_block, SIGNAL(clicked()), this, SLOT(deleteBlock()));
     connect(ui->pushButtonColumnAdd, SIGNAL(clicked()), this, SLOT(addVariable()));
     connect(ui->pushButtonRowAdd, SIGNAL(clicked()), this, SLOT(addRow()));
+    connect(ui->calc, SIGNAL(clicked()), this, SLOT(callParser()));
 }
 
 
@@ -88,6 +88,8 @@ void MainWindow::openFile()
                                                     tr("Open CSV (*.csv);;Open json (*.json)"));
 
     if (fileName.isEmpty()) return;
+
+    if (fileName.isEmpty()) return;
     if (fileName.endsWith(".csv")) {
         Manager::instance()->clear();
         StrategyIO_CSV loader;
@@ -110,6 +112,8 @@ void MainWindow::saveFile()
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                     "data.csv",
                                                     tr("Open CSV (*.csv);;Open json (*.json)"));
+    if (fileName.isEmpty()) return;
+
     if (fileName.endsWith(".csv")) {
         StrategyIO_CSV saver;
         saver.save(fileName);
@@ -120,9 +124,11 @@ void MainWindow::saveFile()
     }
 }
 
-void MainWindow::openDirectory(){
+void MainWindow::openDirectory() {
     auto dirName = QFileDialog::getExistingDirectory(this, tr("Open directory"), "",
                                                      QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    if (dirName.isEmpty()) return;
+
     QString file_csv = dirName + QDir::separator() + "data.csv";
     QString file_json = dirName + QDir::separator() + "data.json";
 
@@ -145,6 +151,8 @@ void MainWindow::saveDirectory()
 {
     auto dirName = QFileDialog::getExistingDirectory(this, tr("Open directory"), "",
                                                      QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    if (dirName.isEmpty()) return;
+
     QString file_csv = dirName + QDir::separator() + "data.csv";
     QString file_json = dirName + QDir::separator() + "data.json";
 
@@ -156,22 +164,28 @@ void MainWindow::saveDirectory()
 }
 
 void MainWindow::addText() {
-    EditorODF::instance()->addTextBlock();
-    ui->ODFEditor->addWidget(EditorODF::instance()->textBlock()->editor);
+    EditorODF::instance()->addTextBlock(ui->blockHolder, EditorODF::instance()->blocks.size());
+    connect(EditorODF::instance()->blocks.back()->returnDeleteButton(), SIGNAL(clicked()), this, SLOT(deleteBlock()));
+    connect(EditorODF::instance()->blocks.back()->returnUpButton(), SIGNAL(clicked()), this, SLOT(moveUpBlock()));
+    connect(EditorODF::instance()->blocks.back()->returnDownButton(), SIGNAL(clicked()), this, SLOT(moveDownBlock()));
 }
 
 void MainWindow::addTable() {
-    EditorODF::instance()->addTableBlock();
-    ui->ODFEditor->addWidget(EditorODF::instance()->tableBlock()->table);
+    EditorODF::instance()->addTableBlock(ui->blockHolder, EditorODF::instance()->blocks.size());
+    connect(EditorODF::instance()->blocks.back()->returnDeleteButton(), SIGNAL(clicked()), this, SLOT(deleteBlock()));
+    connect(EditorODF::instance()->blocks.back()->returnUpButton(), SIGNAL(clicked()), this, SLOT(moveUpBlock()));
+    connect(EditorODF::instance()->blocks.back()->returnDownButton(), SIGNAL(clicked()), this, SLOT(moveDownBlock()));
 }
 
 void MainWindow::addPlot() {
-    EditorODF::instance()->addPlotBlock(ui->plot);
-    ui->ODFEditor->addWidget(EditorODF::instance()->plotBlock()->label);
+    EditorODF::instance()->addPlotBlock(ui->plot, ui->blockHolder, EditorODF::instance()->blocks.size());
+    connect(EditorODF::instance()->blocks.back()->returnDeleteButton(), SIGNAL(clicked()), this, SLOT(deleteBlock()));
+    connect(EditorODF::instance()->blocks.back()->returnUpButton(), SIGNAL(clicked()), this, SLOT(moveUpBlock()));
+    connect(EditorODF::instance()->blocks.back()->returnDownButton(), SIGNAL(clicked()), this, SLOT(moveDownBlock()));
 }
 
 void MainWindow::exportODF() {
-    QString fileName = QFileDialog::getSaveFileName(nullptr,QObject::tr("Save File"),"output_file.odf",QObject::tr("Open Document ('''.odf)"));
+    QString fileName = QFileDialog::getSaveFileName(nullptr,QObject::tr("Save File"), "output_file.odf", QObject::tr("Open Document ('''.odf)"));
     QTextDocumentWriter fileWriter (fileName);
     fileWriter.setFormat("odf");
 
@@ -180,34 +194,7 @@ void MainWindow::exportODF() {
     QTextCursor cursor(document);
 
     for (auto* block : EditorODF::instance()->blocks) {
-        if (block->plotBlock() != nullptr) {
-            QImage chartImage = block->plotBlock()->pixmap.toImage();
-            document->addResource(QTextDocument::ImageResource, QUrl(""), chartImage);
-            // Prepare to insert into the document
-            QTextImageFormat imageFormat;
-            imageFormat.setQuality(100);
-            // Insert into the document
-            cursor.insertImage(imageFormat);
-            cursor.insertBlock();
-        }
-        if (block->textBlock() != nullptr) {
-            cursor.insertText(block->textBlock()->editor->text());
-            cursor.insertBlock();
-        }
-        if (block->tableBlock() != nullptr) {
-            QTableWidget* table = block->tableBlock()->table;
-            cursor.insertTable(table->rowCount() + 1, table->columnCount());
-            for (int i = 0; i < table->columnCount(); ++i) {
-                cursor.insertText(table->horizontalHeaderItem(i)->text());
-                cursor.movePosition(QTextCursor::NextCell);
-            }
-
-            for (int i = 0; i < table->rowCount(); ++i)
-                for (int j = 0; j < table->columnCount(); ++j) {
-                    cursor.insertText(table->item(i, j)->text());
-                    cursor.movePosition(QTextCursor::NextCell);
-                }
-        }
+        block->saveToDocument(&cursor);
     }
 
     fileWriter.setFormat("odf");
@@ -216,17 +203,61 @@ void MainWindow::exportODF() {
 
 void MainWindow::deleteBlock() {
 
+    QObject *senderObj = sender(); // This will give Sender object
+    QString senderObjName = senderObj->objectName();
+
+    for (int i = 0; i < EditorODF::instance()->blocks.size(); ++i) {
+        QString temp_name = EditorODF::instance()->blocks.at(i)->returnDeleteButton()->objectName();
+        if (senderObjName != temp_name) continue;
+
+        EditorODF::instance()->blocks[i]->removeFromBlockHolder(ui->blockHolder);
+        delete EditorODF::instance()->blocks[i];
+        EditorODF::instance()->blocks.removeAt(i);
+    }
 }
 
 
-void MainWindow::changeCursorPositional() {
 
+void MainWindow::moveUpBlock() {
+    QObject *senderObj = sender(); // This will give Sender object
+    QString senderObjName = senderObj->objectName();
+
+    for (int i = 0; i < EditorODF::instance()->blocks.size(); ++i) {
+        QString temp_name = EditorODF::instance()->blocks.at(i)->returnUpButton()->objectName();
+        if (senderObjName != temp_name || i == 0) continue;
+
+        EditorODF::instance()->blocks[i]->removeFromBlockHolder(ui->blockHolder);
+        EditorODF::instance()->blocks[i]->addToBlockHolder(ui->blockHolder, i - 1);
+
+        EditorODF::instance()->blocks[i - 1]->removeFromBlockHolder(ui->blockHolder);
+        EditorODF::instance()->blocks[i - 1]->addToBlockHolder(ui->blockHolder, i);
+
+        EditorODF::instance()->blocks.swap(i, i - 1);
+    }
+}
+
+void MainWindow::moveDownBlock() {
+    QObject *senderObj = sender(); // This will give Sender object
+    QString senderObjName = senderObj->objectName();
+
+    for (int i = 0; i < EditorODF::instance()->blocks.size(); ++i) {
+        QString temp_name = EditorODF::instance()->blocks.at(i)->returnDownButton()->objectName();
+        if (senderObjName != temp_name || i == EditorODF::instance()->blocks.size() - 1) continue;
+
+        EditorODF::instance()->blocks[i]->removeFromBlockHolder(ui->blockHolder);
+        EditorODF::instance()->blocks[i]->addToBlockHolder(ui->blockHolder, i + 1);
+
+        EditorODF::instance()->blocks[i + 1]->removeFromBlockHolder(ui->blockHolder);
+        EditorODF::instance()->blocks[i + 1]->addToBlockHolder(ui->blockHolder, i);
+
+        EditorODF::instance()->blocks.swap(i, i + 1);
+    }
 }
 
 void MainWindow::addVariable()
 {
     auto m = Manager::instance();
-    m->addVariable(VariableData{m->getMeasurementsCount()});
+    m->addVariable(VariableData{m->getMeasurementCount()});
     static_cast<MeasurementModel*>(ui->variable_tableView->model())->insertColumn(m->getCalculatedCount());
     static_cast<VisualModel*>(ui->visual_tableView->model())->insertRow(m->getCalculatedCount());
     static_cast<InstrumentModel*>(ui->instruments_tableView->model())->insertRow(m->getCalculatedCount());
@@ -236,5 +267,11 @@ void MainWindow::addVariable()
 void MainWindow::addRow()
 {
     auto m = Manager::instance();
-    static_cast<MeasurementModel*>(ui->variable_tableView->model())->insertRow(m->getMeasurementsCount());
+    static_cast<MeasurementModel*>(ui->variable_tableView->model())->insertRow(m->getMeasurementCount());
+}
+
+
+void MainWindow::callParser() {
+    QString str = ui->lineEdit->text();
+    parser::calculate(parser::parse(str.toStdString()));
 }

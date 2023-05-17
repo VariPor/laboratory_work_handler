@@ -26,7 +26,7 @@ void PlotScatter::draw(QCustomPlot *plot)
 
         QVector<double> x,y,e;
 
-        for (int j = 0; j < v->getMeasurementsCount(); ++j)
+        for (int j = 0; j < v->getMeasurementCount(); ++j)
         {
             x.append(j);
             y.append(v->measurements[j]);

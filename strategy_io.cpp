@@ -46,7 +46,7 @@ void StrategyIO_CSV::load(const QString& input)
             else
                 data.push_back(NAN);
         }
-        for (int i = data.size(); i < Manager::instance()->getVariablesCount(); ++i)
+        for (int i = data.size(); i < Manager::instance()->getVariableCount(); ++i)
             data.push_back(NAN);
         Manager::instance()->addMeasurementRow(data);
         data.clear();
@@ -68,8 +68,8 @@ void StrategyIO_CSV::save(const QString& output)
 
     auto* manager = Manager::instance();
 
-    if (manager->getVariablesCount() > 0)
-        for (int i = 0; i < manager->getVariablesCount(); ++i)
+    if (manager->getVariableCount() > 0)
+        for (int i = 0; i < manager->getVariableCount(); ++i)
         {
             if (i == 0)
                 outstream << manager->getVariable(i)->shortNaming;
@@ -78,8 +78,8 @@ void StrategyIO_CSV::save(const QString& output)
         }
         outstream << endl;
 
-        for (int i = 0; i < manager->getMeasurementsCount(); ++i) {
-            for (int j = 0; j < manager->getVariablesCount(); ++j)
+        for (int i = 0; i < manager->getMeasurementCount(); ++i) {
+            for (int j = 0; j < manager->getVariableCount(); ++j)
             {
                 if (j == 0)
                     outstream << manager->getVariable(j)->measurements.at(i);
@@ -111,14 +111,10 @@ void StrategyIO_JSON::load(const QString& input)
 
        variable.fullNaming = temp["names"].toObject()["fullNaming"].toString();
 
-       variable.instrumentError.type = VariableData::Instrument::error_types.key(temp["instrumentErrors"].toObject()["type"].toString());
-       if (variable.instrumentError.type != VariableData::Instrument::ErrorType::calculated)
-           variable.instrumentError.value = temp["instrumentErrors"].toObject()["value"].toDouble();
-       else {
-           auto list = temp["instrumentErrors"].toObject()["value"].toArray();
-           for (int i = 0; i < list.size(); ++i)
-               variable.calcErrors.push_back(list[i].toDouble());
-       }
+       variable.instrumentError.type = VariableData::Instrument::error_types.key((temp["instrumentErrors"].toObject()["type"]).toString());
+
+       variable.instrumentError.value = temp["instrumentError"].toObject()["value"].toDouble();
+
 
        variable.visual.visible = temp["visualOptions"].toObject()["visible"].toBool();
        variable.visual.width = temp["visualOptions"].toObject()["width"].toInt();
@@ -137,7 +133,7 @@ void StrategyIO_JSON::save(const QString& output)
     auto* manager = Manager::instance();
 
     QJsonArray array;
-    for (int i = 0; i < manager->getVariablesCount(); ++i)
+    for (int i = 0; i < manager->getVariableCount(); ++i)
     {
         QJsonObject temp;
 
@@ -147,7 +143,7 @@ void StrategyIO_JSON::save(const QString& output)
 
         QJsonObject instrumentError;
         instrumentError["type"] =  VariableData::Instrument::error_types[manager->getVariable(i)->instrumentError.type];
-        instrumentError["value"] = manager->getVariable(i)->error();
+        instrumentError["value"] = manager->getVariable(i)->getError();
 
         QJsonObject visualOptions;
         visualOptions["visible"] = manager->getVariable(i)->visual.visible;

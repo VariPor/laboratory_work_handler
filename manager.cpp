@@ -10,7 +10,7 @@ void Manager::addVariable(const VariableData& var)
 
 void Manager::recalculationMeasurementCount() {
     measurement_count = 0;
-    for (int i = 0; i < this->getVariablesCount(); ++i)
+    for (int i = 0; i < this->getVariableCount(); ++i)
         if (variables.at(i).measurements.size() > measurement_count)
             measurement_count = variables.at(i).measurements.size();
     for (int i = 0; i < this->getCalculatedCount(); ++i)
@@ -18,7 +18,7 @@ void Manager::recalculationMeasurementCount() {
             measurement_count = calculated.at(i).measurements.size();
 }
 
-int Manager::getCalculatedCount() { return calculated.size(); }
+int Manager::getCalculatedCount() const { return calculated.size(); }
 
 void Manager::deleteVariable(int index)
 {
@@ -64,9 +64,9 @@ Manager *Manager::instance()
     return GlobalManager;
 }
 
-int Manager::getVariablesCount() { return variables.size(); }
+int Manager::getVariableCount() const { return variables.size(); }
 
-int Manager::getMeasurementsCount() { return measurement_count; }
+int Manager::getMeasurementCount() const { return measurement_count; }
 
 VariableData* Manager::getVariable(const QString& name)
 {
@@ -101,18 +101,18 @@ VariableData* Manager::getCalculated(int index)
 }
 
 
-int Manager::getVarAndCalcCount() {
-    return this->getCalculatedCount() + this->getVariablesCount();
+int Manager::getVariableAndCalculatedCount() const {
+    return this->getCalculatedCount() + this->getVariableCount();
 }
 
-VariableData* Manager::getVarOrCalc(int index)
+VariableData* Manager::getVariableOrCalculated(int index)
 {
-    if (index >= getVarAndCalcCount()) throw std::runtime_error("No such index (in getVarOrCalc(int index))");
-    if (index < getVariablesCount()) return getVariable(index);
-    else return getCalculated(index - getVariablesCount());
+    if (index >= getVariableAndCalculatedCount()) throw std::runtime_error("No such index (in getVarOrCalc(int index))");
+    if (index < getVariableCount()) return getVariable(index);
+    else return getCalculated(index - getVariableCount());
 }
 
-VariableData* Manager::getVarOrCalc(const QString& name)
+VariableData* Manager::getVariableOrCalculated(const QString& name)
 {
     for (auto& v: variables)
     {
@@ -131,6 +131,14 @@ void Manager::clear() {
     variables.clear();
     calculated.clear();
     measurement_count = 0;
+}
+
+bool Manager::isInManager(QString name) {
+    for (auto var : variables)
+        if (var.shortNaming == name) return true;
+    for (auto var : calculated)
+        if (var.shortNaming == name) return true;
+    return false;
 }
 
 

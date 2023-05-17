@@ -18,7 +18,7 @@ QMap<VariableData::Instrument::ErrorType, QString> VariableData::Instrument::err
     {VariableData::Instrument::ErrorType::calculated, "Calculated"},
 };
 
-double VariableData::error(int index)
+double VariableData::getError(int index) const
 {
   switch(int(VariableData::instrumentError.type))
   {
@@ -27,14 +27,13 @@ double VariableData::error(int index)
     case Instrument::ErrorType::absolute:
       return VariableData::instrumentError.value;
     case Instrument::ErrorType::calculated:
-        //return calcErrors.at(index);
-      return VariableData::instrumentError.value; // ?
+      return calcErrors.at(index);
     default:
       throw "Wrong ErrorType!";
   }
 }
 
-int VariableData::getMeasurementsCount() {return measurements.size();}
+int VariableData::getMeasurementCount() {return measurements.size();}
 
 VariableData::VariableData(QString shortNaming, QString fullNaming, QList<double> meas, QList<double> calcErrors)
     : measurements { meas }, fullNaming { fullNaming }, shortNaming { shortNaming }, calcErrors{ calcErrors }
