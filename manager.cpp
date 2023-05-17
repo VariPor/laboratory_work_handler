@@ -53,6 +53,14 @@ void Manager::addCalculated(const VariableData& var)
     Manager::instance()->recalculationMeasurementCount();
 }
 
+void Manager::deleteCalculated(int index)
+{
+    if (index < 0 || index >= calculated.count())
+        throw std::out_of_range("There isn't a column with this index (from deleteCalculated)");
+    calculated.removeAt(index);
+    recalculationMeasurementCount();
+}
+
 void Manager::clearCalculated()
 {
     calculated.clear();
@@ -66,7 +74,11 @@ Manager *Manager::instance()
 
 int Manager::getVariablesCount() { return variables.size(); }
 
-int Manager::getMeasurementsCount() { return measurement_count; }
+int Manager::getMeasurementsCount()
+{
+    recalculationMeasurementCount();
+    return measurement_count;
+}
 
 VariableData* Manager::getVariable(const QString& name)
 {
@@ -96,7 +108,7 @@ VariableData* Manager::getCalculated(const QString& name)
 
 VariableData* Manager::getCalculated(int index)
 {
-    if (index >= variables.size()) throw std::runtime_error("No such index (in getCalculated(int index))");
+    if (index >= calculated.size()) throw std::runtime_error("No such index (in getCalculated(int index))");
     return &calculated[index];
 }
 
@@ -109,7 +121,8 @@ VariableData* Manager::getVarOrCalc(int index)
 {
     if (index >= getVarAndCalcCount()) throw std::runtime_error("No such index (in getVarOrCalc(int index))");
     if (index < getVariablesCount()) return getVariable(index);
-    else return getCalculated(index - getVariablesCount());
+    else if (index - getVariablesCount() < getCalculatedCount()) return getCalculated(index - getVariablesCount());
+        else return nullptr;
 }
 
 VariableData* Manager::getVarOrCalc(const QString& name)

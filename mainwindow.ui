@@ -46,7 +46,7 @@
         </sizepolicy>
        </property>
        <property name="currentIndex">
-        <number>5</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="variable_tab">
         <attribute name="title">
@@ -79,9 +79,23 @@
             </widget>
            </item>
            <item>
+            <widget class="QPushButton" name="pushButtonColumnRemove">
+             <property name="text">
+              <string>Del column</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QPushButton" name="pushButtonRowAdd">
              <property name="text">
               <string>Add row</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButtonRowRemove">
+             <property name="text">
+              <string>Del row</string>
              </property>
             </widget>
            </item>

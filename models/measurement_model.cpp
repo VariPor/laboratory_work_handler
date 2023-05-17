@@ -50,9 +50,10 @@ bool MeasurementModel::setData(const QModelIndex &index, const QVariant &value, 
     if (role == Qt::EditRole)
     {
         if (!value.canConvert<double>()) return false;
+        if (value == "") return false;
         VariableData* v = Manager::instance()->getVarOrCalc(variable);
 
-        if (v->measurements.size() <= row)
+        if (v->getMeasurementsCount() <= row)
         {
             v->measurements.append(value.toDouble());
             emit dataChanged(index, index);
@@ -79,10 +80,20 @@ void MeasurementModel::insertColumn(int column)
     endInsertColumns();
 }
 
+void MeasurementModel::removeColumn(int column)
+{
+    beginRemoveColumns(QModelIndex(), column, column);
+    endRemoveColumns();
+}
+
 void MeasurementModel::insertRow(int row)
 {
     beginInsertRows(QModelIndex(), row, row);
-    endInsertRows();
     extraRows++;
+    endInsertRows();   
+}
+
+void MeasurementModel::removeRows(int row, int count)
+{
 }
 

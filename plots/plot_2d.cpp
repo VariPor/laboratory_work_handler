@@ -18,6 +18,7 @@ void Plot2d::draw(QCustomPlot *plot)
             yv = m->getVarOrCalc(0);
         } else return;
     }
+    if (!xv) return;
 
     auto graph = plot->addGraph();
     QPen pen;

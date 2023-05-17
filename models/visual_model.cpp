@@ -2,6 +2,15 @@
 #include "variable_data.h"
 #include "manager.h"
 
+enum Fields
+{
+    visibleField,
+    widthField,
+    pointTypeField,
+    lineTypeField,
+    colorField
+};
+
 int VisualModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
@@ -25,9 +34,9 @@ QVariant VisualModel::data(const QModelIndex &index, int role) const
         case Qt::BackgroundColorRole:
             switch (option)
             {
-              case 0:
+              case Fields::visibleField:
                 return visual.visible ? Qt::Checked : Qt::Unchecked;
-              case 4:
+              case Fields::colorField:
                 return visual.color;
             }
          break;
@@ -35,7 +44,7 @@ QVariant VisualModel::data(const QModelIndex &index, int role) const
         case Qt::CheckStateRole:
             switch (option)
             {
-              case 0:
+              case Fields::visibleField:
                 return visual.visible ? Qt::Checked : Qt::Unchecked;
             }
             break;
@@ -43,11 +52,11 @@ QVariant VisualModel::data(const QModelIndex &index, int role) const
         case Qt::DisplayRole:
             switch (option)
             {
-              case 1:
+              case Fields::widthField:
                 return visual.width;
-              case 2:
+              case Fields::pointTypeField:
                 return visual.point_types.value(visual.point_type);
-              case 3:
+              case Fields::lineTypeField:
                 return visual.line_types.value(visual.line_type);
             }
     }
@@ -65,7 +74,7 @@ bool VisualModel::setData(const QModelIndex &index, const QVariant &value, int r
     {
         switch (option)
         {
-          case 0:
+          case Fields::visibleField:
             if (!value.canConvert<int>()) return false;
             if (value.toInt() < Qt::Unchecked || value.toInt()> Qt::Checked) return false;
             auto state = static_cast<Qt::CheckState>(value.toInt());
@@ -79,21 +88,21 @@ bool VisualModel::setData(const QModelIndex &index, const QVariant &value, int r
     {
         switch (option)
         {
-          case 1:
+          case Fields::widthField:
             if (!value.toInt(&ok)) return false;
             if (!ok) return false;
             visual.width = value.toInt();
             emit dataChanged(index, index);
             return true;
-          case 2:
+          case Fields::pointTypeField:
             visual.point_type = VariableData::VisualOptions::point_types.key(value.toString());
             emit dataChanged(index, index);
             return true;
-          case 3:
+          case Fields::lineTypeField:
             visual.line_type = VariableData::VisualOptions::line_types.key(value.toString());
             emit dataChanged(index, index);
             return true;
-          case 4:
+          case Fields::colorField:
             visual.color = value.value<QColor>();
             emit dataChanged(index, index);
             return true;
@@ -113,15 +122,15 @@ QVariant VisualModel::headerData (int section, Qt::Orientation orientation, int 
 
     switch (section)
     {
-      case 0:
+      case Fields::visibleField:
         return QString("Visible");
-      case 1:
+      case Fields::widthField:
         return QString("Width");
-      case 2:
+      case Fields::pointTypeField:
         return QString("Point type");
-      case 3:
+      case Fields::lineTypeField:
         return QString("Line type");
-      case 4:
+      case Fields::colorField:
         return QString("Color");
     }
     return QVariant();
@@ -132,19 +141,24 @@ Qt::ItemFlags VisualModel::flags(const QModelIndex &index) const
     int option  = index.column();
     switch (option)
     {
-      case 0:
+      case Fields::visibleField:
         return Qt::ItemIsEnabled | Qt::ItemIsUserCheckable | QAbstractItemModel::flags(index);
-      case 1:
-      case 2:
-      case 3:
-      case 4:
+
+      case Fields::widthField: case Fields::lineTypeField:
+      case Fields::colorField:case Fields::pointTypeField:
         return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
     }
-    return Qt::ItemIsEditable;
+    return QAbstractItemModel::flags(index);
 }
 
 void VisualModel::insertRow(int row)
 {
     beginInsertRows(QModelIndex(), row, row);
     endInsertRows();
+}
+
+void VisualModel::removeRow(int row)
+{
+    beginRemoveRows(QModelIndex(), row, row);
+    endRemoveRows();
 }

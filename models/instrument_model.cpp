@@ -91,3 +91,9 @@ void InstrumentModel::insertRow(int row)
     beginInsertRows(QModelIndex(), row, row);
     endInsertRows();
 }
+
+void InstrumentModel::removeRow(int row)
+{
+    beginRemoveRows(QModelIndex(), row, row);
+    endRemoveRows();
+}

@@ -27,6 +27,7 @@ class InstrumentModel : public QAbstractTableModel
   Qt::ItemFlags flags(const QModelIndex& index) const override;
 
   void insertRow(int row);
+  void removeRow(int row);
 };
 
 #endif // INSTRUMENT_MODEL_H

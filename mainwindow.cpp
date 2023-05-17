@@ -63,6 +63,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->delete_block, SIGNAL(clicked()), this, SLOT(deleteBlock()));
     connect(ui->pushButtonColumnAdd, SIGNAL(clicked()), this, SLOT(addVariable()));
     connect(ui->pushButtonRowAdd, SIGNAL(clicked()), this, SLOT(addRow()));
+    connect(ui->pushButtonColumnRemove, SIGNAL(clicked()), this, SLOT(deleteVariable()));
+    connect(ui->pushButtonRowRemove, SIGNAL(clicked()), this, SLOT(deleteRow()));
 }
 
 
@@ -237,4 +239,26 @@ void MainWindow::addRow()
 {
     auto m = Manager::instance();
     static_cast<MeasurementModel*>(ui->variable_tableView->model())->insertRow(m->getMeasurementsCount());
+}
+
+void MainWindow::deleteVariable()
+{
+    QItemSelectionModel *select = ui->variable_tableView->selectionModel();
+    if (select->selectedColumns().size() == 0) return;
+    int variable = select->selectedColumns()[0].column();
+
+    static_cast<MeasurementModel*>(ui->variable_tableView->model())->removeColumn(variable);
+    static_cast<VisualModel*>(ui->visual_tableView->model())->removeRow(variable);
+    static_cast<InstrumentModel*>(ui->instruments_tableView->model())->removeRow(variable);
+    static_cast<NamingModel*>(ui->naming_tableView->model())->removeRow(variable);
+
+    if (variable < Manager::instance()->getVariablesCount()){
+        Manager::instance()->deleteVariable(variable);
+    } else if (variable - Manager::instance()->getVariablesCount() < Manager::instance()->getCalculatedCount()){
+            Manager::instance()->deleteCalculated(variable - Manager::instance()->getVariablesCount());
+    }
+}
+
+void MainWindow::deleteRow()
+{
 }

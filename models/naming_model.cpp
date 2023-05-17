@@ -89,3 +89,9 @@ void NamingModel::insertRow(int row)
     endInsertRows();
 }
 
+void NamingModel::removeRow(int row)
+{
+    beginRemoveRows(QModelIndex(), row, row);
+    endRemoveRows();
+}
+
