@@ -79,10 +79,20 @@ void MeasurementModel::insertColumn(int column)
     endInsertColumns();
 }
 
+void MeasurementModel::removeColumn(int column)
+{
+    beginRemoveColumns(QModelIndex(), column, column);
+    endRemoveColumns();
+}
+
 void MeasurementModel::insertRow(int row)
 {
     beginInsertRows(QModelIndex(), row, row);
-    endInsertRows();
     extraRows++;
+    endInsertRows();
+}
+
+void MeasurementModel::removeRows(int row, int count)
+{
 }
 

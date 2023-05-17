@@ -141,4 +141,10 @@ bool Manager::isInManager(QString name) {
     return false;
 }
 
-
+void Manager::deleteCalculated(int index)
+{
+    if (index < 0 || index >= calculated.count())
+        throw std::out_of_range("There isn't a column with this index (from deleteCalculated)");
+    calculated.removeAt(index);
+    recalculationMeasurementCount();
+}

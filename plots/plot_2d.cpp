@@ -18,6 +18,7 @@ void Plot2d::draw(QCustomPlot *plot)
             yv = m->getVariableOrCalculated(0);
         } else return;
     }
+    if (!xv) return;
 
     auto graph = plot->addGraph();
     QPen pen;
@@ -99,5 +100,4 @@ Plot2dOptionsDialog::Plot2dOptionsDialog(QString xlable, QString ylable, QString
 
     setLayout(mainlayout);
 }
-
 

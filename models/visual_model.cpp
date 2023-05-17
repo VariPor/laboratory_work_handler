@@ -148,3 +148,9 @@ void VisualModel::insertRow(int row)
     beginInsertRows(QModelIndex(), row, row);
     endInsertRows();
 }
+
+void VisualModel::removeRow(int row)
+{
+    beginRemoveRows(QModelIndex(), row, row);
+    endRemoveRows();
+}

@@ -25,7 +25,9 @@ class VisualModel : public QAbstractTableModel
                const QVariant& value,
                int role = Qt::EditRole) override;
   Qt::ItemFlags flags(const QModelIndex& index) const override;
+
   void insertRow(int row);
+  void removeRow(int row);
 };
 
 

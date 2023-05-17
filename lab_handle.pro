@@ -46,6 +46,7 @@ HEADERS += \
     manager.h \
     models/measurement_model.h \
     models/naming_model.h \
+    parser.h \
     plots/plot.h \
     plots/plot_2d.h \
     plots/plot_choise.h \
