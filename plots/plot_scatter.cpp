@@ -7,9 +7,9 @@ void PlotScatter::draw(QCustomPlot *plot)
 
     plot->clearGraphs();
     plot->legend->clear();
-    for (int i = 0; i < m->getVarAndCalcCount(); ++i)
+    for (int i = 0; i < m->getVariableAndCalculatedCount(); ++i)
     {
-        auto* v = m->getVarOrCalc(i);
+        auto* v = m->getVariableOrCalculated(i);
         if (!v->visual.visible) continue;
         auto graph = plot->addGraph();
         QPen pen;

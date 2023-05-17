@@ -5,7 +5,7 @@
 int MeasurementModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return Manager::instance()->getMeasurementsCount() + extraRows;
+    return Manager::instance()->getMeasurementCount() + extraRows;
 }
 
 int MeasurementModel::columnCount(const QModelIndex &parent) const
