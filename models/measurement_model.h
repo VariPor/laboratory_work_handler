@@ -25,6 +25,14 @@ class MeasurementModel : public QAbstractTableModel
                const QVariant& value,
                int role = Qt::EditRole) override;
   Qt::ItemFlags flags(const QModelIndex& index) const override;
+
+  void insertColumn(int column);
+  void removeColumn(int column);
+  void insertRow(int row);
+  void removeRows(int row, int count);
+
+private:
+  int extraRows = 0;
 };
 
 #endif // MEASUREMENT_MODEL_H

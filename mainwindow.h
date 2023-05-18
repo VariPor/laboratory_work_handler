@@ -33,6 +33,9 @@ private slots:
     void addVariable();
     void addRow();
     void callParser();
+    void deleteVariable();
+    void deleteRow();
+
 
 private:
     Ui::MainWindow *ui;

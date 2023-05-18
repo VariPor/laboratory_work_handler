@@ -63,6 +63,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->pushButtonColumnAdd, SIGNAL(clicked()), this, SLOT(addVariable()));
     connect(ui->pushButtonRowAdd, SIGNAL(clicked()), this, SLOT(addRow()));
     connect(ui->calc, SIGNAL(clicked()), this, SLOT(callParser()));
+    connect(ui->pushButtonColumnRemove, SIGNAL(clicked()), this, SLOT(deleteVariable()));
 }
 
 
@@ -186,6 +187,9 @@ void MainWindow::addPlot() {
 
 void MainWindow::exportODF() {
     QString fileName = QFileDialog::getSaveFileName(nullptr,QObject::tr("Save File"), "output_file.odf", QObject::tr("Open Document ('''.odf)"));
+
+    if (fileName.isEmpty()) return;
+
     QTextDocumentWriter fileWriter (fileName);
     fileWriter.setFormat("odf");
 
@@ -270,8 +274,27 @@ void MainWindow::addRow()
     static_cast<MeasurementModel*>(ui->variable_tableView->model())->insertRow(m->getMeasurementCount());
 }
 
-
 void MainWindow::callParser() {
     QString str = ui->lineEdit->text();
     parser::calculate(parser::parse(str.toStdString()));
 }
+
+void MainWindow::deleteVariable()
+{
+    QItemSelectionModel *select = ui->variable_tableView->selectionModel();
+    if (select->selectedColumns().size() == 0) return;
+    int variable = select->selectedColumns()[0].column();
+
+    static_cast<MeasurementModel*>(ui->variable_tableView->model())->removeColumn(variable);
+    static_cast<VisualModel*>(ui->visual_tableView->model())->removeRow(variable);
+    static_cast<InstrumentModel*>(ui->instruments_tableView->model())->removeRow(variable);
+    static_cast<NamingModel*>(ui->naming_tableView->model())->removeRow(variable);
+
+    if (variable < Manager::instance()->getVariableCount()){
+        Manager::instance()->deleteVariable(variable);
+    } else if (variable - Manager::instance()->getVariableCount() < Manager::instance()->getCalculatedCount()){
+            Manager::instance()->deleteCalculated(variable - Manager::instance()->getVariableCount());
+    }
+}
+
+void MainWindow::deleteRow(){}

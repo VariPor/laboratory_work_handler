@@ -44,8 +44,9 @@ HEADERS += \
     models/instrument_model.h \
     mainwindow.h \
     manager.h \
-    measurement_model.h \
+    models/measurement_model.h \
     models/naming_model.h \
+    parser.h \
     plots/plot.h \
     plots/plot_2d.h \
     plots/plot_choise.h \

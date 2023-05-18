@@ -85,3 +85,15 @@ Qt::ItemFlags InstrumentModel::flags(const QModelIndex &index) const
     else
         return QAbstractItemModel::flags(index);
 }
+
+void InstrumentModel::insertRow(int row)
+{
+    beginInsertRows(QModelIndex(), row, row);
+    endInsertRows();
+}
+
+void InstrumentModel::removeRow(int row)
+{
+    beginRemoveRows(QModelIndex(), row, row);
+    endRemoveRows();
+}

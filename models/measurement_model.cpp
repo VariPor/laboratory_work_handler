@@ -5,7 +5,7 @@
 int MeasurementModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return Manager::instance()->getMeasurementCount();
+    return Manager::instance()->getMeasurementCount() + extraRows;
 }
 
 int MeasurementModel::columnCount(const QModelIndex &parent) const
@@ -46,7 +46,6 @@ bool MeasurementModel::setData(const QModelIndex &index, const QVariant &value, 
 {
     int row = index.row();
     int variable = index.column();
-    auto m = Manager::instance();
 
     if (role == Qt::EditRole)
     {
@@ -73,3 +72,27 @@ Qt::ItemFlags MeasurementModel::flags(const QModelIndex &index) const
     else
         return QAbstractItemModel::flags(index);
 }
+
+void MeasurementModel::insertColumn(int column)
+{
+    beginInsertColumns(QModelIndex(), column, column);
+    endInsertColumns();
+}
+
+void MeasurementModel::removeColumn(int column)
+{
+    beginRemoveColumns(QModelIndex(), column, column);
+    endRemoveColumns();
+}
+
+void MeasurementModel::insertRow(int row)
+{
+    beginInsertRows(QModelIndex(), row, row);
+    extraRows++;
+    endInsertRows();
+}
+
+void MeasurementModel::removeRows(int row, int count)
+{
+}
+

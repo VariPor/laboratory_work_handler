@@ -15,6 +15,7 @@ public:
    void removeMeasurementRow(int index);
    void clearCalculated();
    void addCalculated(const VariableData&);
+   void deleteCalculated(int index);
 
    int getVariableCount() const;
    int getVariableAndCalculatedCount() const;
