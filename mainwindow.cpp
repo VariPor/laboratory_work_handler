@@ -279,6 +279,8 @@ void MainWindow::callParser() {
     int temp = m->getVariableAndCalculatedCount();
     QString str = ui->lineEdit->text();
     parser::calculate(parser::parse(str.toStdString()));
+    parser::calculate(parser::parse(str.toStdString()));
+
 
     if (temp < m->getVariableAndCalculatedCount()) {
     int columnNum = m->getVariableAndCalculatedCount() - 1;
