@@ -10,6 +10,10 @@
 #include <string>
 #include <vector>
 
+#include "manager.h"
+
+
+namespace parser {
 using namespace std;
 
 class Variable {
@@ -17,31 +21,32 @@ class Variable {
   Variable(string n, vector<double> v) {
     name = n;
     value = v;
-    err = 0;
+    //err = 0;
   }
   Variable(vector<double> v) {
     name = "MyVector";
     value = v;
-    err = 0;
+    //err = 0;
   }
   string getName() { return name; }
   vector<double>& getValue() { return value; }
   void setName(string s) { name = s; }
   void setValue(vector<double> n) { value = n; }
+  Variable(const VariableData& VD) : name{ VD.shortNaming.toStdString() } {
+      value = VD.measurements.toVector().toStdVector();
+      //err = VD.getError();
+  }
 
  private:
   string name;
   vector<double> value;
-  double err;
+  //double err;
 };
 
 vector<Variable> Variable_Data = {};
 
-bool isUnique(vector<Variable> Variable_Data, string n) {
-  for (int i = 0; i < Variable_Data.size(); ++i) {
-    if (Variable_Data[i].getName() == n) return false;
-  }
-  return true;
+bool isUnique(QString n) {
+  return Manager::instance()->isInManager(n);
 }
 
 template <typename T>
@@ -49,21 +54,16 @@ void remove(std::vector<T>& v, size_t index) {
   v.erase(v.begin() + index);
 }
 
-bool VariableCheck(string s) {
+/*bool isUnique(QString::fromStdString(QString s) {
   for (auto i : Variable_Data) {
     if (s == i.getName()) return true;
   }
   return false;
-}
+}*/
 
 Variable VariableGet(string s) {
-  for (auto i : Variable_Data) {
-    if (s == i.getName()) {
-      return i;
-    }
-  }
-  Variable k = {"", vector<double>{}};
-  return k;
+  VariableData* var = Manager::instance()->getVariableOrCalculated(QString::fromStdString(s));
+  return Variable(*var);
 }
 
 int symPriority(char c) {
@@ -93,197 +93,212 @@ int symPriority(char c) {
   return p;
 }
 
-vector<string> parse(string s) {
+pair<vector<string>, pair<bool, string>> parse(string s) {
   vector<string> output;
   vector<char> sym;
   int i = 0;
   int number_of_brackets = 0;
   string lvalue = "";
-
-  while (s[i] != '=') {
-    lvalue += s[i];
-    ++i;
+  bool eq = false;
+  for (char c : s) {
+      if (c == '=') {
+          eq = true;
+          break;
+      }
+      lvalue += c;
   }
 
-  if (isUnique(Variable_Data, lvalue)) {
-    vector<double> k = {0};
-    Variable_Data.push_back(Variable{lvalue, k});
+  if (!eq) {
+      vector<double> k = {0};
+      QVector<double> v_d = QVector<double>::fromStdVector(k);
+      QList<double> l_d = QList<double>::fromVector(v_d);
+      Manager::instance()->addVariable(VariableData (QString::fromStdString(lvalue), QString::fromStdString(lvalue), l_d));
+      vector<string> str {};
+      return {str, {0, lvalue}};
   }
+  else {
+      string tmp_name = lvalue;
+      if (isUnique(QString::fromStdString(lvalue))) {
 
-  s = s.substr(i + 1, s.length() - i - 1);
+        s = s.substr(i + 1, s.length() - i - 1);
 
-  i = 0;
-  lvalue = "";
+        i = 0;
+        lvalue = "";
 
-  while (s[i] != '\0') {
-    // Проверка на число
+        while (s[i] != '\0') {
+          // Проверка на число
 
-    if (isdigit(s[i])) {
-      int number_of_dots = 0;
-      while (isdigit(s[i]) or s[i] == '.') {
-        lvalue += s[i];
-        if (s[i] == '.') number_of_dots++;
-        ++i;
-      }
-      if (number_of_dots > 1) {
-        cout << "NUMBER OF DOTS > 1";
-        throw "BAD INPUT";
-      }
-      output.push_back(lvalue);
-      --i;
-      lvalue = "";
-    }
-
-    // Проверка на переменную или функцию
-
-    else if (isalpha(s[i])) {
-      while (isalpha(s[i])) {
-        lvalue += s[i];
-        ++i;
-      }
-      int number_of_comma = 0;
-
-      // Если это функция
-
-      if (s[i] == '{') {
-        ++i;
-        string word_for_func = "";
-        while (s[i] == ',' or isdigit(s[i])) {
-          int number_of_dots = 0;
-          if (s[i] == ',') number_of_comma++;
           if (isdigit(s[i])) {
+            int number_of_dots = 0;
             while (isdigit(s[i]) or s[i] == '.') {
-              word_for_func += s[i];
+              lvalue += s[i];
               if (s[i] == '.') number_of_dots++;
               ++i;
             }
             if (number_of_dots > 1) {
-              cout << "NUMBER OF DOTS > 1";
               throw "BAD INPUT";
             }
+            output.push_back(lvalue);
             --i;
-            output.push_back(word_for_func);
-            word_for_func = "";
+            lvalue = "";
           }
 
-          ++i;
-        }
-        if (isalpha(s[i])) {
-        }
+          // Проверка на переменную или функцию
 
-        if (s[i] == '}') {
-          output.push_back(lvalue);
-          string tmp_word = "{";
-          tmp_word += to_string(number_of_comma + 1);
-          tmp_word += "}";
-          output.push_back(tmp_word);
-        }
-      }
+          else if (isalpha(s[i])) {
+            while (isalpha(s[i])) {
+              lvalue += s[i];
+              ++i;
+            }
+            int number_of_comma = 0;
 
-      // Если это переменная-вектор с диапазоном
+            // Если это функция
 
-      else if (s[i] == '[') {
-        if (isdigit(s[i + 1])) {
-          ++i;
-          string first_num = "";
-          string second_num = "";
-          while (isdigit(s[i])) {
-            first_num += s[i];
-            ++i;
-          }
-          --i;
-          if (s[i + 1] == ':') {
-            if (VariableCheck(lvalue)) {
-              i += 2;
-              output.push_back(lvalue);
-              while (isdigit(s[i])) {
-                second_num += s[i];
+            if (s[i] == '{') {
+              ++i;
+              string word_for_func = "";
+              while (s[i] == ',' or isdigit(s[i])) {
+                int number_of_dots = 0;
+                if (s[i] == ',') number_of_comma++;
+                if (isdigit(s[i])) {
+                  while (isdigit(s[i]) or s[i] == '.') {
+                    word_for_func += s[i];
+                    if (s[i] == '.') number_of_dots++;
+                    ++i;
+                  }
+                  if (number_of_dots > 1) {
+                    cout << "NUMBER OF DOTS > 1";
+                    throw "BAD INPUT";
+                  }
+                  --i;
+                  output.push_back(word_for_func);
+                  word_for_func = "";
+                }
+
                 ++i;
               }
-              string range_ = "[" + first_num + "," + second_num + "]";
-              output.push_back(range_);
+              if (isalpha(s[i])) {
+              }
+
+              if (s[i] == '}') {
+                output.push_back(lvalue);
+                string tmp_word = "{";
+                tmp_word += to_string(number_of_comma + 1);
+                tmp_word += "}";
+                output.push_back(tmp_word);
+              }
+            }
+
+            // Если это переменная-вектор с диапазоном
+
+            else if (s[i] == '[') {
+              if (isdigit(s[i + 1])) {
+                ++i;
+                string first_num = "";
+                string second_num = "";
+                while (isdigit(s[i])) {
+                  first_num += s[i];
+                  ++i;
+                }
+                --i;
+                if (s[i + 1] == ':') {
+                  if (isUnique(QString::fromStdString(lvalue))) {
+                    i += 2;
+                    output.push_back(lvalue);
+                    while (isdigit(s[i])) {
+                      second_num += s[i];
+                      ++i;
+                    }
+                    string range_ = "[" + first_num + "," + second_num + "]";
+                    output.push_back(range_);
+                  }
+                }
+              }
+
+            }
+
+            // Если это переменная-вектор без диапазона
+
+            else {
+              if (isUnique(QString::fromStdString(lvalue))) {
+                output.push_back(lvalue);
+                --i;
+              }
+            }
+            lvalue = "";
+          }
+
+          // Проверка на операцию
+
+          else {
+            if (s[i] == '(') {
+              sym.push_back(s[i]);
+              number_of_brackets++;
+
+            } else if (s[i] == ')' and number_of_brackets) {
+              string for_sym = "";
+              for (int j = sym.size() - 1; j >= 0; --j) {
+                if (sym[j] == '(') {
+                  remove(sym, j);
+                  break;
+                } else {
+                  for_sym += sym[j];
+                  output.push_back(for_sym);
+                  for_sym = "";
+                  remove(sym, j);
+                }
+              }
+
+              number_of_brackets--;
+            } else {
+              if ((symPriority(s[i + 1]) > 0 and symPriority(s[i + 1]) <= 4) or
+                  symPriority(s[i - 1]) == 0) {
+                throw "BAD INPUT";
+              }
+
+              else {
+                string for_sym = "";
+                for (int j = sym.size() - 1; j >= 0; --j) {
+                  if (sym[j] == '(')
+                    break;
+                  else if (symPriority(s[i]) <= symPriority(sym[j])) {
+                    for_sym += sym[j];
+                    output.push_back(for_sym);
+                    for_sym = "";
+                    remove(sym, j);
+                  }
+                }
+                sym.push_back(s[i]);
+              }
             }
           }
-        }
-
-      }
-
-      // Если это переменная-вектор без диапазона
-
-      else {
-        if (VariableCheck(lvalue)) {
-          output.push_back(lvalue);
-          --i;
-        }
-      }
-      lvalue = "";
-    }
-
-    // Проверка на операцию
-
-    else {
-      if (s[i] == '(') {
-        sym.push_back(s[i]);
-        number_of_brackets++;
-
-      } else if (s[i] == ')' and number_of_brackets) {
-        string for_sym = "";
-        for (int j = sym.size() - 1; j >= 0; --j) {
-          if (sym[j] == '(') {
-            remove(sym, j);
-            break;
-          } else {
-            for_sym += sym[j];
-            output.push_back(for_sym);
-            for_sym = "";
-            remove(sym, j);
-          }
-        }
-
-        number_of_brackets--;
-      } else {
-        if ((symPriority(s[i + 1]) > 0 and symPriority(s[i + 1]) <= 4) or
-            symPriority(s[i - 1]) == 0) {
-          throw "BAD INPUT";
-        }
-
-        else {
-          string for_sym = "";
-          for (int j = sym.size() - 1; j >= 0; --j) {
-            if (sym[j] == '(')
-              break;
-            else if (symPriority(s[i]) <= symPriority(sym[j])) {
+          if (s[i + 1] == '\0') {
+            string for_sym = "";
+            for (int j = sym.size() - 1; j >= 0; --j) {
               for_sym += sym[j];
               output.push_back(for_sym);
               for_sym = "";
-              remove(sym, j);
             }
           }
-          sym.push_back(s[i]);
+          ++i;
         }
-      }
+        if (number_of_brackets == 0) {
+          cout << endl;
+          return {output, {1, tmp_name}};
+        } else {
+          cout << "WRONG NUMBER OF BRACKETS";
+          throw "BAD INPUT";
+        }
     }
-    if (s[i + 1] == '\0') {
-      string for_sym = "";
-      for (int j = sym.size() - 1; j >= 0; --j) {
-        for_sym += sym[j];
-        output.push_back(for_sym);
-        for_sym = "";
-      }
+    else {
+          vector<double> k = {0};
+          QVector<double> v_d = QVector<double>::fromStdVector(k);
+          QList<double> l_d = QList<double>::fromVector(v_d);
+          Manager::instance()->addVariable(VariableData (QString::fromStdString(tmp_name), QString::fromStdString(lvalue), l_d));
+          return {output, {0, tmp_name}};
     }
-    ++i;
-  }
-
-  if (number_of_brackets == 0) {
-    for (auto i : output) cout << i << " ";
-    cout << endl;
-    return output;
-  } else {
-    cout << "WRONG NUMBER OF BRACKETS";
-    throw "BAD INPUT";
-  }
+    }
 }
-
 // Функция, проверяющая, диапазон это или нет
 
 pair<int, int> isrange(string s) {
@@ -326,7 +341,7 @@ double substract(double a, double b) { return b - a; }
 
 double multiplication(double a, double b) { return a * b; }
 
-double exponentiation(double a, double b) { return pow(b, a); }
+double exponentiation(double a, double b) { return pow(a, b); }
 
 double division(double a, double b) { return b / a; }
 
@@ -338,14 +353,17 @@ vector<double> op_func(vector<double> a, vector<double> b,
   vector<double> tmp;
   if (a.size() == 1) {
     for (auto elem : b) {
+      qInfo() << op(elem, b[0]) << endl;
       tmp.push_back(op(elem, a[0]));
     }
   } else if (b.size() == 1) {
     for (auto elem : a) {
+      qInfo() << op(elem, b[0]) << endl;
       tmp.push_back(op(elem, b[0]));
     }
   } else if (a.size() > 1 and b.size() > 1 and a.size() == b.size()) {
     for (int i = 0; i < a.size(); ++i) {
+      qInfo() << op(a[i], b[i]) << endl;
       tmp.push_back(op(a[i], b[i]));
     }
   } else {
@@ -372,10 +390,12 @@ bool arrangement_check(int first, int second, vector<double> vec) {
 
 // Функция вычисления строки, полученной из parse()
 
-vector<double> calculate(vector<string> vec) {
+void calculate(pair<vector<string>, pair<bool, string>> Pair_d) {
   vector<Variable> elements;
-  double tmp_num = 0;
-
+  vector<string> vec = Pair_d.first;
+  string name = Pair_d.second.second;
+  bool is_parsed = Pair_d.second.first;
+  if (is_parsed) {
   for (int i = 0; i < vec.size(); ++i) {
     // Если это число
 
@@ -385,7 +405,7 @@ vector<double> calculate(vector<string> vec) {
 
     // Если это переменная с диапазоном
 
-    else if (VariableCheck(vec[i]) and !isArgumentNumber(vec[i + 1]) and
+    else if (isUnique(QString::fromStdString(vec[i])) and !isArgumentNumber(vec[i + 1]) and
              (isrange(vec[i + 1]).first or isrange(vec[i + 1]).second)) {
       int first = isrange(vec[i + 1]).first;
       int second = isrange(vec[i + 1]).second;
@@ -400,7 +420,7 @@ vector<double> calculate(vector<string> vec) {
 
     // Если это переменная без диапазона
 
-    else if (VariableCheck(vec[i]) and !isArgumentNumber(vec[i + 1]) and
+    else if (isUnique(QString::fromStdString(vec[i])) and !isArgumentNumber(vec[i + 1]) and
              (!isrange(vec[i + 1]).first and !isrange(vec[i + 1]).second)) {
       elements.push_back({VariableGet(vec[i]).getValue()});
     }
@@ -462,10 +482,15 @@ vector<double> calculate(vector<string> vec) {
     }
   }
 
-  return elements[0].getValue();
+  //QList<double> temp_list = QList<double>::fromVector(QVector<double>::fromStdVector(elements[0].getValue()));
+  QList<double> tmp_list;
+  for (auto i : elements[0].getValue())
+      tmp_list.append(i);
+  Manager::instance()->getVariableOrCalculated(QString::fromStdString(name))->measurements = tmp_list;
+  }
 }
 
-int main() {
+/*int main() {
   string s;
   Variable_Data.push_back(Variable("a", {1, 2, 3, 4}));
   Variable_Data.push_back(Variable("b", {2, 2, 2, 2}));
@@ -476,7 +501,7 @@ int main() {
   for (int i = 0; i < ans.size(); ++i) {
     cout << ans[i] << " ";
   }
-}
+}*/
 
 vector<double> minimality(vector<Variable> elems, int count) {
   if (count == 1) {
@@ -520,7 +545,6 @@ vector<double> minimality(vector<Variable> elems, int count) {
           tmp_min = min(tmp_min, j);
         }
       }
-      cout << tmp_min << "THATS RESULT" << endl;
       vector<double> tmp_min_holder{tmp_min};
       return tmp_min_holder;
     } else {
@@ -538,4 +562,5 @@ vector<double> minimality(vector<Variable> elems, int count) {
       return tmp_min_holder;
     }
   }
+}
 }
