@@ -187,6 +187,9 @@ void MainWindow::addPlot() {
 
 void MainWindow::exportODF() {
     QString fileName = QFileDialog::getSaveFileName(nullptr,QObject::tr("Save File"), "output_file.odf", QObject::tr("Open Document ('''.odf)"));
+
+    if (fileName.isEmpty()) return;
+
     QTextDocumentWriter fileWriter (fileName);
     fileWriter.setFormat("odf");
 
