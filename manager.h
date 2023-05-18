@@ -10,12 +10,11 @@ class Manager
 public:
    void addVariable(const VariableData&);
    void deleteVariable(int index);
+   void deleteCalculated(int index);
    void addMeasurementRow(QList<double>&);
    void removeMeasurementRow(int index);
    void clearCalculated();
    void addCalculated(const VariableData&);
-   void deleteCalculated(int index);
-
    int getVariableCount() const;
    int getVariableAndCalculatedCount() const;
    int getMeasurementCount() const;
