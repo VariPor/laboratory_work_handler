@@ -5,7 +5,6 @@ Q_GLOBAL_STATIC(Manager, GlobalManager)
 void Manager::addVariable(const VariableData& var)
 {
     variables.append(var);
-    Manager::instance()->recalculationMeasurementCount();
 }
 
 void Manager::recalculationMeasurementCount() {
@@ -25,7 +24,6 @@ void Manager::deleteVariable(int index)
     if (index < 0 || index > variables.count())
         throw std::out_of_range("There isn't a column with this index");
     variables.removeAt(index);
-    Manager::instance()->recalculationMeasurementCount();
 }
 
 void Manager::addMeasurementRow(QList<double>& meas)
@@ -34,7 +32,6 @@ void Manager::addMeasurementRow(QList<double>& meas)
         throw std::out_of_range("Too few or too many measurement");
     for (int i = 0; i < meas.count(); ++i)
         variables[i].measurements.append(meas[i]);
-    measurement_count += 1;
 }
 
 void Manager::removeMeasurementRow(int num_row)
@@ -44,19 +41,16 @@ void Manager::removeMeasurementRow(int num_row)
     for (int i = 0; i < variables.count(); ++i)
         if (variables[i].measurements.count() > num_row)
             variables[i].measurements.removeAt(num_row);
-    Manager::instance()->recalculationMeasurementCount();
 }
 
 void Manager::addCalculated(const VariableData& var)
 {
     calculated.append(var);
-    Manager::instance()->recalculationMeasurementCount();
 }
 
 void Manager::clearCalculated()
 {
     calculated.clear();
-    Manager::instance()->recalculationMeasurementCount();
 }
 
 Manager *Manager::instance()
@@ -66,7 +60,10 @@ Manager *Manager::instance()
 
 int Manager::getVariableCount() const { return variables.size(); }
 
-int Manager::getMeasurementCount() const { return measurement_count; }
+int Manager::getMeasurementCount() const {
+    Manager::instance()->recalculationMeasurementCount();
+    return measurement_count;
+}
 
 VariableData* Manager::getVariable(const QString& name)
 {
@@ -141,4 +138,9 @@ bool Manager::isInManager(QString name) {
     return false;
 }
 
-
+void Manager::deleteCalculated(int index)
+{
+    if (index < 0 || index >= calculated.count())
+        throw std::out_of_range("There isn't a column with this index (from deleteCalculated)");
+    calculated.removeAt(index);
+}

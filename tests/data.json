@@ -1,7 +1,7 @@
 [
     {
         "instrumentError": {
-            "type": "Absolute",
+            "type": "Relative",
             "value": 0.1
         },
         "names": {
@@ -10,6 +10,23 @@
         },
         "visualOptions": {
             "color": "#fce94f",
+            "line_type": "Dashed",
+            "point_type": "Cross",
+            "visible": true,
+            "width": 5
+        }
+    },
+    {
+        "instrumentError": {
+            "type": "Absolute",
+            "value": 8.9
+        },
+        "names": {
+            "fullNaming": "aaa",
+            "shortNaming": "a"
+        },
+        "visualOptions": {
+            "color": "#0ce948",
             "line_type": "Dashed",
             "point_type": "Cross",
             "visible": true,
