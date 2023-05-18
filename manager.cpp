@@ -93,7 +93,7 @@ VariableData* Manager::getCalculated(const QString& name)
 
 VariableData* Manager::getCalculated(int index)
 {
-    if (index >= variables.size()) throw std::runtime_error("No such index (in getCalculated(int index))");
+    if (index >= calculated.size()) throw std::runtime_error("No such index (in getCalculated(int index))");
     return &calculated[index];
 }
 

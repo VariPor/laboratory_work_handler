@@ -102,7 +102,7 @@ pair<vector<string>, pair<bool, string>> parse(string s) {
       vector<double> k = {0};
       QVector<double> v_d = QVector<double>::fromStdVector(k);
       QList<double> l_d = QList<double>::fromVector(v_d);
-      Manager::instance()->addVariable(VariableData (QString::fromStdString(lvalue), QString::fromStdString(lvalue), l_d));
+      Manager::instance()->addCalculated(VariableData (QString::fromStdString(lvalue), QString::fromStdString(lvalue), l_d));
       vector<string> str {};
       return {str, {0, lvalue}};
   }
@@ -284,7 +284,7 @@ pair<vector<string>, pair<bool, string>> parse(string s) {
           vector<double> k = {0};
           QVector<double> v_d = QVector<double>::fromStdVector(k);
           QList<double> l_d = QList<double>::fromVector(v_d);
-          Manager::instance()->addVariable(VariableData (QString::fromStdString(tmp_name), QString::fromStdString(lvalue), l_d));
+          Manager::instance()->addCalculated(VariableData (QString::fromStdString(tmp_name), QString::fromStdString(lvalue), l_d));
           return {output, {0, tmp_name}};
     }
     }

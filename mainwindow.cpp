@@ -275,8 +275,18 @@ void MainWindow::addRow()
 }
 
 void MainWindow::callParser() {
+    auto m = Manager::instance();
+    int temp = m->getVariableAndCalculatedCount();
     QString str = ui->lineEdit->text();
     parser::calculate(parser::parse(str.toStdString()));
+
+    if (temp < m->getVariableAndCalculatedCount()) {
+    int columnNum = m->getVariableAndCalculatedCount() - 1;
+        static_cast<MeasurementModel*>(ui->variable_tableView->model())->insertColumn(columnNum);
+        static_cast<VisualModel*>(ui->visual_tableView->model())->insertRow(columnNum);
+        static_cast<InstrumentModel*>(ui->instruments_tableView->model())->insertRow(columnNum);
+        static_cast<NamingModel*>(ui->naming_tableView->model())->insertRow(columnNum);
+    }
 }
 
 void MainWindow::deleteVariable()
