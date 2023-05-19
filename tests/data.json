@@ -2,35 +2,52 @@
     {
         "instrumentError": {
             "type": "Relative",
-            "value": 0.1
+            "value": 13.5
         },
         "names": {
-            "fullNaming": "ohh",
-            "shortNaming": "foo"
+            "fullNaming": "ASDqqq",
+            "shortNaming": "asdqqq"
         },
         "visualOptions": {
-            "color": "#fce94f",
-            "line_type": "Dashed",
-            "point_type": "Cross",
-            "visible": true,
-            "width": 5
+            "color": "#aa55ff",
+            "line_type": "Solid",
+            "point_type": "Circle",
+            "visible": false,
+            "width": 1
         }
     },
     {
         "instrumentError": {
             "type": "Absolute",
-            "value": 8.9
+            "value": 9
         },
         "names": {
-            "fullNaming": "aaa",
-            "shortNaming": "a"
+            "fullNaming": "zxcqqq",
+            "shortNaming": "zxcqqq"
         },
         "visualOptions": {
-            "color": "#0ce948",
+            "color": "#8ae234",
             "line_type": "Dashed",
-            "point_type": "Cross",
+            "point_type": "None",
             "visible": true,
-            "width": 5
+            "width": 2
+        }
+    },
+    {
+        "instrumentError": {
+            "type": "Relative",
+            "value": 0
+        },
+        "names": {
+            "fullNaming": "QWEwww",
+            "shortNaming": "qwewww"
+        },
+        "visualOptions": {
+            "color": "#729fcf",
+            "line_type": "Dashed",
+            "point_type": "Circle",
+            "visible": true,
+            "width": 3
         }
     }
 ]

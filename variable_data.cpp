@@ -1,4 +1,5 @@
 ﻿#include "variable_data.h"
+#include "manager.h"
 
 QMap<Qt::PenStyle, QString> VariableData::VisualOptions::line_types = {
     {Qt::SolidLine, "Solid"},
@@ -44,10 +45,11 @@ VariableData::VariableData(QString shortNaming, QString fullNaming, QList<double
 
 VariableData::VariableData(int size)
 {
+    static int new_counter = 0;
     for (int i = 0; i < size; ++i) measurements.append(0);
     if (size == 0) measurements.append(0);
 
-    QVariant t = QVariant(rand() % 10);
-    shortNaming = t.toString();
-    fullNaming = QString("New") + t.toString();
+    while (Manager::instance()->isInManager(QString::number(new_counter))) new_counter++;
+    shortNaming = QString::number(new_counter);
+    fullNaming = QString("New") + shortNaming;
 }
