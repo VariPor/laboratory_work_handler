@@ -107,11 +107,13 @@ void StrategyIO_JSON::load(const QString& input)
        QJsonObject temp = array[i].toObject();
        QString short_name = temp["names"].toObject()["shortNaming"].toString();
 
+       if (!Manager::instance()->isInManager(short_name)) return;
+
        auto& variable = *Manager::instance()->getVariable(short_name);
 
        variable.fullNaming = temp["names"].toObject()["fullNaming"].toString();
 
-       variable.instrumentError.type = VariableData::Instrument::error_types.key((temp["instrumentErrors"].toObject()["type"]).toString());
+       variable.instrumentError.type = VariableData::Instrument::error_types.key((temp["instrumentError"].toObject()["type"]).toString());
 
        variable.instrumentError.value = temp["instrumentError"].toObject()["value"].toDouble();
 

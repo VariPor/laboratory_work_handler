@@ -21,46 +21,35 @@ class Variable {
   Variable(string n, vector<double> v) {
     name = n;
     value = v;
-    err = 0;
   }
   Variable(vector<double> v) {
     name = "MyVector";
     value = v;
-    err = 0;
   }
   string getName() { return name; }
   vector<double>& getValue() { return value; }
   void setName(string s) { name = s; }
   void setValue(vector<double> n) { value = n; }
   Variable(const VariableData& VD) : name{ VD.shortNaming.toStdString() } {
-      for (auto&e: VD.measurements) value.push_back(e);
-      //value = VD.measurements.toVector().toStdVector();
-      err = VD.getError();
+      value = VD.measurements.toVector().toStdVector();
   }
 
  private:
   string name;
   vector<double> value;
-  double err;
+  //double err;
 };
 
 vector<Variable> Variable_Data = {};
 
 bool isUnique(QString n) {
-  Manager::instance()->isInManager(n);
+  return Manager::instance()->isInManager(n);
 }
 
 template <typename T>
 void remove(std::vector<T>& v, size_t index) {
   v.erase(v.begin() + index);
 }
-
-/*bool isUnique(QString::fromStdString(QString s) {
-  for (auto i : Variable_Data) {
-    if (s == i.getName()) return true;
-  }
-  return false;
-}*/
 
 Variable VariableGet(string s) {
   VariableData* var = Manager::instance()->getVariableOrCalculated(QString::fromStdString(s));
@@ -102,30 +91,25 @@ pair<vector<string>, pair<bool, string>> parse(string s) {
   string lvalue = "";
   bool eq = false;
   for (char c : s) {
+      if (c == '=') {
+          eq = true;
+          break;
+      }
       lvalue += c;
-      if (c == '=') eq = true;
   }
 
   if (!eq) {
       vector<double> k = {0};
-      QVector<double> v_d;
-      for (auto&e: k) v_d.push_back(e);
-      //QVector<double> v_d = QVector<double>::fromStdVector(k);
+      QVector<double> v_d = QVector<double>::fromStdVector(k);
       QList<double> l_d = QList<double>::fromVector(v_d);
-      Manager::instance()->addVariable(VariableData (QString::fromStdString(lvalue), QString::fromStdString(lvalue), l_d));
+      Manager::instance()->addCalculated(VariableData (QString::fromStdString(lvalue), QString::fromStdString(lvalue), l_d));
       vector<string> str {};
       return {str, {0, lvalue}};
   }
   else {
+      string tmp_name = lvalue;
       if (isUnique(QString::fromStdString(lvalue))) {
-          vector<double> k = {0};
-          QVector<double> v_d;
-          for (auto&e: k) v_d.push_back(e);
-          //QVector<double> v_d = QVector<double>::fromStdVector(k);
-          QList<double> l_d = QList<double>::fromVector(v_d);
-          Manager::instance()->addCalculated(VariableData (QString::fromStdString(lvalue), QString::fromStdString(lvalue), l_d));
-        }
-        string tmp_name = lvalue;
+
         s = s.substr(i + 1, s.length() - i - 1);
 
         i = 0;
@@ -142,7 +126,6 @@ pair<vector<string>, pair<bool, string>> parse(string s) {
               ++i;
             }
             if (number_of_dots > 1) {
-              cout << "NUMBER OF DOTS > 1";
               throw "BAD INPUT";
             }
             output.push_back(lvalue);
@@ -290,7 +273,6 @@ pair<vector<string>, pair<bool, string>> parse(string s) {
           ++i;
         }
         if (number_of_brackets == 0) {
-          for (auto i : output) cout << i << " ";
           cout << endl;
           return {output, {1, tmp_name}};
         } else {
@@ -298,8 +280,15 @@ pair<vector<string>, pair<bool, string>> parse(string s) {
           throw "BAD INPUT";
         }
     }
+    else {
+          vector<double> k = {0};
+          QVector<double> v_d = QVector<double>::fromStdVector(k);
+          QList<double> l_d = QList<double>::fromVector(v_d);
+          Manager::instance()->addCalculated(VariableData (QString::fromStdString(tmp_name), QString::fromStdString(lvalue), l_d));
+          return {output, {0, tmp_name}};
+    }
+    }
 }
-
 // Функция, проверяющая, диапазон это или нет
 
 pair<int, int> isrange(string s) {
@@ -342,7 +331,7 @@ double substract(double a, double b) { return b - a; }
 
 double multiplication(double a, double b) { return a * b; }
 
-double exponentiation(double a, double b) { return pow(b, a); }
+double exponentiation(double a, double b) { return pow(a, b); }
 
 double division(double a, double b) { return b / a; }
 
@@ -350,18 +339,20 @@ double division(double a, double b) { return b / a; }
 
 vector<double> op_func(vector<double> a, vector<double> b,
                        double (*op)(double, double)) {
-  cout << endl << a.size() << " " << b.size() << endl;
   vector<double> tmp;
   if (a.size() == 1) {
     for (auto elem : b) {
+      qInfo() << op(elem, b[0]) << endl;
       tmp.push_back(op(elem, a[0]));
     }
   } else if (b.size() == 1) {
     for (auto elem : a) {
+      qInfo() << op(elem, b[0]) << endl;
       tmp.push_back(op(elem, b[0]));
     }
   } else if (a.size() > 1 and b.size() > 1 and a.size() == b.size()) {
     for (int i = 0; i < a.size(); ++i) {
+      qInfo() << op(a[i], b[i]) << endl;
       tmp.push_back(op(a[i], b[i]));
     }
   } else {
@@ -427,19 +418,11 @@ void calculate(pair<vector<string>, pair<bool, string>> Pair_d) {
 
     else if (vec[i] == "min" and isArgumentNumber(vec[i + 1])) {
       vector<Variable> tmp_elements = elements;
-      cout << elements.size() << endl;
-      for (auto i : elements) {
-        cout << i.getValue()[0] << ". ";
-      }
-      cout << "WORKS";
-      cout << endl;
       int argnum = isArgumentNumber(vec[i + 1]);
       for (int i = 0; i < argnum; ++i) {
         elements.pop_back();
       }
       vector<double> k = minimality(tmp_elements, isArgumentNumber(vec[i + 1]));
-      for (auto i : k) cout << i << " ";
-      cout << endl;
       elements.push_back(
           minimality(tmp_elements, isArgumentNumber(vec[i + 1])));
 
@@ -481,24 +464,12 @@ void calculate(pair<vector<string>, pair<bool, string>> Pair_d) {
   }
 
   //QList<double> temp_list = QList<double>::fromVector(QVector<double>::fromStdVector(elements[0].getValue()));
-  QList<double> temp_list;
-  for (auto&e: elements[0].getValue()) temp_list.append(e);
-  Manager::instance()->getCalculated(QString::fromStdString(name))->measurements = temp_list;
+  QList<double> tmp_list;
+  for (auto i : elements[0].getValue())
+      tmp_list.append(i);
+  Manager::instance()->getVariableOrCalculated(QString::fromStdString(name))->measurements = tmp_list;
   }
 }
-
-/*int main() {
-  string s;
-  Variable_Data.push_back(Variable("a", {1, 2, 3, 4}));
-  Variable_Data.push_back(Variable("b", {2, 2, 2, 2}));
-  Variable_Data.push_back(Variable("c", {-2, -3, -4, -4}));
-  Variable_Data.push_back(Variable("z", {0, 0, 0, 0}));
-  s = "k=a*0";
-  vector<double> ans = calculate(parse(s));
-  for (int i = 0; i < ans.size(); ++i) {
-    cout << ans[i] << " ";
-  }
-}*/
 
 vector<double> minimality(vector<Variable> elems, int count) {
   if (count == 1) {
@@ -542,7 +513,6 @@ vector<double> minimality(vector<Variable> elems, int count) {
           tmp_min = min(tmp_min, j);
         }
       }
-      cout << tmp_min << "THATS RESULT" << endl;
       vector<double> tmp_min_holder{tmp_min};
       return tmp_min_holder;
     } else {
