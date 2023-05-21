@@ -12,6 +12,7 @@ public:
    void deleteVariable(int index);
    void deleteCalculated(int index);
    void addMeasurementRow(QList<double>&);
+   void addMeasurementRowWithZeros();
    void removeMeasurementRow(int index);
    void clearCalculated();
    void addCalculated(const VariableData&);

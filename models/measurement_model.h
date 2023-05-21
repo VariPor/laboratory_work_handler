@@ -29,7 +29,7 @@ class MeasurementModel : public QAbstractTableModel
   void insertColumn(int column);
   void removeColumn(int column);
   void insertRow(int row);
-  void removeRows(int row, int count);
+  void removeRow(int row);
 
 private:
   int extraRows = 0;

@@ -5,7 +5,7 @@
 int MeasurementModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return Manager::instance()->getMeasurementCount() + extraRows;
+    return Manager::instance()->getMeasurementCount();
 }
 
 int MeasurementModel::columnCount(const QModelIndex &parent) const
@@ -51,13 +51,7 @@ bool MeasurementModel::setData(const QModelIndex &index, const QVariant &value, 
     {
         if (!value.canConvert<double>()) return false;
         VariableData* v = Manager::instance()->getVariableOrCalculated(variable);
-
-        if (v->measurements.size() <= row)
-        {
-            v->measurements.append(value.toDouble());
-            emit dataChanged(index, index);
-            return true;
-        }
+        if (v->measurements.size() <= row) return false;
         v->measurements[row] = value.toDouble();
         emit dataChanged(index, index);
         return true;
@@ -92,7 +86,8 @@ void MeasurementModel::insertRow(int row)
     endInsertRows();
 }
 
-void MeasurementModel::removeRows(int row, int count)
+void MeasurementModel::removeRow(int row)
 {
+    beginRemoveRows(QModelIndex(), row, row);
+    endRemoveRows();
 }
-

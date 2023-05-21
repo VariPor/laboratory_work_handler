@@ -34,6 +34,14 @@ void Manager::addMeasurementRow(QList<double>& meas)
         variables[i].measurements.append(meas[i]);
 }
 
+void Manager::addMeasurementRowWithZeros()
+{
+    for (int i = 0; i < getVariableAndCalculatedCount(); ++i)
+    {
+        getVariableOrCalculated(i)->measurements.append(0.);
+    }
+}
+
 void Manager::removeMeasurementRow(int num_row)
 {
     if (num_row < 0 || num_row >= measurement_count)
@@ -41,6 +49,10 @@ void Manager::removeMeasurementRow(int num_row)
     for (int i = 0; i < variables.count(); ++i)
         if (variables[i].measurements.count() > num_row)
             variables[i].measurements.removeAt(num_row);
+    for (int i = 0; i < calculated.count(); ++i)
+        if (calculated[i].measurements.count() > num_row)
+            calculated[i].measurements.removeAt(num_row);
+    recalculationMeasurementCount();
 }
 
 void Manager::addCalculated(const VariableData& var)
