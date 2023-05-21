@@ -15,8 +15,8 @@ QMap<QCPScatterStyle::ScatterShape, QString> VariableData::VisualOptions::point_
 
 QMap<VariableData::Instrument::ErrorType, QString> VariableData::Instrument::error_types = {
     {VariableData::Instrument::ErrorType::relative, "Relative"},
-    {VariableData::Instrument::ErrorType::absolute, "Absolute"},
-    {VariableData::Instrument::ErrorType::calculated, "Calculated"},
+    {VariableData::Instrument::ErrorType::absolute, "Absolute"}
+    //{VariableData::Instrument::ErrorType::calculated, "Calculated"}, - can't see
 };
 
 double VariableData::getError(int index) const

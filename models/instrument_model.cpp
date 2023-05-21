@@ -5,7 +5,7 @@
 int InstrumentModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return Manager::instance()->getVariableAndCalculatedCount();
+    return Manager::instance()->getVariableCount();
 }
 
 int InstrumentModel::columnCount(const QModelIndex &parent) const
@@ -18,7 +18,7 @@ QVariant InstrumentModel::data(const QModelIndex &index, int role) const
 {
     int variable = index.row();
     int option  = index.column();
-    auto& instrument = Manager::instance() -> getVariableOrCalculated(variable)->instrumentError;
+    auto& instrument = Manager::instance() -> getVariable(variable)->instrumentError;
 
     switch (role)
     {
@@ -38,7 +38,7 @@ bool InstrumentModel::setData(const QModelIndex &index, const QVariant &value, i
 {
     int variable = index.row();
     int option  = index.column();
-    auto& instrument = Manager::instance() -> getVariableOrCalculated(variable)->instrumentError;
+    auto& instrument = Manager::instance() -> getVariable(variable)->instrumentError;
 
     if (role == Qt::EditRole)
     {
@@ -65,7 +65,7 @@ QVariant InstrumentModel::headerData( int section, Qt::Orientation orientation, 
 
     if( orientation == Qt::Vertical )
     {
-        return QString(Manager::instance() -> getVariableOrCalculated(section)->shortNaming);
+        return QString(Manager::instance() -> getVariable(section)->shortNaming);
     }
 
     switch( section )
@@ -80,10 +80,7 @@ QVariant InstrumentModel::headerData( int section, Qt::Orientation orientation, 
 
 Qt::ItemFlags InstrumentModel::flags(const QModelIndex &index) const
 {
-    if (index.row() < Manager::instance()->getVariableCount())
         return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
-    else
-        return QAbstractItemModel::flags(index);
 }
 
 void InstrumentModel::insertRow(int row)
